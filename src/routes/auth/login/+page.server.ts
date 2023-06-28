@@ -1,14 +1,24 @@
-// src/routes/+page.server.ts
-import { redirect } from '@sveltejs/kit';
-import type { PageServerLoad } from './$types';
+import { fail } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ url, locals: { getSession } }) => {
-	const session = await getSession();
+export const actions = {
+	default: async ({ request, url, locals: { supabase } }) => {
+		const formData = await request.formData();
+		const email = formData.get('email') as string;
+		const password = formData.get('password') as string;
 
-	// if the user is already logged in return them to the account page
-	if (session) {
-		throw redirect(303, '/account');
+		const { error } = await supabase.auth.signInWithPassword({
+			email,
+			password
+		});
+
+		if (error) {
+			console.log(error);
+			return fail(500, { message: 'Špatné přihlašovací údaje', success: false, email });
+		}
+
+		return {
+			message: 'Přihlášení úspešné',
+			success: true
+		};
 	}
-
-	return { url: url.origin };
 };

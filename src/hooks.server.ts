@@ -1,9 +1,9 @@
-// src/hooks.server.ts
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
+	console.log('a');
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
@@ -21,6 +21,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 		} = await event.locals.supabase.auth.getSession();
 		return session;
 	};
+
+	if (event.url.pathname.startsWith('/sec')) {
+		const session = await event.locals.getSession();
+		if (!session) {
+			// the user is not signed in
+			console.log('redirecting');
+			throw redirect(303, '/');
+		}
+	}
 
 	return resolve(event, {
 		filterSerializedResponseHeaders(name) {
