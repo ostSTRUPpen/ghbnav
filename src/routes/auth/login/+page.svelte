@@ -1,18 +1,17 @@
 <script lang="ts">
-	import { Auth } from '@supabase/auth-ui-svelte';
-	import { ThemeSupa } from '@supabase/auth-ui-shared';
+	import { supabase } from '@supabase/auth-ui-shared';
 
-	export let data;
-	//appearance={{ theme: ThemeSupa, style: { input: 'color: #fff' } }}
+	const { data, error } = await supabase.auth.signUp({
+		email: 'example@email.com',
+		password: 'example-password'
+	});
 </script>
 
-<svelte:head>
-	<title>User Management</title>
-</svelte:head>
-
-<Auth
-	supabaseClient={data.supabase}
-	view="magic_link"
-	redirectTo={`${data.url}/auth/callback`}
-	showLinks={false}
-/>
+<div>
+	<form>
+		<label for="emai">E-mail:</label>
+		<input name="email" type="email" /> <br />
+		<label for="password">Heslo:</label>
+		<input name="password" type="password" />
+	</form>
+</div>
