@@ -2,4 +2,4 @@
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 </script>
 
-<SecureAnchor page={'/markers'} text={'Značky'} />
+<SecureAnchor page={''} text={'Zpět'} />
