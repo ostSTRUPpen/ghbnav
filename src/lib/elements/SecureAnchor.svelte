@@ -9,4 +9,5 @@
 	}
 </script>
 
+<!-- svelte-ignore a11y-invalid-attribute -->
 <a href="#" on:click={anchor}>{text}</a>

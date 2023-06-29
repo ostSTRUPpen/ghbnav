@@ -15,6 +15,7 @@
 </script>
 
 <div>
+	<!-- TODO víc graficky odlišit jednotlivé placeholdery-->
 	<div>
 		<!--<label for="from">Odkud:</label>
 		<input list="ending_points" id="from" name="from" bind:value={navFrom} />
@@ -26,6 +27,10 @@
 				<option value={endPoint.display_name}/>
 			{/each}
 		</datalist>-->
+		<!-- TODO zobrazovat patra -->
+		<!-- TODO přidat placehodler (se kterým nepůjde dát navigovat)-->
+		<!-- TODO Přidat kontrolu, zda from a to nejsou stejné -->
+		<!-- TODO Přidat výpis patra -->
 		<label for="from">Odkud:</label>
 		<select id="from" name="from" bind:value={navFrom}>
 			{#each endingPoints as endPoint}
@@ -41,7 +46,10 @@
 		<button on:click={navFromTo}>Navigovat</button>
 	</div>
 
+	<!-- TODO zprovoznit a otestovat -->
+	<!-- TODO automatický generátor QR kódů (https://davidshimjs.github.io/qrcodejs/)-->
 	<div>Skenovat qr kod</div>
 
+	<!-- TODOD předefinovat -->
 	<div>caste cesty</div>
 </div>

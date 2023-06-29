@@ -6,6 +6,14 @@
 	import floor_2 from '$lib/images/floor_2.jpg';
 	import floor_3 from '$lib/images/floor_3.jpg';
 	import floor_4 from '$lib/images/floor_4.jpg';
+	import closet_room from '$lib/images/icons/closet_room.png';
+	import director from '$lib/images/icons/director.png';
+	import gym from '$lib/images/icons/gym.png';
+	import main_classroom from '$lib/images/icons/main_classroom.png';
+	import office from '$lib/images/icons/office.png';
+	import teachers_room from '$lib/images/icons/teachers_room.png';
+	import wc from '$lib/images/icons/wc.png';
+	import special_classroom from '$lib/images/icons/special_classroom.png';
 	import MarkerPopup from '$lib/elements/MarkerPopup.svelte';
 
 	export let data;
@@ -20,43 +28,40 @@
 	let popup: any;
 
 	//TODO ikony
-	function createMarkers(L: any, markers: any, floor: number) {
+	function createMarkers(L: any, markers: any, floor: number, iconList: any) {
 		let marker_list = [];
 		for (let marker of markers) {
 			if (marker.floor === floor) {
-				/*let icon;
-		switch (marker.type) {
-			case 'classroom': {
-				icon = x;
-				break;
-			}
-			case 'cabinet': {
-				icon = y;
-				break;
-			}
-			case 'wc': {
-				icon = z;
-				break;
-			}
-			default: {
-				icon = def;
-				break;
-			}
-		}
-		*/
-				marker_list.push(
-					// All cords are YX... its not my fault
-					L.marker([marker.y, marker.x] /*icon*/)
-						.bindPopup(() => {
-							let container = L.DomUtil.create('div');
-							let c = new MarkerPopup({
-								target: container,
-								props: { text: marker.display_name, id: marker.id }
-							});
-							return container;
-						})
-						.openPopup()
-				);
+				let mIcon = '';
+				if (marker.icon !== '') {
+					marker_list.push(
+						// All cords are YX... its not my fault
+						L.marker([marker.y, marker.x], { icon: iconList[marker.icon] })
+							.bindPopup(() => {
+								let container = L.DomUtil.create('div');
+								let c = new MarkerPopup({
+									target: container,
+									props: { text: marker.display_name, id: marker.id }
+								});
+								return container;
+							})
+							.openPopup()
+					);
+				} else {
+					marker_list.push(
+						// All cords are YX... its not my fault
+						L.marker([marker.y, marker.x])
+							.bindPopup(() => {
+								let container = L.DomUtil.create('div');
+								let c = new MarkerPopup({
+									target: container,
+									props: { text: marker.display_name, id: marker.id }
+								});
+								return container;
+							})
+							.openPopup()
+					);
+				}
 			}
 		}
 		return marker_list;
@@ -66,6 +71,23 @@
 		console.log(data);
 		if (browser) {
 			const L = await import('leaflet');
+
+			const NavIcon = L.Icon.extend({
+				options: {
+					iconSize: [25, 25], // size of the icon
+					iconAnchor: [12.5, 12.5], // point of the icon which will correspond to marker's location
+					popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
+				}
+			});
+
+			// const x = new NavIcon({ iconUrl: wc });
+			// TODO přidat všechny ikony
+			const markerIcons = {
+				// FIXME https://docs.maptiler.com/leaflet/ts-get-started/
+				//@ts-ignore
+				wc: new NavIcon({ iconUrl: wc })
+			};
+			//const markerIcons = {};
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [
 				[0, 0],
@@ -88,6 +110,7 @@
 				[1915, 8868]
 			]);
 
+			// FIXME odstraenit až nebude třeba vypisovat souřadnice kliknutí
 			popup = L.popup();
 
 			// TO-DONE Až bude příslušná infrastruktura (databáze a tak, tak vytvořím markery pomocí foreach loopu) DONE
@@ -110,8 +133,13 @@
 			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
 			// TODO Speciální ikony dle typu
 			// TODO zjistit co je X
+
+			// TODO navigace z A do B (navigační markery a tak - hlavně konzultace s ferenczem)
+			// TODO přidat import from a to z url
+			// TODO zobrazit from a to na stránce
+			// TODO Nakreslit všechny ikony
 			let marker_list: any = [];
-			marker_list = createMarkers(L, markers, 0);
+			marker_list = createMarkers(L, markers, 0, markerIcons);
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...marker_list
@@ -174,7 +202,7 @@
 					* ])
 					*/
 			]);
-			marker_list = createMarkers(L, markers, 1);
+			marker_list = createMarkers(L, markers, 1, markerIcons);
 			let firstFloor = L.layerGroup([
 				// Map image
 				firstFloorImg,
@@ -215,7 +243,7 @@
 				 * L.marker([328, 9944]).bindPopup('Šatna').openPopup()
 				 */ //L.marker([]).bindPopup('A').openPopup(),
 			]);
-			marker_list = createMarkers(L, markers, 2);
+			marker_list = createMarkers(L, markers, 2, markerIcons);
 			let secondFloor = L.layerGroup([
 				// Map image
 				secondFloorImg,
@@ -257,7 +285,7 @@
 				//L.marker([]).bindPopup('A').openPopup(),
 				*/
 			]);
-			marker_list = createMarkers(L, markers, 3);
+			marker_list = createMarkers(L, markers, 3, markerIcons);
 			let thirdFloor = L.layerGroup([
 				// Map image
 				thirdFloorImg,
@@ -293,7 +321,7 @@
 				 */
 				//L.marker([]).bindPopup('A').openPopup(),
 			]);
-			marker_list = createMarkers(L, markers, 4);
+			marker_list = createMarkers(L, markers, 4, markerIcons);
 			let fourthFloor = L.layerGroup([
 				// Map image
 				fourthFloorImg,
@@ -340,9 +368,12 @@
 				[3000, 10000]
 			]);
 			L.control.layers(floors).addTo(map);
+			// FIXME odstraenit až nebude třeba vypisovat souřadnice kliknutí
 			map.on('click', onMapClick);
+			L.marker([0, 0], { icon: markerIcons['wc'] }).bindPopup('Kabinet TV').openPopup().addTo(map);
 		}
 	});
+	// FIXME odstraenit až nebude třeba vypisovat souřadnice kliknutí
 	function onMapClick(e: any) {
 		popup.setLatLng(e.latlng).setContent(e.latlng.toString()).openOn(map);
 	}
