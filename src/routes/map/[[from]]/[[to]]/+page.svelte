@@ -85,7 +85,14 @@
 			const markerIcons = {
 				// FIXME https://docs.maptiler.com/leaflet/ts-get-started/
 				//@ts-ignore
-				wc: new NavIcon({ iconUrl: wc })
+				wc: new NavIcon({ iconUrl: wc }),
+				kabinet: new NavIcon({iconUrl: teachers_room}),
+				kmen_trida: new NavIcon({iconUrl: main_classroom}),
+				poslucharna: new NavIcon({iconUrl: special_classroom}),
+				telocvicna: new NavIcon({iconUrl: gym }),
+				satna: new NavIcon({iconUrl: closet_room}),
+				reditelna: new NavIcon({iconUrl: director }),
+				kancelar: new NavIcon({iconUrl: office })
 			};
 			//const markerIcons = {};
 
