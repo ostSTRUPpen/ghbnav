@@ -1,7 +1,6 @@
 import type { Actions } from './$types';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { AuthApiError } from '@supabase/supabase-js';
-import { goto } from '$app/navigation';
 
 /**
  * Making auth work was a pain in the ass because SvelteKit, Supabase auth helpers documentation sucks and changes all the time
@@ -78,11 +77,11 @@ export const actions: Actions = {
 			});
 		}
 
-		goto(`/sec`, { replaceState: true });
+		throw redirect(302, '/sec');
 	},
 
 	logout: async ({ locals: { supabase } }) => {
 		await supabase.auth.signOut();
-		goto(`/`, { replaceState: true });
+		throw redirect(302, '/');
 	}
 };

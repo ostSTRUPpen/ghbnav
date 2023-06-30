@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	// floorplans
 	import floor_0 from '$lib/images/floor_0.jpg';
 	import floor_1 from '$lib/images/floor_1.jpg';
 	import floor_2 from '$lib/images/floor_2.jpg';
 	import floor_3 from '$lib/images/floor_3.jpg';
 	import floor_4 from '$lib/images/floor_4.jpg';
+	// icons
 	import closet_room from '$lib/images/icons/closet_room.png';
 	import director from '$lib/images/icons/director.png';
 	import gym from '$lib/images/icons/gym.png';
@@ -14,6 +16,33 @@
 	import teachers_room from '$lib/images/icons/teachers_room.png';
 	import wc from '$lib/images/icons/wc.png';
 	import special_classroom from '$lib/images/icons/special_classroom.png';
+	import entry from '$lib/images/icons/entry.png';
+	import gym_dress_room from '$lib/images/icons/gym_dress_room.png';
+	import it_classroom from '$lib/images/icons/it_classroom.png';
+	import labs from '$lib/images/icons/labs.png';
+	import staircase from '$lib/images/icons/staircase.png';
+	import workout_room from '$lib/images/icons/workout_room.png';
+	import explore from '$lib/images/icons/explore.png';
+	import language_rooms from '$lib/images/icons/language_rooms.png';
+	import singing from '$lib/images/icons/singing.png';
+	import storage from '$lib/images/icons/storage.png';
+	import archive from '$lib/images/icons/archive.png';
+	import art from '$lib/images/icons/art.png';
+	import read from '$lib/images/icons/read.png';
+	import teachers_common_room from '$lib/images/icons/teachers_common_room.png';
+	import weight from '$lib/images/icons/weight.png';
+	import deputies from '$lib/images/icons/deputies.png';
+	import library from '$lib/images/icons/library.png';
+	import boiler_room from '$lib/images/icons/boiler_room.png';
+	import bufet from '$lib/images/icons/bufet.png';
+	import psychiatrist from '$lib/images/icons/psychiatrist.png';
+	import sleep from '$lib/images/icons/sleep.png';
+	import uta from '$lib/images/icons/uta.png';
+	import washroom from '$lib/images/icons/washroom.png';
+	import workshop from '$lib/images/icons/workshop.png';
+	import janitor from '$lib/images/icons/janitor.png';
+	import janitor_flat from '$lib/images/icons/janitor_flat.png';
+	// marker text popup
 	import MarkerPopup from '$lib/elements/MarkerPopup.svelte';
 
 	export let data;
@@ -27,13 +56,12 @@
 	let map: any;
 	let popup: any;
 
-	//TODO ikony
 	function createMarkers(L: any, markers: any, floor: number, iconList: any) {
 		let marker_list = [];
 		for (let marker of markers) {
 			if (marker.floor === floor) {
-				let mIcon = '';
-				if (marker.icon !== '') {
+				// If this if statement fails, the whole pageload fails - so I double check it
+				if (marker.icon !== '' && marker.icon in iconList) {
 					marker_list.push(
 						// All cords are YX... its not my fault
 						L.marker([marker.y, marker.x], { icon: iconList[marker.icon] })
@@ -68,8 +96,8 @@
 	}
 
 	onMount(async () => {
-		console.log(data);
 		if (browser) {
+			// TODO - vložit sem loading screen dokud se všechno nenačte
 			const L = await import('leaflet');
 
 			const NavIcon = L.Icon.extend({
@@ -81,20 +109,78 @@
 			});
 
 			// const x = new NavIcon({ iconUrl: wc });
-			// TODO přidat všechny ikony
+			// TODO přidat všechny ikony (už chybí jen 2 X (1. PP a 1. NP))
 			const markerIcons = {
 				// FIXME https://docs.maptiler.com/leaflet/ts-get-started/
 				//@ts-ignore
 				wc: new NavIcon({ iconUrl: wc }),
-				kabinet: new NavIcon({iconUrl: teachers_room}),
-				kmen_trida: new NavIcon({iconUrl: main_classroom}),
-				poslucharna: new NavIcon({iconUrl: special_classroom}),
-				telocvicna: new NavIcon({iconUrl: gym }),
-				satna: new NavIcon({iconUrl: closet_room}),
-				reditelna: new NavIcon({iconUrl: director }),
-				kancelar: new NavIcon({iconUrl: office })
+				//@ts-ignore
+				kabinet: new NavIcon({ iconUrl: teachers_room }),
+				//@ts-ignore
+				kmen_trida: new NavIcon({ iconUrl: main_classroom }),
+				//@ts-ignore
+				poslucharna: new NavIcon({ iconUrl: special_classroom }),
+				//@ts-ignore
+				telocvicna: new NavIcon({ iconUrl: gym }),
+				//@ts-ignore
+				satna: new NavIcon({ iconUrl: closet_room }),
+				//@ts-ignore
+				reditelna: new NavIcon({ iconUrl: director }),
+				//@ts-ignore
+				kancelar: new NavIcon({ iconUrl: office }),
+				//@ts-ignore
+				vstup: new NavIcon({ iconUrl: entry }),
+				//@ts-ignore
+				tv_satna: new NavIcon({ iconUrl: gym_dress_room }),
+				//@ts-ignore
+				it_ucebna: new NavIcon({ iconUrl: it_classroom }),
+				//@ts-ignore
+				laborator: new NavIcon({ iconUrl: labs }),
+				//@ts-ignore
+				schodiste: new NavIcon({ iconUrl: staircase }),
+				//@ts-ignore
+				posilovna: new NavIcon({ iconUrl: workout_room }),
+				//@ts-ignore
+				badatelna: new NavIcon({ iconUrl: explore }),
+				//@ts-ignore
+				jazykovka: new NavIcon({ iconUrl: language_rooms }),
+				//@ts-ignore
+				hudebka: new NavIcon({ iconUrl: singing }),
+				//@ts-ignore
+				sklad: new NavIcon({ iconUrl: storage }),
+				//@ts-ignore
+				archiv: new NavIcon({ iconUrl: archive }),
+				//@ts-ignore
+				atelier: new NavIcon({ iconUrl: art }),
+				//@ts-ignore
+				zastupci_reditele: new NavIcon({ iconUrl: deputies }),
+				//@ts-ignore
+				knihovna: new NavIcon({ iconUrl: library }),
+				//@ts-ignore
+				citarna: new NavIcon({ iconUrl: read }),
+				//@ts-ignore
+				sborovna: new NavIcon({ iconUrl: teachers_common_room }),
+				//@ts-ignore
+				vahovna: new NavIcon({ iconUrl: weight }),
+				//@ts-ignore
+				kotelna: new NavIcon({ iconUrl: boiler_room }),
+				//@ts-ignore
+				bufet: new NavIcon({ iconUrl: bufet }),
+				//@ts-ignore
+				psycholog: new NavIcon({ iconUrl: psychiatrist }),
+				//@ts-ignore
+				spinkarna: new NavIcon({ iconUrl: sleep }),
+				//@ts-ignore
+				uta: new NavIcon({ iconUrl: uta }),
+				//@ts-ignore
+				umyvarna: new NavIcon({ iconUrl: washroom }),
+				//@ts-ignore
+				dilna: new NavIcon({ iconUrl: workshop }),
+				//@ts-ignore
+				skolnik: new NavIcon({ iconUrl: janitor }),
+				//@ts-ignore
+				byt_skolnika: new NavIcon({ iconUrl: janitor_flat })
 			};
-			//const markerIcons = {};
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [
 				[0, 0],
@@ -138,8 +224,7 @@
 			*/
 			// TO-DONE Je potřeba vyřešit, aby byl v markeru čudlík/odkaz, který umožňí nechat se na něj navigovat DONE
 			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
-			// TODO Speciální ikony dle typu
-			// TODO zjistit co je X
+			// TODO zjistit co jsou X (1. PP a 1. NP)
 
 			// TODO navigace z A do B (navigační markery a tak - hlavně konzultace s ferenczem)
 			// TODO přidat import from a to z url
@@ -173,7 +258,6 @@
 					* L.marker([312, 432]).bindPopup('Posilovna').openPopup(),
 					* L.marker([1070, 950]).bindPopup('Schodiště B').openPopup(),
 					* L.marker([1056, 1416]).bindPopup('Bufet').openPopup(),
-					* // TODO zjistit co je X
 					* L.marker([1008, 2008]).bindPopup('X').openPopup(),
 					* L.marker([968, 2720]).bindPopup('Dílna').openPopup(),
 					* // New building
@@ -218,7 +302,6 @@
 				 * // Markers
 				 * // Old building (All cords are YX... its not my fault)
 				 * L.marker([3560, 968]).bindPopup('Spinkárna').openPopup(),
-				 * // TODO zjistit co je X
 				 * L.marker([3544, 288]).bindPopup('X').openPopup(),
 				 * L.marker([2880, 280]).bindPopup('J6').openPopup(),
 				 * L.marker([3040, 928]).bindPopup('Schodiště A').openPopup(),
