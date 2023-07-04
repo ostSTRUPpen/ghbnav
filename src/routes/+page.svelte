@@ -86,3 +86,4 @@
 	<a href="/auth">Přihlásit se</a>
 </footer>
 <!-- TEST -->
+<!-- OK -->
