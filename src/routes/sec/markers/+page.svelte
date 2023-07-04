@@ -290,6 +290,7 @@
 	>
 </dialog>
 <!-- TODO přidat ukázku všech dostupnýc ikon-->
+<!-- TODO Víc graficky rozlišit patra a vylepšit grafiku tabulky-->
 <table>
 	<thead>
 		<tr>

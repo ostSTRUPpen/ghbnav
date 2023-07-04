@@ -23,6 +23,12 @@
 	}
 </script>
 
+<!-- 
+	TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
+	Vítejte
+	...
+-->
+
 <header>
 	<a href="/map">Mapa</a>
 	{#if session}
@@ -33,6 +39,24 @@
 	<div>
 		<!-- TODO víc graficky odlišit jednotlivé placeholdery-->
 		<div>
+			<!-- TODO možná to nějak jinak seřaďit, aby to dávalo smysl 
+			
+				Např:
+					Služby
+						toalety, bufet, skříňkové šatny, knihovna, čítárna, psycholožka
+					administrace
+						ředitel, zástupce ředitele, kancelář, archiv, sborovna, školník
+					výuka
+						třída, posluchárna, laboratoř, kabinet, tělocvična, ateliér, badatelna
+					Pohyb
+						schodiště, vstupní prostor
+					Ostatní
+						... ostatní
+					
+
+
+			
+			-->
 			<label for="from">Odkud:</label>
 			<select id="from" name="from" bind:value={navFrom}>
 				<option value="0">--Prosím vyberte začátek cesty--</option>

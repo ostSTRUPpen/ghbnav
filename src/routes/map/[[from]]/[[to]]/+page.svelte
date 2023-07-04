@@ -109,7 +109,7 @@
 			});
 
 			// const x = new NavIcon({ iconUrl: wc });
-			// TODO přidat všechny ikony (už chybí jen 2 X (1. PP a 1. NP))
+			// TODO Omezit počet ikon jen na pár nejdůležitějších (wc, třída, posluchárna, laboratoř, kabinet) (a přidat možnost vytvářet vlastní?)
 			const markerIcons = {
 				// FIXME https://docs.maptiler.com/leaflet/ts-get-started/
 				//@ts-ignore
