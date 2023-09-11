@@ -24,6 +24,7 @@
 	}
 </script>
 
+<!--TODO využít skeleton ke zkrášlení stránky-->
 <!-- 
 	TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
 	Vítejte
