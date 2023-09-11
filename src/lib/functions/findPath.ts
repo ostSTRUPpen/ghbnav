@@ -21,6 +21,7 @@ const findLowestWeightNode = (weights: object, processed: Array<string>) => {
 	return lowestWeightNode;
 };
 //FIXME
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function procesData(data: any, startNode: string, endNode: string) {
 	const graph: App.GraphTypes['graphObject'] = {};
 	for (const navMarker of data) {

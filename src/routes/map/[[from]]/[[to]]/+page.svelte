@@ -30,6 +30,11 @@
 	navFrom = from;
 	navTo = to;
 
+	/**
+	 * TODO přidat další navmarkery
+	 * TODO přidat ukládání do databáze |startingPoint|endingPoint|path|amountOfUsage
+	 * TODO zprovoznit QRkódy a zobrazení nejpoužívanějších cest
+	 */
 	let currentFoundPath = [''];
 	foundpath.subscribe((value) => {
 		currentFoundPath = value;
