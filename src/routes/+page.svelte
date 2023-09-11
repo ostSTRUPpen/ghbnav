@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import StoreTest from '$lib/elements/StoreTest.svelte';
 
 	export let data;
-	let { endingPoints, session } = data;
-	$: ({ endingPoints, session } = data);
+	let { locations, session } = data;
+	$: ({ locations, session } = data);
 
 	let navFrom: string;
 	let navTo: string;
@@ -28,7 +29,6 @@
 	Vítejte
 	...
 -->
-
 <header>
 	<a href="/map">Mapa</a>
 	{#if session}
@@ -60,15 +60,15 @@
 			<label for="from">Odkud:</label>
 			<select id="from" name="from" bind:value={navFrom}>
 				<option value="0">--Prosím vyberte začátek cesty--</option>
-				{#each endingPoints as endPoint}
-					<option value={endPoint.id}>{endPoint.display_name} (Patro: {endPoint.floor})</option>
+				{#each locations as location}
+					<option value={location.id}>{location.display_name} (Patro: {location.floor})</option>
 				{/each}
 			</select>
 			<label for="to">Kam:</label>
 			<select id="to" name="to" bind:value={navTo}>
 				<option value="0">--Prosím vyberte konec cesty--</option>
-				{#each endingPoints as endPoint}
-					<option value={endPoint.id}>{endPoint.display_name} (Patro: {endPoint.floor})</option>
+				{#each locations as location}
+					<option value={location.id}>{location.display_name} (Patro: {location.floor})</option>
 				{/each}
 			</select>
 			<button on:click={navFromTo} disabled={isDisabled}>Navigovat</button>

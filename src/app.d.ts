@@ -7,6 +7,11 @@ declare global {
 			supabase: SupabaseClient<Database>;
 			getSession(): Promise<Session | null>;
 		}
+		interface GraphTypes {
+			graphObject: { [key: string | number]: { [key: string | number]: number | string } };
+			rawGraphObject: Array<{ [key: string]: number }>;
+			additionObject: Record<string, number>;
+		}
 		interface PageData {
 			session: Session | null;
 		}

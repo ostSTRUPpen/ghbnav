@@ -1,6 +1,5 @@
 //import { supabase } from '$lib/supabaseClient.js';
 import { redirect } from '@sveltejs/kit';
-import type { RequestEvent } from './$types';
 
 //FIXME
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -31,7 +30,7 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 					break;
 				}
 				case 'icon': {
-					const { data, error } = await supabase
+					const { error } = await supabase
 						.from('markers')
 						.update({
 							icon: changedEndingPoint.icon
@@ -71,52 +70,13 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 			{ status: 201 }
 		);
 		// FIXME
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
-		const errMessage = error.message ?? 'An error has occured while updating the user';
+		const errMessage = error.message
+			? error.message
+			: 'An error has occured while updating the user';
 		return new Response(JSON.stringify({ message: errMessage }), {
 			status: 400
 		});
 	}
 }
-/*
-export async function PATCH(requestEvent): Promise<Response> {
-	const { request } = requestEvent;
-	const { id, username, password, role } = await request.json();
-	const userToUpdate: any = await User.findById(id).exec();
-
-	if (!userToUpdate) {
-		return new Response(JSON.stringify({ message: `User not found!`, success: false }), {
-			status: 400
-		});
-	}
-
-	try {
-		const foundUser = await User.findOne({ username })
-			.collation({ locale: 'cs', strength: 2 })
-			.lean()
-			.exec();
-		if (foundUser && foundUser._id.toString() !== id) {
-			return new Response(
-				JSON.stringify({ message: `Username (${username}) is already taken!`, success: false }),
-				{
-					status: 400
-				}
-			);
-		}
-		userToUpdate.username = username;
-		if (password.length !== 0) userToUpdate.password = await bcrypt.hash(password, 10);
-		userToUpdate.role = role;
-		const updatedUser = await userToUpdate.save();
-		return new Response(
-			JSON.stringify({
-				message: `User ${updatedUser.username} updated successfully`,
-				success: true
-			}),
-			{ status: 201 }
-		);
-	} catch (error: any) {
-		const errMessage = error.message ?? 'An error has occured while updating the user';
-		return new Response(JSON.stringify({ message: errMessage, success: false }), { status: 400 });
-	}
-}
-*/

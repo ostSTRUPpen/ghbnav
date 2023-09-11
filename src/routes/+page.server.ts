@@ -1,5 +1,4 @@
 import { supabase } from '$lib/supabaseClient';
-import type { LayoutServerLoad } from './$types';
 
 export async function load({ locals: { getSession } }) {
 	const { data } = await supabase
@@ -8,7 +7,7 @@ export async function load({ locals: { getSession } }) {
 		.order('floor', { ascending: true });
 
 	return {
-		endingPoints: data ?? [],
+		locations: data ?? [],
 		session: getSession()
 	};
 }
