@@ -101,8 +101,8 @@ export const dijkstra = (
 		console.log(optimalPath);
 		parent = parents[parent]; // add parent to start of path array
 	}
+	//FIXME remove after buug fixing
 	console.log(optimalPath);
-
 	const results = {
 		status: 'OK',
 		distance: weights[endNode],

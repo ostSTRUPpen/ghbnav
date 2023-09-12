@@ -45,7 +45,7 @@ import janitor_flat from '$lib/images/icons/janitor_flat.png';
 
 //FIXME
 //@ts-ignore
-export function getMarketIcons(L) {
+export function getMarkerIcons(L) {
 	const NavIcon = L.Icon.extend({
 		options: {
 			iconSize: [25, 25], // size of the icon

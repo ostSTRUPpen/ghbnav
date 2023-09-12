@@ -1,7 +1,8 @@
 <script lang="ts">
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
-	import { changeMarker } from './markerManagemetnFunctions.js';
+	import { changeMarker } from '../../../lib/functions/markerManagemetnFunctions.js';
 	// icons
+
 	import closet_room from '$lib/images/icons/closet_room.png';
 	import director from '$lib/images/icons/director.png';
 	import gym from '$lib/images/icons/gym.png';

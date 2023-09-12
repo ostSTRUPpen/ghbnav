@@ -9,11 +9,12 @@
 		floor_2,
 		floor_3,
 		floor_4,
-		getMarketIcons
+		getMarkerIcons
 	} from '$lib/data/markerIcons.js';
 	import { goto } from '$app/navigation';
 	import { dijkstra } from '$lib/functions/findPath.js';
 	import { foundpath } from '$lib/data/store.js';
+	import { savePath } from '$lib/functions/pathSavingFunctions.js';
 	export let data;
 
 	let { markers, nav_markers } = data;
@@ -183,7 +184,7 @@
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
-			const markerIcons = getMarketIcons(L);
+			const markerIcons = getMarkerIcons(L);
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [
 				[0, 0],
@@ -210,6 +211,7 @@
 			popup = L.popup();
 
 			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
+			// TODO zjistit, zda je průchozí "tělocvična D->umývárny"
 			// TODO zjistit co jsou X (1. PP a 1. NP)
 
 			let markerList: any = [];
@@ -227,9 +229,9 @@
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				L.polyline(pathList)
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
@@ -239,9 +241,9 @@
 				// Map image
 				firstFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				L.polyline(pathList)
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
@@ -314,11 +316,18 @@
 				) {
 					foundpath.update((n) => (n = ['']));
 					const response = dijkstra(nav_markers, from, to);
+					console.log(response.path);
 					if (response.status === 'OK') {
+						console.log('h');
+						//if (response.path.length > 1) {
 						foundpath.update((n) => (n = response.path));
+						console.log('h');
+						const data = await savePath(from, to, response.path);
+						console.log('h');
 						goto('/loading').then(() => {
 							goto(`/map/${from}/${to}`);
 						});
+						//}
 					}
 				}
 			}
@@ -336,6 +345,12 @@
 	function navFromTo() {
 		//console.log(navFrom + ' -> ' + navTo);
 		goto('/loading').then(() => goto(`/map/${navFrom}/${navTo}`));
+	}
+	function clearNav() {
+		foundpath.update((n) => (n = ['']));
+		goto('/loading').then(() => {
+			goto(`/map`);
+		});
 	}
 
 	$: {
@@ -371,6 +386,7 @@
 			{/each}
 		</select>
 		<button on:click={navFromTo} disabled={isDisabled}>Navigovat</button>
+		<button on:click={clearNav}>Vymazat navigaci</button>
 	</div>
 </main>
 <link
