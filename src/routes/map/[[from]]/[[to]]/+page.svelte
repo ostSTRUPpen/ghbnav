@@ -227,9 +227,9 @@
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
@@ -239,9 +239,9 @@
 				// Map image
 				firstFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
@@ -251,9 +251,9 @@
 				// Map image
 				secondFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
@@ -263,9 +263,9 @@
 				// Map image
 				thirdFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
@@ -275,9 +275,9 @@
 				// Map image
 				fourthFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 			markerList = [];
 			navMarkerList = [];
@@ -307,7 +307,7 @@
 			if (state === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
-					goto('/').then(() => goto(`/map/${from}`));
+					goto('/loading').then(() => goto(`/map/${from}`));
 				} else if (
 					currentFoundPath[0] !== from ||
 					currentFoundPath[currentFoundPath.length - 1] !== to
@@ -316,7 +316,7 @@
 					const response = dijkstra(nav_markers, from, to);
 					if (response.status === 'OK') {
 						foundpath.update((n) => (n = response.path));
-						goto('/').then(() => {
+						goto('/loading').then(() => {
 							goto(`/map/${from}/${to}`);
 						});
 					}
@@ -335,7 +335,7 @@
 
 	function navFromTo() {
 		//console.log(navFrom + ' -> ' + navTo);
-		goto('/').then(() => goto(`/map/${navFrom}/${navTo}`));
+		goto('/loading').then(() => goto(`/map/${navFrom}/${navTo}`));
 	}
 
 	$: {

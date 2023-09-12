@@ -24,15 +24,15 @@
 		if (buttonType === 'no_from-to') {
 			//FIX?ME Určitě musí existovat lepší způsob
 			foundpath.update((n) => (n = ['']));
-			goto('/').then(() => goto(`/map/${id}`));
+			goto('/loading').then(() => goto(`/map/${id}`));
 		} else if (buttonType === 'no_to') {
-			goto('/').then(() => goto(`/map/${fromNodeId}/${id}`));
+			goto('/loading').then(() => goto(`/map/${fromNodeId}/${id}`));
 		} else if (buttonType === 'ready') {
-			goto('/').then(() => {
+			goto('/loading').then(() => {
 				goto(`/map/${fromNodeId}/${id}`);
 			});
 		} else {
-			goto('/');
+			goto('/loading');
 		}
 	}
 </script>
