@@ -3,7 +3,7 @@ export async function savePath(
 	endNode: string,
 	path: Array<string>
 ): Promise<object> {
-	console.log('h');
+	//console.log('h');
 	const response = await fetch('../../../../api/add_path', {
 		method: 'POST',
 		body: JSON.stringify({ startNode, endNode, path }),

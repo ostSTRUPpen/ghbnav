@@ -6,29 +6,42 @@ import { supabase } from '$lib/supabaseClient';
 export async function POST(requestEvent: RequestEvent): Promise<Response> {
 	const { request } = requestEvent;
 	const { startNode, endNode, path } = await request.json();
-	console.log('h');
+	//console.log('h');
 	try {
+		let canSave = true;
 		if (startNode && endNode && path.length > 1) {
 			const { data: stored_paths } = await supabase
 				.from('stored_paths')
 				.select('starting_and_ending_point');
-			//if()
-			//TODO kontrola, že startNodeendNode není v stored_paths, pokud není, tak přidám novou path - pokud je, tak nic
+			if (stored_paths !== null) {
+				for (const stored_path of stored_paths) {
+					if (stored_path.starting_and_ending_point === `${startNode}-${endNode}`) {
+						canSave = false;
+					}
+				}
+			}
+			if (canSave) {
+				const { error } = await supabase
+					.from('stored_paths')
+					.insert([
+						{
+							start_node: startNode,
+							end_node: endNode,
+							path: path,
+							starting_and_ending_point: `${startNode}-${endNode}`
+						}
+					])
+					.select();
 
-			console.log('h');
-			const { error } = await supabase
-				.from('stored_paths')
-				.insert([{ id: startNode + endNode, start_node: startNode, end_node: endNode, path: path }])
-				.select();
-
-			if (error) {
-				console.log(error);
-				return new Response(JSON.stringify({ message: error.message }), {
-					status: Number(error.code)
-				});
+				if (error) {
+					//console.log(error);
+					return new Response(JSON.stringify({ message: error.message }), {
+						status: Number(error.code)
+					});
+				}
 			}
 		} else {
-			console.log('s');
+			//console.log('s');
 			return new Response(JSON.stringify({ message: 'Data missing' }), {
 				status: 400
 			});

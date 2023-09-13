@@ -55,37 +55,37 @@ export const dijkstra = (
 		//FIXME
 		//@ts-ignore
 		parents[child] = startNode;
-		console.log(parents);
+		//console.log(parents);
 	}
 
 	// track nodes that have already been processed
 	const processed: Array<string> = [];
-	console.log(processed);
+	//console.log(processed);
 	//Next, we’ll set the initial value of the node being processed //using the lowestCostNode function. Then, we’ll begin a while loop, //which will continuously look for the cheapest node.
 	let node = findLowestWeightNode(weights, processed);
-	console.log(node);
+	//console.log(node);
 
 	while (node) {
 		//Get the weight of the current node
 		const weight = weights[node];
 		//Get all the neighbors of current node
 		const children: object = graph[node as keyof typeof graph];
-		console.log(graph[node]);
+		//console.log(graph[node]);
 		//Loop through each of the children, and calculate the weight to reach that child node. We'll update the weight of that node in the weights object if it is lowest or the ONLY weight available
 		for (const n in children) {
-			console.log(n);
+			//console.log(n);
 			if (n === startNode) {
-				console.log(n);
+				//console.log(n);
 				continue;
 			}
 			const newWeight = weight + children[n as keyof typeof children];
-			console.log(newWeight);
+			//console.log(newWeight);
 			if (!weights[n] || weights[n] > newWeight) {
 				weights[n] = newWeight;
 				//FIXME
 				//@ts-ignore
 				parents[n] = node;
-				console.log(parents);
+				///console.log(parents);
 			}
 		}
 		//push processed data into its data structure
@@ -95,14 +95,14 @@ export const dijkstra = (
 	}
 	const optimalPath = [endNode];
 	let parent = parents[endNode as keyof typeof parents];
-	console.log(parents);
+	//console.log(parents);
 	while (parent) {
 		optimalPath.unshift(parent);
-		console.log(optimalPath);
+		//console.log(optimalPath);
 		parent = parents[parent]; // add parent to start of path array
 	}
 	//FIXME remove after buug fixing
-	console.log(optimalPath);
+	//console.log(optimalPath);
 	const results = {
 		status: 'OK',
 		distance: weights[endNode],

@@ -39,7 +39,7 @@
 	let currentFoundPath = [''];
 	foundpath.subscribe((value) => {
 		currentFoundPath = value;
-		console.log(currentFoundPath);
+		//console.log(currentFoundPath);
 	});
 
 	let state = 'no_from-to';
@@ -119,6 +119,8 @@
 	}
 	// TODO odstranit, až budou všechny navmarekry správně
 	function createNavMarkers(markers: any, navMarkers: any, floor: number) {
+		markers = markers.reverse();
+		navMarkers = navMarkers.reverse();
 		let lineList = [];
 		for (let navMarker of navMarkers) {
 			if (navMarker.floor === floor) {
@@ -229,9 +231,9 @@
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
@@ -241,9 +243,9 @@
 				// Map image
 				firstFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList),
 				//@ts-ignore
-				//L.polyline(navMarkerList)
+				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
@@ -316,14 +318,14 @@
 				) {
 					foundpath.update((n) => (n = ['']));
 					const response = dijkstra(nav_markers, from, to);
-					console.log(response.path);
+					//console.log(response.path);
 					if (response.status === 'OK') {
-						console.log('h');
+						//console.log('h');
 						//if (response.path.length > 1) {
 						foundpath.update((n) => (n = response.path));
-						console.log('h');
+						//console.log('h');
 						const data = await savePath(from, to, response.path);
-						console.log('h');
+						//console.log('h');
 						goto('/loading').then(() => {
 							goto(`/map/${from}/${to}`);
 						});

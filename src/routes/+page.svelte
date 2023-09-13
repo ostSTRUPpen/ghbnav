@@ -11,7 +11,7 @@
 	let isDisabled: boolean = true;
 
 	function navFromTo() {
-		console.log(navFrom + ' -> ' + navTo);
+		//console.log(navFrom + ' -> ' + navTo);
 		goto(`/map/${navFrom}/${navTo}`, { replaceState: false });
 	}
 
