@@ -83,6 +83,7 @@
 								let c = new MarkerPopup({
 									target: container,
 									props: {
+										//FIXME upravit až nebude potřeba
 										text: `${marker.display_name} Y: ${marker.y}, X: ${marker.x}`,
 										id: marker.id,
 										buttonType: buttonType,
@@ -118,9 +119,10 @@
 		return markerList;
 	}
 	// TODO odstranit, až budou všechny navmarekry správně
+	//FIXME odstranit až nebude potřeba
 	function createNavMarkers(markers: any, navMarkers: any, floor: number) {
-		//markers = markers.reverse();
-		//navMarkers = navMarkers.reverse();
+		markers = markers.reverse();
+		navMarkers = navMarkers.reverse();
 		let lineList = [];
 		for (let navMarker of navMarkers) {
 			if (navMarker.floor === floor) {
@@ -148,10 +150,18 @@
 		}
 		return lineList;
 	}
-	function drawPath(path: any, markers: any, navMarkers: any, floor: number) {
+	function drawPath(
+		path: any,
+		markers: any,
+		navMarkers: any,
+		floor: number,
+		changedFloorsBefore: boolean
+	) {
 		let lineList: Array<Array<Array<string>>> = [];
 		let floorLineList: Array<Array<string>> = [];
-		let changingFloors = false;
+		let changedFloors = changedFloorsBefore;
+		console.log(changedFloors);
+		console.log(path);
 		//console.log(navMarkers);
 		for (let pathPoint of path) {
 			//console.log(pathPoint);
@@ -167,25 +177,42 @@
 					//console.log('h');
 					if (navMarker.floor === floor) {
 						floorLineList.push([navMarker.y, navMarker.x]);
-						if (navMarker.special_type === 'stair_up' || navMarker.special_type === 'stair_down') {
-						    // TODO //FIXME //IMPORTANT //!!!! nefunguje přepínání čili i vykreslování cesty na jiném než startovním patře
-                            console.log(navMarker.special_type)	
-                            changingFloors = !changingFloors;
-                            console.log(changingFloors)
-                        }
-						if (changingFloors) {
+						// TODO pořád to nefunguje... už to neskipne vždy, ale pořád ne ideální - je potřeba rozlišovat splitLine a changedFloors:
+						// skipLine = rozděl line (platí pouze pro patro)
+						// changedFloors = říká, že na dalším patře se začne stair_up nebo stair_down markerem...
+
+						//console.log(navMarker.id);
+						//console.log(changedFloors);
+						//console.log(navMarker.special_type + '   ' + navMarker.floor + '   ' + navMarker.id);
+						if (
+							(navMarker.special_type === 'stair_up' && changedFloors === false) ||
+							(navMarker.special_type === 'stair_down' && changedFloors === false)
+						) {
+							//if (changedFloors === false) {
+							// TODO //FIXME //IMPORTANT //!!!! nefunguje přepínání čili i vykreslování cesty na jiném než startovním patře
 							lineList.push(floorLineList);
+							console.log(floorLineList);
 							floorLineList = [];
+							changedFloors = true;
+							console.log('clearer');
+							//}
+						} else {
+							changedFloors = false;
 						}
+						console.log(changedFloors);
+						console.log('---');
 					}
 				}
 			}
-			lineList.push(floorLineList);
 			//console.log(lineList);
 		}
+		lineList.push(floorLineList);
 		//console.log(lineList);
-        console.log(lineList)
-		return lineList;
+		//console.log(lineList)
+		return {
+			pathList: lineList,
+			prevState: changedFloors
+		};
 	}
 
 	onMount(async () => {
@@ -222,73 +249,92 @@
 			// TODO zjistit co jsou X (1. PP a 1. NP)
 
 			let markerList: any = [];
+			//FIXME odstranit až nebude potřeba
 			let navMarkerList = [];
 			let pathList: any = [];
 			let canDrawPath: boolean = false;
+			let prevState: boolean = false;
 
 			if (currentFoundPath[0] === from && currentFoundPath[currentFoundPath.length - 1] === to) {
 				canDrawPath = true;
 			}
 
 			markerList = createMarkers(L, markers, 0, markerIcons, state, from);
+			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 0);
-			if (canDrawPath === true) pathList = drawPath(currentFoundPath, markers, nav_markers, 0);
+			if (canDrawPath === true)
+				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 0, prevState));
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				//L.polyline(pathList),
+				//L.polyline(pathList)
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
+			console.log(prevState);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
+			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 1);
-			if (canDrawPath === true) pathList = drawPath(currentFoundPath, markers, nav_markers, 1);
+			if (canDrawPath === true)
+				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 1, prevState));
 			let firstFloor = L.layerGroup([
 				// Map image
 				firstFloorImg,
 				...markerList,
-				//L.polyline(pathList),
+				//L.polyline(pathList)
+				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
+			console.log(prevState);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
+			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 2);
-			if (canDrawPath === true) pathList = drawPath(currentFoundPath, markers, nav_markers, 2);
+			if (canDrawPath === true)
+				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 2, prevState));
 			let secondFloor = L.layerGroup([
 				// Map image
 				secondFloorImg,
 				...markerList,
-				//L.polyline(pathList),
+				//L.polyline(pathList)
+				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
+			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 3);
-			if (canDrawPath === true) pathList = drawPath(currentFoundPath, markers, nav_markers, 3);
+			if (canDrawPath === true)
+				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 3, prevState));
 			let thirdFloor = L.layerGroup([
 				// Map image
 				thirdFloorImg,
 				...markerList,
-				//L.polyline(pathList),
+				//L.polyline(pathList)
+				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
+			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 4);
-			if (canDrawPath === true) pathList = drawPath(currentFoundPath, markers, nav_markers, 4);
+			if (canDrawPath === true)
+				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 4, prevState));
 			let fourthFloor = L.layerGroup([
 				// Map image
 				fourthFloorImg,
 				...markerList,
-				//L.polyline(pathList),
+				//L.polyline(pathList)
+				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
 			markerList = [];
+			//FIXME odstranit až nebude potřeba
 			navMarkerList = [];
 			pathList = [];
 			let floors = {

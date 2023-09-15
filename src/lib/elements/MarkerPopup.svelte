@@ -38,6 +38,7 @@
 </script>
 
 <div>
+	<!--//FIXME upravit až nebude potřeba-->
 	<p class="marker-paragraph">{text + ' (' + id + ')'}</p>
 	<button class="navigate-button" on:click={navTo}>{buttonText}</button>
 </div>
