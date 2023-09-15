@@ -119,8 +119,8 @@
 	}
 	// TODO odstranit, až budou všechny navmarekry správně
 	function createNavMarkers(markers: any, navMarkers: any, floor: number) {
-		markers = markers.reverse();
-		navMarkers = navMarkers.reverse();
+		//markers = markers.reverse();
+		//navMarkers = navMarkers.reverse();
 		let lineList = [];
 		for (let navMarker of navMarkers) {
 			if (navMarker.floor === floor) {
@@ -167,8 +167,12 @@
 					//console.log('h');
 					if (navMarker.floor === floor) {
 						floorLineList.push([navMarker.y, navMarker.x]);
-						if (navMarker.special_type === 'stair_up' || navMarker.special_type === 'stairt_down')
-							changingFloors = !changingFloors;
+						if (navMarker.special_type === 'stair_up' || navMarker.special_type === 'stair_down') {
+						    // TODO //FIXME //IMPORTANT //!!!! nefunguje přepínání čili i vykreslování cesty na jiném než startovním patře
+                            console.log(navMarker.special_type)	
+                            changingFloors = !changingFloors;
+                            console.log(changingFloors)
+                        }
 						if (changingFloors) {
 							lineList.push(floorLineList);
 							floorLineList = [];
@@ -180,6 +184,7 @@
 			//console.log(lineList);
 		}
 		//console.log(lineList);
+        console.log(lineList)
 		return lineList;
 	}
 
@@ -231,7 +236,7 @@
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				//L.polyline(pathList),
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
@@ -243,7 +248,7 @@
 				// Map image
 				firstFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				//L.polyline(pathList),
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
@@ -255,7 +260,7 @@
 				// Map image
 				secondFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				//L.polyline(pathList),
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
@@ -267,7 +272,7 @@
 				// Map image
 				thirdFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				//L.polyline(pathList),
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
@@ -279,7 +284,7 @@
 				// Map image
 				fourthFloorImg,
 				...markerList,
-				L.polyline(pathList),
+				//L.polyline(pathList),
 				//@ts-ignore
 				L.polyline(navMarkerList)
 			]);
