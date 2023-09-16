@@ -130,3 +130,176 @@ export function getMarkerIcons(L) {
 	return markerIcons;
 }
 export { floor_0, floor_1, floor_2, floor_3, floor_4 };
+
+export const iconImageList = [
+	{
+		name: 'wc',
+		image: wc,
+		displayname: 'WC'
+	},
+	{
+		name: 'kabinet',
+		image: teachers_room,
+		displayname: 'Kabinet'
+	},
+	{
+		name: 'kmen_trida',
+		image: main_classroom,
+		displayname: 'Kmenová třída'
+	},
+	{
+		name: 'poslucharna',
+		image: special_classroom,
+		displayname: 'Posluchárna'
+	},
+	{
+		name: 'telocvicna',
+		image: gym,
+		displayname: 'Tělocvična'
+	},
+	{
+		name: 'satna',
+		image: closet_room,
+		displayname: 'Šatna se skříňkami'
+	},
+	{
+		name: 'reditelna',
+		image: director,
+		displayname: 'Ředitelna'
+	},
+	{
+		name: 'kancelar',
+		image: office,
+		displayname: 'Kancelář'
+	},
+	{
+		name: 'vstup',
+		image: entry,
+		displayname: 'Vstupní prostor'
+	},
+	{
+		name: 'tv_satna',
+		image: gym_dress_room,
+		displayname: 'Šatna (u tělocvičny)'
+	},
+	{
+		name: 'it_ucebna',
+		image: it_classroom,
+		displayname: 'UVT'
+	},
+	{
+		name: 'laborator',
+		image: labs,
+		displayname: 'Laboratoř (CH,FY,BI)'
+	},
+	{
+		name: 'schodiste',
+		image: staircase,
+		displayname: 'Schodiště'
+	},
+	{
+		name: 'posilovna',
+		image: workout_room,
+		displayname: 'Posilovna'
+	},
+	{
+		name: 'badatelna',
+		image: explore,
+		displayname: 'Badatelské centrum'
+	},
+	{
+		name: 'jazykovka',
+		image: language_rooms,
+		displayname: 'Jazyková učebna'
+	},
+	{
+		name: 'hudebka',
+		image: singing,
+		displayname: 'HV'
+	},
+	{
+		name: 'sklad',
+		image: storage,
+		displayname: 'Sklad/Půda'
+	},
+	{
+		name: 'archiv',
+		image: archive,
+		displayname: 'Archiv'
+	},
+	{
+		name: 'atelier',
+		image: art,
+		displayname: 'Ateliér'
+	},
+	{
+		name: 'zastupci_reditele',
+		image: deputies,
+		displayname: 'Zástupci ředitele'
+	},
+	{
+		name: 'knihovna',
+		image: library,
+		displayname: 'Knihovna'
+	},
+	{
+		name: 'citarna',
+		image: read,
+		displayname: 'Čítárna'
+	},
+	{
+		name: 'sborovna',
+		image: teachers_common_room,
+		displayname: 'Sborovna'
+	},
+	{
+		name: 'vahovna',
+		image: weight,
+		displayname: 'Váhovna'
+	},
+	{
+		name: 'kotelna',
+		image: boiler_room,
+		displayname: 'Kotelna'
+	},
+	{
+		name: 'bufet',
+		image: bufet,
+		displayname: 'Bufet'
+	},
+	{
+		name: 'psycholog',
+		image: psychiatrist,
+		displayname: 'Psycholog'
+	},
+	{
+		name: 'spinkarna',
+		image: sleep,
+		displayname: 'Spinkárna'
+	},
+	{
+		name: 'uta',
+		image: uta,
+		displayname: 'UTA'
+	},
+	{
+		name: 'umyvarna',
+		image: washroom,
+		displayname: 'Umývárna'
+	},
+	{
+		name: 'dilna',
+		image: workshop,
+		displayname: 'Dílna'
+	},
+	{
+		name: 'skolnik',
+		image: janitor,
+		displayname: 'Školník'
+	},
+	{
+		name: 'byt_skolnika',
+		image: janitor_flat,
+		displayname: 'Byt školníka'
+	}
+];

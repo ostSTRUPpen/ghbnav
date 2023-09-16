@@ -7,17 +7,18 @@
 	export let id: string;
 	export let buttonType: string;
 	export let fromNodeId: string;
+	export let canNav: boolean;
 
 	let buttonText = '';
-
 	if (buttonType === 'no_from-to') {
 		buttonText = 'Zde stojím';
 	} else if (buttonType === 'no_to') {
 		buttonText = 'Navigovat';
 	} else if (buttonType === 'ready') {
 		buttonText = 'Změnit cíl navigace';
+	} else if (canNav === false) {
+		buttonText = 'Nelze navigovat';
 	} else {
-		console.log(buttonType);
 		buttonText = 'Došlo k chybě';
 	}
 	function navTo() {
@@ -31,6 +32,7 @@
 			goto('/loading').then(() => {
 				goto(`/map/${fromNodeId}/${id}`);
 			});
+		} else if (canNav === false) {
 		} else {
 			goto('/loading');
 		}
@@ -38,9 +40,11 @@
 </script>
 
 <div>
-	<!--//FIXME upravit až nebude potřeba-->
+	<!---->
 	<p class="marker-paragraph">{text + ' (' + id + ')'}</p>
-	<button class="navigate-button" on:click={navTo}>{buttonText}</button>
+	{#if canNav}
+		<button class="navigate-button" on:click={navTo}>{buttonText}</button>
+	{/if}
 </div>
 
 <style>

@@ -13,56 +13,21 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 
 	try {
 		for (const changedEndingPoint of changedEndingPoints) {
-			switch (changedEndingPoint.change) {
-				case 'both': {
-					const { error } = await supabase
-						.from('markers')
-						.update({
-							display_name: changedEndingPoint.display_name,
-							icon: changedEndingPoint.icon
-						})
-						.eq('id', changedEndingPoint.id);
-					if (error) {
-						return new Response(JSON.stringify({ message: error.message }), {
-							status: Number(error.code)
-						});
-					}
-					break;
-				}
-				case 'icon': {
-					const { error } = await supabase
-						.from('markers')
-						.update({
-							icon: changedEndingPoint.icon
-						})
-						.eq('id', changedEndingPoint.id)
-						.select();
-					if (error) {
-						return new Response(JSON.stringify({ message: error.message }), {
-							status: Number(error.code)
-						});
-					}
-					break;
-				}
-				case 'display name': {
-					const { error } = await supabase
-						.from('markers')
-						.update({
-							display_name: changedEndingPoint.display_name
-						})
-						.eq('id', changedEndingPoint.id);
-					if (error) {
-						return new Response(JSON.stringify({ message: error.message }), {
-							status: Number(error.code)
-						});
-					}
-					break;
-				}
-				default: {
-					break;
-				}
+			const { error } = await supabase
+				.from('markers')
+				.update({
+					display_name: changedEndingPoint.display_name,
+					icon: changedEndingPoint.icon,
+					can_nav: changedEndingPoint.can_nav
+				})
+				.eq('id', changedEndingPoint.id);
+			if (error) {
+				return new Response(JSON.stringify({ message: error.message }), {
+					status: Number(error.code)
+				});
 			}
 		}
+
 		return new Response(
 			JSON.stringify({
 				message: 'Markers updated successfully'

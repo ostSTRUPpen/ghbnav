@@ -62,14 +62,18 @@
 			<select id="from" name="from" bind:value={navFrom}>
 				<option value="0">--Prosím vyberte začátek cesty--</option>
 				{#each locations as location}
-					<option value={location.id}>{location.display_name} (Patro: {location.floor})</option>
+					{#if location.can_nav !== false}
+						<option value={location.id}>{location.display_name} (Patro: {location.floor})</option>
+					{/if}
 				{/each}
 			</select>
 			<label for="to">Kam:</label>
 			<select id="to" name="to" bind:value={navTo}>
 				<option value="0">--Prosím vyberte konec cesty--</option>
 				{#each locations as location}
-					<option value={location.id}>{location.display_name} (Patro: {location.floor})</option>
+					{#if location.can_nav !== false}
+						<option value={location.id}>{location.display_name} (Patro: {location.floor})</option>
+					{/if}
 				{/each}
 			</select>
 			<button on:click={navFromTo} disabled={isDisabled}>Navigovat</button>

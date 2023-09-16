@@ -67,14 +67,20 @@
 		markers: any,
 		floor: number,
 		iconList: any,
-		buttonType: string,
+		mainButtonType: string,
 		fromNodeId: string
 	) {
+		let tempButtonType = mainButtonType;
 		let markerList = [];
 		for (let marker of markers) {
+			tempButtonType = mainButtonType;
 			if (marker.floor === floor) {
 				// If this if statement fails, the whole pageload fails - so I double check it
 				if (marker.icon !== '' && marker.icon in iconList) {
+					if (marker.can_nav === false) {
+						tempButtonType = 'do_not_nav';
+					}
+
 					markerList.push(
 						// All cords are YX... its not my fault
 						L.marker([marker.y, marker.x], { icon: iconList[marker.icon] })
@@ -86,8 +92,9 @@
 										//FIXME upravit až nebude potřeba
 										text: `${marker.display_name} Y: ${marker.y}, X: ${marker.x}`,
 										id: marker.id,
-										buttonType: buttonType,
-										fromNodeId
+										buttonType: tempButtonType,
+										fromNodeId,
+										canNav: marker.can_nav
 									}
 								});
 								return container;
@@ -95,6 +102,9 @@
 							.openPopup()
 					);
 				} else {
+					if (marker.can_nav === false) {
+						tempButtonType = 'do_not_nav';
+					}
 					markerList.push(
 						// All cords are YX... its not my fault
 						L.marker([marker.y, marker.x])
@@ -105,8 +115,9 @@
 									props: {
 										text: marker.display_name,
 										id: marker.id,
-										buttonType: buttonType,
-										fromNodeId
+										buttonType: tempButtonType,
+										fromNodeId,
+										canNav: marker.can_nav
 									}
 								});
 								return container;
@@ -150,23 +161,12 @@
 		}
 		return lineList;
 	}
-	function drawPath(
-		path: any,
-		markers: any,
-		navMarkers: any,
-		floor: number,
-		changedFloorsBefore: boolean
-	) {
+	function drawPath(path: any, markers: any, navMarkers: any, floor: number) {
 		let lineList: Array<Array<Array<string>>> = [];
 		let floorLineList: Array<Array<string>> = [];
-		let changedFloors = changedFloorsBefore;
-		console.log(changedFloors);
-		console.log(path);
-		//console.log(navMarkers);
+		let passedStairSplit: boolean = false;
 		for (let pathPoint of path) {
-			//console.log(pathPoint);
 			for (let marker of markers) {
-				//console.log('h');
 				if (marker.id === pathPoint) {
 					if (marker.floor === floor) floorLineList.push([marker.y, marker.x]);
 				}
@@ -174,44 +174,28 @@
 
 			for (let navMarker of navMarkers) {
 				if (String(navMarker.id) === pathPoint) {
-					//console.log('h');
 					if (navMarker.floor === floor) {
 						floorLineList.push([navMarker.y, navMarker.x]);
-						// TODO pořád to nefunguje... už to neskipne vždy, ale pořád ne ideální - je potřeba rozlišovat splitLine a changedFloors:
-						// skipLine = rozděl line (platí pouze pro patro)
-						// changedFloors = říká, že na dalším patře se začne stair_up nebo stair_down markerem...
-
-						//console.log(navMarker.id);
-						//console.log(changedFloors);
-						//console.log(navMarker.special_type + '   ' + navMarker.floor + '   ' + navMarker.id);
 						if (
-							(navMarker.special_type === 'stair_up' && changedFloors === false) ||
-							(navMarker.special_type === 'stair_down' && changedFloors === false)
+							(navMarker.special_type === 'stair_up' && passedStairSplit === true) ||
+							(navMarker.special_type === 'stair_down' && passedStairSplit === true)
 						) {
-							//if (changedFloors === false) {
-							// TODO //FIXME //IMPORTANT //!!!! nefunguje přepínání čili i vykreslování cesty na jiném než startovním patře
 							lineList.push(floorLineList);
-							console.log(floorLineList);
 							floorLineList = [];
-							changedFloors = true;
-							console.log('clearer');
-							//}
-						} else {
-							changedFloors = false;
 						}
-						console.log(changedFloors);
-						console.log('---');
+						if (navMarker.special_type === 'stair_split') {
+							passedStairSplit = true;
+						} else {
+							passedStairSplit = false;
+						}
 					}
 				}
 			}
-			//console.log(lineList);
 		}
 		lineList.push(floorLineList);
-		//console.log(lineList);
-		//console.log(lineList)
+
 		return {
-			pathList: lineList,
-			prevState: changedFloors
+			pathList: lineList
 		};
 	}
 
@@ -245,7 +229,6 @@
 			popup = L.popup();
 
 			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
-			// TODO zjistit, zda je průchozí "tělocvična D->umývárny"
 			// TODO zjistit co jsou X (1. PP a 1. NP)
 
 			let markerList: any = [];
@@ -253,7 +236,6 @@
 			let navMarkerList = [];
 			let pathList: any = [];
 			let canDrawPath: boolean = false;
-			let prevState: boolean = false;
 
 			if (currentFoundPath[0] === from && currentFoundPath[currentFoundPath.length - 1] === to) {
 				canDrawPath = true;
@@ -263,75 +245,73 @@
 			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 0);
 			if (canDrawPath === true)
-				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 0, prevState));
+				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 0));
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				//L.polyline(pathList)
+				L.polyline(pathList)
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
-			console.log(prevState);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
 			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 1);
 			if (canDrawPath === true)
-				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 1, prevState));
+				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 1));
 			let firstFloor = L.layerGroup([
 				// Map image
 				firstFloorImg,
 				...markerList,
-				//L.polyline(pathList)
+				L.polyline(pathList)
 				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
-			console.log(prevState);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
 			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 2);
 			if (canDrawPath === true)
-				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 2, prevState));
+				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 2));
 			let secondFloor = L.layerGroup([
 				// Map image
 				secondFloorImg,
 				...markerList,
-				//L.polyline(pathList)
+				L.polyline(pathList)
 				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
 			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 3);
 			if (canDrawPath === true)
-				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 3, prevState));
+				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 3));
 			let thirdFloor = L.layerGroup([
 				// Map image
 				thirdFloorImg,
 				...markerList,
-				//L.polyline(pathList)
+				L.polyline(pathList)
 				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
 			//FIXME odstranit až nebude potřeba
 			navMarkerList = createNavMarkers(markers, nav_markers, 4);
 			if (canDrawPath === true)
-				({ pathList, prevState } = drawPath(currentFoundPath, markers, nav_markers, 4, prevState));
+				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 4));
 			let fourthFloor = L.layerGroup([
 				// Map image
 				fourthFloorImg,
 				...markerList,
-				//L.polyline(pathList)
+				L.polyline(pathList)
 				//FIXME odstranit až nebude potřeba
 				//@ts-ignore
-				L.polyline(navMarkerList)
+				//L.polyline(navMarkerList)
 			]);
 			markerList = [];
 			//FIXME odstranit až nebude potřeba
@@ -413,7 +393,14 @@
 			isDisabled = false;
 		}
 	}
+	function resizeMap() {
+		if (map) {
+			map.invalidateSize();
+		}
+	}
 </script>
+
+<svelte:window on:resize={resizeMap} />
 
 <main>
 	{#if error}
@@ -428,14 +415,18 @@
 		<select id="from" name="from" bind:value={navFrom}>
 			<option value="0">--Prosím vyberte začátek cesty--</option>
 			{#each markers as marker}
-				<option value={marker.id}>{marker.display_name} (Patro: {marker.floor})</option>
+				{#if marker.can_nav !== false}
+					<option value={marker.id}>{marker.display_name} (Patro: {marker.floor})</option>
+				{/if}
 			{/each}
 		</select>
 		<label for="to">Kam:</label>
 		<select id="to" name="to" bind:value={navTo}>
 			<option value="0">--Prosím vyberte konec cesty--</option>
 			{#each markers as marker}
-				<option value={marker.id}>{marker.display_name} (Patro: {marker.floor})</option>
+				{#if marker.can_nav !== false}
+					<option value={marker.id}>{marker.display_name} (Patro: {marker.floor})</option>
+				{/if}
 			{/each}
 		</select>
 		<button on:click={navFromTo} disabled={isDisabled}>Navigovat</button>

@@ -1,49 +1,14 @@
 <script lang="ts">
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import { changeMarker } from '../../../lib/functions/markerManagemetnFunctions.js';
-	// icons
-
-	import closet_room from '$lib/images/icons/closet_room.png';
-	import director from '$lib/images/icons/director.png';
-	import gym from '$lib/images/icons/gym.png';
-	import main_classroom from '$lib/images/icons/main_classroom.png';
-	import office from '$lib/images/icons/office.png';
-	import teachers_room from '$lib/images/icons/teachers_room.png';
-	import wc from '$lib/images/icons/wc.png';
-	import special_classroom from '$lib/images/icons/special_classroom.png';
-	import entry from '$lib/images/icons/entry.png';
-	import gym_dress_room from '$lib/images/icons/gym_dress_room.png';
-	import it_classroom from '$lib/images/icons/it_classroom.png';
-	import labs from '$lib/images/icons/labs.png';
-	import staircase from '$lib/images/icons/staircase.png';
-	import workout_room from '$lib/images/icons/workout_room.png';
-	import explore from '$lib/images/icons/explore.png';
-	import language_rooms from '$lib/images/icons/language_rooms.png';
-	import singing from '$lib/images/icons/singing.png';
-	import storage from '$lib/images/icons/storage.png';
-	import archive from '$lib/images/icons/archive.png';
-	import art from '$lib/images/icons/art.png';
-	import read from '$lib/images/icons/read.png';
-	import teachers_common_room from '$lib/images/icons/teachers_common_room.png';
-	import weight from '$lib/images/icons/weight.png';
-	import deputies from '$lib/images/icons/deputies.png';
-	import library from '$lib/images/icons/library.png';
-	import boiler_room from '$lib/images/icons/boiler_room.png';
-	import bufet from '$lib/images/icons/bufet.png';
-	import psychiatrist from '$lib/images/icons/psychiatrist.png';
-	import sleep from '$lib/images/icons/sleep.png';
-	import uta from '$lib/images/icons/uta.png';
-	import washroom from '$lib/images/icons/washroom.png';
-	import workshop from '$lib/images/icons/workshop.png';
-	import janitor from '$lib/images/icons/janitor.png';
-	import janitor_flat from '$lib/images/icons/janitor_flat.png';
 	// svelte stuff
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-
+	import { iconImageList } from '$lib/data/markerIcons.js';
+	const iconList = iconImageList;
 	// TODO - seřadit podle množství změn (nejvíc třídy a potom podle celkového počtu I guess)
 	// TODO přidat všechny ikony (už chybí jen 2 X (1. PP a 1. NP))
-	const iconList = [
+	/*const iconList = [
 		{
 			name: 'wc',
 			image: wc,
@@ -214,7 +179,7 @@
 			image: janitor_flat,
 			displayname: 'Byt školníka'
 		}
-	];
+	];*/
 
 	export let data;
 	let { endingPoints } = data;
@@ -227,9 +192,11 @@
 		// FIXME zprovoznit datové typy
 		// FIXME
 		//@ts-ignore
-		endingPoint['new_display_name'] = '';
+		endingPoint['new_display_name'] = endingPoint.display_name;
 		//@ts-ignore
 		endingPoint['new_icon'] = endingPoint.icon;
+		//@ts-ignore
+		endingPoint['new_can_nav'] = endingPoint.can_nav;
 	}
 
 	async function saveChanges() {
@@ -237,31 +204,24 @@
 		for (let endingPoint of endingPoints) {
 			// FIXME
 			//@ts-ignore
-			if (endingPoint.new_display_name !== '' && endingPoint.icon !== endingPoint.new_icon) {
+			if (
+				//@ts-ignore
+				endingPoint.new_display_name !== '' ||
+				//@ts-ignore
+				endingPoint.new_icon !== endingPoint.icon ||
+				//@ts-ignore
+				endingPoint.new_can_nav !== endingPoint.can_nav
+			) {
 				changedEndingPoints.push({
 					id: endingPoint.id,
 					//@ts-ignore
 					display_name: endingPoint.new_display_name,
 					//@ts-ignore
 					icon: endingPoint.new_icon,
-					change: 'both'
+					//@ts-ignore
+					can_nav: endingPoint.new_can_nav
 				});
 				//@ts-ignore
-			} else if (endingPoint.new_display_name !== '' && endingPoint.icon === endingPoint.new_icon) {
-				changedEndingPoints.push({
-					id: endingPoint.id,
-					//@ts-ignore
-					display_name: endingPoint.new_display_name,
-					change: 'display name'
-				});
-				//@ts-ignore
-			} else if (endingPoint.new_display_name === '' && endingPoint.icon !== endingPoint.new_icon) {
-				changedEndingPoints.push({
-					id: endingPoint.id,
-					//@ts-ignore
-					icon: endingPoint.new_icon,
-					change: 'icon'
-				});
 			}
 		}
 		if (changedEndingPoints.length > 0) {
@@ -296,16 +256,15 @@
 	<thead>
 		<tr>
 			<th>Patro</th>
-			<th>Stávající název značky</th>
-			<th><b>Nový</b> název značky</th>
+			<th>Název značky</th>
 			<th>Ikona</th>
+			<th>Navigovatelný</th>
 		</tr>
 	</thead>
 	<tbody>
 		{#each endingPoints as endPoint}
 			<tr>
 				<td>{endPoint.floor}</td>
-				<td>{endPoint.display_name}</td>
 				<td><input type="text" maxlength="50" bind:value={endPoint.new_display_name} /></td>
 				<td>
 					<select id="icon" bind:value={endPoint.new_icon}>
@@ -317,6 +276,9 @@
 							{/if}
 						{/each}
 					</select>
+				</td>
+				<td>
+					<input type="checkbox" bind:checked={endPoint.new_can_nav} />
 				</td>
 			</tr>
 		{/each}
