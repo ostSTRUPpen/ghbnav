@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import StoreTest from '$lib/elements/StoreTest.svelte';
+	import { base } from '$app/paths';
+	//import QrCodeMaker from '$lib/elements/QRCodeMaker.svelte';
+	//import QrCodeScanner from '$lib/elements/QRCodeScanner.svelte';
+	//import StoreTest from '$lib/elements/StoreTest.svelte';
 
 	export let data;
 	let { locations, session } = data;
@@ -12,7 +15,7 @@
 
 	function navFromTo() {
 		//console.log(navFrom + ' -> ' + navTo);
-		goto(`/map/${navFrom}/${navTo}`, { replaceState: false });
+		goto(`${base}/map/${navFrom}/${navTo}`, { replaceState: false });
 	}
 
 	$: {
@@ -24,12 +27,16 @@
 	}
 </script>
 
+<!---<svelte:head>
+	<script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+</svelte:head>-->
 <!--TODO využít skeleton ke zkrášlení stránky-->
 <!-- 
 	TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
 	Vítejte
 	...
--->
+
+<QrCodeMaker marker={'a'} />-->
 <header>
 	<a href="/map">Mapa</a>
 	{#if session}
@@ -81,7 +88,10 @@
 
 		<!-- TODO zprovoznit a otestovat -->
 		<!-- TODO automatický generátor QR kódů (https://davidshimjs.github.io/qrcodejs/)-->
-		<div>Skenovat qr kod</div>
+		<!-- FIXME nefunguje - možná bude lepší, aby se qr kódy skenovali v jiné aplikaci a jen prostě otevřeli odkaz-->
+		<div>
+			<!----<QrCodeScanner />-->
+		</div>
 
 		<!-- TODOD předefinovat -->
 		<div>caste cesty</div>

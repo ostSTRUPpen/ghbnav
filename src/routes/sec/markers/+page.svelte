@@ -1,10 +1,12 @@
 <script lang="ts">
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
-	import { changeMarker } from '../../../lib/functions/markerManagemetnFunctions.js';
+	import { changeMarker } from '../../../lib/functions/markerManagementFunctions.js';
 	// svelte stuff
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { iconImageList } from '$lib/data/markerIcons.js';
+	import { base } from '$app/paths';
+	import { printMarkersList } from '$lib/data/store.js';
 	const iconList = iconImageList;
 	// TODO - seřadit podle množství změn (nejvíc třídy a potom podle celkového počtu I guess)
 	// TODO přidat všechny ikony (už chybí jen 2 X (1. PP a 1. NP))
@@ -180,6 +182,7 @@
 			displayname: 'Byt školníka'
 		}
 	];*/
+	let localPrintMarkersList: Array<Array<string>> = [];
 
 	export let data;
 	let { endingPoints } = data;
@@ -197,9 +200,11 @@
 		endingPoint['new_icon'] = endingPoint.icon;
 		//@ts-ignore
 		endingPoint['new_can_nav'] = endingPoint.can_nav;
+		//@ts-ignore
+		endingPoint['genQR'] = false;
 	}
 
-	async function saveChanges() {
+	async function saveChanges(show: boolean = true) {
 		let changedEndingPoints = [];
 		for (let endingPoint of endingPoints) {
 			// FIXME
@@ -224,7 +229,7 @@
 				//@ts-ignore
 			}
 		}
-		if (changedEndingPoints.length > 0) {
+		if (changedEndingPoints.length > 0 && show) {
 			await changeMarker(changedEndingPoints);
 			dialog['showModal']();
 		}
@@ -235,23 +240,45 @@
 	});
 
 	function cancelChanges() {
-		goto('/sec', { replaceState: true });
+		goto(`${base}/sec`, { replaceState: true });
+	}
+
+	function addQRToPrint(id: string, name: string, changeQR: boolean) {
+		console.log(changeQR);
+		if (!changeQR) {
+			localPrintMarkersList.push([id, name]);
+		}
+	}
+	function printAllQRs() {
+		for (let endingPoint of endingPoints) {
+			//@ts-ignore
+			localPrintMarkersList.push([endingPoint.id, endingPoint.new_display_name]);
+		}
+		printQRs();
+	}
+
+	function printQRs() {
+		console.log(localPrintMarkersList);
+		printMarkersList.update((n) => (n = localPrintMarkersList));
+		saveChanges(false);
+		goto(`${base}/sec/markers/print`, { replaceState: true });
 	}
 </script>
 
-<SecureAnchor page={''} text={'Zpět'} />
+<SecureAnchor page={''} text={'Zpět'} /> <br />
 
 <dialog id="deletion-dialog">
 	<h1>Značky úspěšně upraveny</h1>
 	<button
 		on:click={() => {
 			dialog.close();
-			goto('/sec', { replaceState: true });
+			goto(`${base}/sec`, { replaceState: true });
 		}}>Ok</button
 	>
 </dialog>
-<!-- TODO přidat ukázku všech dostupnýc ikon-->
+<!-- TODO přidat ukázku všech dostupných ikon-->
 <!-- TODO Víc graficky rozlišit patra a vylepšit grafiku tabulky-->
+<button on:click={printQRs}>Tisk QR kódů</button>
 <table>
 	<thead>
 		<tr>
@@ -259,6 +286,7 @@
 			<th>Název značky</th>
 			<th>Ikona</th>
 			<th>Navigovatelný</th>
+			<th>Nový QR kód <br /> <button on:click={printAllQRs}>Vytisknout všechny QR kódy</button></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -278,14 +306,23 @@
 					</select>
 				</td>
 				<td>
+					<!-- @ts-ignore -->
 					<input type="checkbox" bind:checked={endPoint.new_can_nav} />
+				</td>
+				<td>
+					<input
+						type="checkbox"
+						on:change={() => addQRToPrint(endPoint.id, endPoint.new_display_name, endPoint.genQR)}
+						bind:checked={endPoint.genQR}
+					/>
 				</td>
 			</tr>
 		{/each}
 	</tbody>
 	<tfoot>
 		<tr>
-			<td colspan="2"><button on:click={saveChanges}>Uložit změny</button> </td><td colspan="2"
+			<td colspan="2"><button on:click={() => saveChanges(true)}>Uložit změny</button> </td><td
+				colspan="2"
 				><button on:click={cancelChanges}>Zrušit změny</button>
 			</td></tr
 		>

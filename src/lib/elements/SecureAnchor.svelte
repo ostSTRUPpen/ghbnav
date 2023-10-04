@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
 
 	export let page: string;
 	export let text: string;
 
 	function anchor() {
-		goto(`/sec${page}`, { replaceState: true });
+		goto(`${base}/sec${page}`, { replaceState: true });
 	}
 </script>
 

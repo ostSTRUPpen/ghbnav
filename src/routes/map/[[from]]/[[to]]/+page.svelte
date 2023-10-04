@@ -13,8 +13,9 @@
 	} from '$lib/data/markerIcons.js';
 	import { goto } from '$app/navigation';
 	import { dijkstra } from '$lib/functions/findPath.js';
-	import { foundpath } from '$lib/data/store.js';
+	import { foundPath } from '$lib/data/store.js';
 	import { savePath } from '$lib/functions/pathSavingFunctions.js';
+	import { base } from '$app/paths';
 	export let data;
 
 	let { markers, nav_markers } = data;
@@ -37,7 +38,7 @@
 	 * TODO zprovoznit QRkódy a zobrazení nejpoužívanějších cest
 	 */
 	let currentFoundPath = [''];
-	foundpath.subscribe((value) => {
+	foundPath.subscribe((value) => {
 		currentFoundPath = value;
 		//console.log(currentFoundPath);
 	});
@@ -342,23 +343,23 @@
 			if (state === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
-					goto('/loading').then(() => goto(`/map/${from}`));
+					goto(`${base}/loading`).then(() => goto(`${base}/map/${from}`));
 				} else if (
 					currentFoundPath[0] !== from ||
 					currentFoundPath[currentFoundPath.length - 1] !== to
 				) {
-					foundpath.update((n) => (n = ['']));
+					foundPath.update((n) => (n = ['']));
 					const response = dijkstra(nav_markers, from, to);
 					//console.log(response.path);
 					if (response.status === 'OK') {
 						//console.log('h');
 						//if (response.path.length > 1) {
-						foundpath.update((n) => (n = response.path));
+						foundPath.update((n) => (n = response.path));
 						//console.log('h');
 						const data = await savePath(from, to, response.path);
 						//console.log('h');
-						goto('/loading').then(() => {
-							goto(`/map/${from}/${to}`);
+						goto(`${base}/loading`).then(() => {
+							goto(`${base}/map/${from}/${to}`);
 						});
 						//}
 					}
@@ -377,12 +378,12 @@
 
 	function navFromTo() {
 		//console.log(navFrom + ' -> ' + navTo);
-		goto('/loading').then(() => goto(`/map/${navFrom}/${navTo}`));
+		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
 	}
 	function clearNav() {
-		foundpath.update((n) => (n = ['']));
-		goto('/loading').then(() => {
-			goto(`/map`);
+		foundPath.update((n) => (n = ['']));
+		goto(`${base}/loading`).then(() => {
+			goto(`${base}/map`);
 		});
 	}
 

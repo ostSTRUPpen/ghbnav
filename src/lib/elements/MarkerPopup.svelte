@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { foundpath } from '$lib/data/store';
-	import { redirect } from '@sveltejs/kit';
+	import { base } from '$app/paths';
+	import { foundPath } from '$lib/data/store';
 
 	export let text: string;
 	export let id: string;
@@ -24,17 +24,17 @@
 	function navTo() {
 		if (buttonType === 'no_from-to') {
 			//FIX?ME Určitě musí existovat lepší způsob
-			foundpath.update((n) => (n = ['']));
-			goto('/loading').then(() => goto(`/map/${id}`));
+			foundPath.update((n) => (n = ['']));
+			goto(`${base}/loading`).then(() => goto(`${base}/map/${id}`));
 		} else if (buttonType === 'no_to') {
-			goto('/loading').then(() => goto(`/map/${fromNodeId}/${id}`));
+			goto(`${base}/loading`).then(() => goto(`${base}/map/${fromNodeId}/${id}`));
 		} else if (buttonType === 'ready') {
-			goto('/loading').then(() => {
-				goto(`/map/${fromNodeId}/${id}`);
+			goto(`${base}/loading`).then(() => {
+				goto(`${base}/map/${fromNodeId}/${id}`);
 			});
 		} else if (canNav === false) {
 		} else {
-			goto('/loading');
+			goto(`${base}/loading`);
 		}
 	}
 </script>

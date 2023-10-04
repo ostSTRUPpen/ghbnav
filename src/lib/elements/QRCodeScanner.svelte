@@ -40,15 +40,14 @@
 	}
 </script>
 
-<main>
+<div>
 	<reader id="reader" />
 	{#if scanning}
-		<button on:click={stop}>stop</button>
+		<button on:click={stop}>Zastavit skenování</button>
 	{:else}
-		<button on:click={start}>start</button>
+		<button on:click={start}>Naskenovat QR kód</button>
 	{/if}
-</main>
-} } } } } } ) } }
+</div>
 
 <style>
 	main {
