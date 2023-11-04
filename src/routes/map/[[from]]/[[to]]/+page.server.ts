@@ -4,6 +4,7 @@ export async function load() {
 	const { data: markers, error } = await supabase
 		.from('markers')
 		.select('id, x, y, display_name, floor, icon, can_nav')
+		.order('icon', { ascending: true })
 		.order('floor', { ascending: true });
 	if (error) console.log(error);
 	const { data: nav_markers, error: navError } = await supabase

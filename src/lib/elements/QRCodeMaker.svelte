@@ -34,6 +34,7 @@
 			<th class="qrcode_td"><div id={`qr${id}`} /></th>
 		</tr>
 		<tr><td class="link_text">{`${base}/map/${id}`}</td></tr>
+		<tr><td class="link_text">{base}</td></tr>
 	</tbody>
 </table>
 

@@ -18,7 +18,6 @@
 	let endingPoints: Array<App.others['enlargedMarkerObject']> = [];
 
 	// TODO seznam všech ikon a jejich displayname názvů
-	// TODO možnost vygenerovat QR kód (kdyby se nějaký rozbil)
 
 	for (let marker of markers) {
 		endingPoints.push({
@@ -127,9 +126,16 @@
 		{#each endingPoints as endPoint}
 			<tr class={checkForFloorChange(endPoint.floor)}>
 				<td>{endPoint.floor}</td>
-				<td><input type="text" maxlength="50" bind:value={endPoint.new_display_name} /></td>
+				<td
+					><input
+						type="text"
+						maxlength="50"
+						bind:value={endPoint.new_display_name}
+						class="dark:bg-stone-400"
+					/></td
+				>
 				<td>
-					<select id="icon" bind:value={endPoint.new_icon}>
+					<select id="icon" bind:value={endPoint.new_icon} class="dark:bg-stone-400">
 						{#each iconList as icon}
 							{#if endPoint.icon === icon['name']}
 								<option value={icon['name']} selected>{icon.displayname}</option>

@@ -9,7 +9,8 @@
 		floor_2,
 		floor_3,
 		floor_4,
-		getMarkerIcons
+		getMarkerIcons,
+		iconImageDisplayNames
 	} from '$lib/data/markerIcons.js';
 	import { goto } from '$app/navigation';
 	import { dijkstra } from '$lib/functions/findPath.js';
@@ -24,7 +25,9 @@
 	let from: string = '',
 		to: string = '',
 		navFrom: string = '',
-		navTo: string = '';
+		navTo: string = '',
+		fromMarkerFloor: number = 1,
+		preparedLocations: any[] = [];
 
 	from = $page.params.from;
 	to = $page.params.to;
@@ -33,8 +36,6 @@
 	navTo = to;
 
 	/**
-	 * TODO přidat další navmarkery
-	 * TODO přidat ukládání do databáze |startingPoint|endingPoint|path|amountOfUsage
 	 * TODO zprovoznit QRkódy a zobrazení nejpoužívanějších cest
 	 */
 	let currentFoundPath = [''];
@@ -76,7 +77,7 @@
 		for (let marker of markers) {
 			tempButtonType = mainButtonType;
 			if (marker.floor === floor) {
-				// If this if statement fails, the whole pageload fails - so I double check it
+				// If this if statement fails, the whole page fails to load - so I double check it
 				if (marker.icon !== '' && marker.icon in iconList) {
 					if (marker.can_nav === false) {
 						tempButtonType = 'do_not_nav';
@@ -90,8 +91,7 @@
 								let c = new MarkerPopup({
 									target: container,
 									props: {
-										//FIXME upravit až nebude potřeba
-										text: `${marker.display_name} Y: ${marker.y}, X: ${marker.x}`,
+										text: `${marker.display_name}`,
 										id: marker.id,
 										buttonType: tempButtonType,
 										fromNodeId,
@@ -130,9 +130,8 @@
 		}
 		return markerList;
 	}
-	// TODO odstranit, až budou všechny navmarekry správně
-	//FIXME odstranit až nebude potřeba
-	function createNavMarkers(markers: any, navMarkers: any, floor: number) {
+
+	/*function createNavMarkers(markers: any, navMarkers: any, floor: number) {
 		markers = markers.reverse();
 		navMarkers = navMarkers.reverse();
 		let lineList = [];
@@ -161,7 +160,7 @@
 			}
 		}
 		return lineList;
-	}
+	}*/
 	function drawPath(path: any, markers: any, navMarkers: any, floor: number) {
 		let lineList: Array<Array<Array<string>>> = [];
 		let floorLineList: Array<Array<string>> = [];
@@ -200,10 +199,30 @@
 		};
 	}
 
+	$: {
+		let lastLocation: string = '';
+		for (let location of markers) {
+			if (location.icon !== lastLocation) {
+				lastLocation = location.icon;
+				preparedLocations.push({
+					id: 0,
+					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
+					can_nav: true
+				});
+			}
+			preparedLocations.push({
+				id: location.id,
+				name: `${location.display_name} (Patro: ${location.floor})`,
+				can_nav: location.can_nav
+			});
+		}
+	}
+
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
 			const markerIcons = getMarkerIcons(L);
+			fromMarkerFloor = markers.find((obj) => obj.id === from)?.floor ?? 1;
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [
 				[0, 0],
@@ -226,15 +245,12 @@
 				[1915, 8868]
 			]);
 
-			// FIXME odstraenit až nebude třeba vypisovat souřadnice kliknutí
 			popup = L.popup();
 
 			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
 			// TODO zjistit co jsou X (1. PP a 1. NP)
-
+			console.log(fromMarkerFloor);
 			let markerList: any = [];
-			//FIXME odstranit až nebude potřeba
-			let navMarkerList = [];
 			let pathList: any = [];
 			let canDrawPath: boolean = false;
 
@@ -243,21 +259,12 @@
 			}
 
 			markerList = createMarkers(L, markers, 0, markerIcons, state, from);
-			//FIXME odstranit až nebude potřeba
-			navMarkerList = createNavMarkers(markers, nav_markers, 0);
+
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 0));
-			let zeroFloor = L.layerGroup([
-				zeroFloorImg,
-				...markerList,
-				L.polyline(pathList)
-				//@ts-ignore
-				//L.polyline(navMarkerList)
-			]);
+			let zeroFloor = L.layerGroup([zeroFloorImg, ...markerList, L.polyline(pathList)]);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
-			//FIXME odstranit až nebude potřeba
-			navMarkerList = createNavMarkers(markers, nav_markers, 1);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 1));
 			let firstFloor = L.layerGroup([
@@ -265,14 +272,9 @@
 				firstFloorImg,
 				...markerList,
 				L.polyline(pathList)
-				//FIXME odstranit až nebude potřeba
-				//@ts-ignore
-				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
-			//FIXME odstranit až nebude potřeba
-			navMarkerList = createNavMarkers(markers, nav_markers, 2);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 2));
 			let secondFloor = L.layerGroup([
@@ -280,14 +282,9 @@
 				secondFloorImg,
 				...markerList,
 				L.polyline(pathList)
-				//FIXME odstranit až nebude potřeba
-				//@ts-ignore
-				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
-			//FIXME odstranit až nebude potřeba
-			navMarkerList = createNavMarkers(markers, nav_markers, 3);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 3));
 			let thirdFloor = L.layerGroup([
@@ -295,14 +292,9 @@
 				thirdFloorImg,
 				...markerList,
 				L.polyline(pathList)
-				//FIXME odstranit až nebude potřeba
-				//@ts-ignore
-				//L.polyline(navMarkerList)
 			]);
 
 			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
-			//FIXME odstranit až nebude potřeba
-			navMarkerList = createNavMarkers(markers, nav_markers, 4);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 4));
 			let fourthFloor = L.layerGroup([
@@ -310,13 +302,8 @@
 				fourthFloorImg,
 				...markerList,
 				L.polyline(pathList)
-				//FIXME odstranit až nebude potřeba
-				//@ts-ignore
-				//L.polyline(navMarkerList)
 			]);
 			markerList = [];
-			//FIXME odstranit až nebude potřeba
-			navMarkerList = [];
 			pathList = [];
 			let floors = {
 				'1. PP': zeroFloor,
@@ -329,7 +316,9 @@
 				crs: L.CRS.Simple, // CRS.Simple, which represents a square grid:
 				minZoom: -5,
 				maxZoom: 0,
-				layers: [zeroFloor]
+				layers: [Object.values(floors)[fromMarkerFloor]],
+				maxBounds: L.latLngBounds(L.latLng(-1000, 11000), L.latLng(5000, -1000)),
+				maxBoundsViscosity: 1.0
 			});
 			map.fitBounds([
 				[0, 0],
@@ -337,8 +326,6 @@
 			]);
 
 			L.control.layers(floors).addTo(map);
-			// FIXME odstraenit až nebude třeba vypisovat souřadnice kliknutí
-			map.on('click', onMapClick);
 
 			if (state === 'ready') {
 				if (from === to && from !== undefined) {
@@ -349,26 +336,24 @@
 					currentFoundPath[currentFoundPath.length - 1] !== to
 				) {
 					foundPath.update((n) => (n = ['']));
-					const response = dijkstra(nav_markers, from, to);
-					//console.log(response.path);
+					const response = dijkstra(
+						nav_markers,
+						from,
+						to,
+						markers.find((obj) => obj.id === from)?.floor
+					);
 					if (response.status === 'OK') {
-						//console.log('h');
-						//if (response.path.length > 1) {
 						foundPath.update((n) => (n = response.path));
-						//console.log('h');
 						const data = await savePath(from, to, response.path);
-						//console.log('h');
 						goto(`${base}/loading`).then(() => {
 							goto(`${base}/map/${from}/${to}`);
 						});
-						//}
 					}
 				}
 			}
 		}
 	});
 
-	// FIXME odstraenit až nebude třeba vypisovat souřadnice kliknutí
 	function onMapClick(e: any) {
 		popup.setLatLng(e.latlng).setContent(e.latlng.toString()).openOn(map);
 	}
@@ -377,7 +362,6 @@
 	let isDisabled: boolean = true;
 
 	function navFromTo() {
-		//console.log(navFrom + ' -> ' + navTo);
 		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
 	}
 	function clearNav() {
@@ -399,29 +383,34 @@
 			map.invalidateSize();
 		}
 	}
+	// TODO Udělat zobrazení from a to floating
 </script>
 
 <svelte:window on:resize={resizeMap} />
+<!--<svelte:head>
+	<link rel="stylesheet" href="control.layers.minimap.css" />
+	<script src="L.Control.Layers.Minimap.js"></script>
+</svelte:head>-->
 
 <main>
 	<div id="selection">
 		<!-- TODO viz main page-->
 		<label for="from">Odkud:</label>
-		<select id="from" name="from" bind:value={navFrom}>
+		<select id="from" name="from" bind:value={navFrom} class="dark:bg-stone-400">
 			<option value="0">--Prosím vyberte začátek cesty--</option>
-			{#each markers as marker}
-				{#if marker.can_nav !== false}
-					<option value={marker.id}>{marker.display_name} (Patro: {marker.floor})</option>
+			{#each preparedLocations as location}
+				{#if location.can_nav !== false}
+					<option value={location.id}>{location.name}</option>
 				{/if}
 			{/each}
 		</select>
 		<br />
 		<label for="to">Kam:</label>
-		<select id="to" name="to" bind:value={navTo}>
+		<select id="to" name="to" bind:value={navTo} class="dark:bg-stone-400">
 			<option value="0">--Prosím vyberte konec cesty--</option>
-			{#each markers as marker}
-				{#if marker.can_nav !== false}
-					<option value={marker.id}>{marker.display_name} (Patro: {marker.floor})</option>
+			{#each preparedLocations as location}
+				{#if location.can_nav !== false}
+					<option value={location.id}>{location.name}</option>
 				{/if}
 			{/each}
 		</select>

@@ -1,9 +1,5 @@
-//import { supabase } from '$lib/supabaseClient.js';
 import { redirect } from '@sveltejs/kit';
 
-//FIXME
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 export async function PATCH({ request, locals: { supabase, getSession } }): Promise<Response> {
 	const session = await getSession();
 	if (!session) {
@@ -39,7 +35,7 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
-			: 'An error has occured while updating the user';
+			: 'An error has occurred while updating markers';
 		return new Response(JSON.stringify({ message: errMessage }), {
 			status: 400
 		});

@@ -5,8 +5,7 @@
 
 <SecureAnchor page={`${base}/markers`} text={'Značky'} />
 
-<!-- 
-	TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
+<!--TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
 	Vítejte
 	...
 -->
