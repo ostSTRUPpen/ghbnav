@@ -34,7 +34,7 @@
 <button class="noPrintPdf" on:click={startPrint}>Tisk</button>
 <div id="printElement">
 	{#each data as markerInfo}
-		<QrCodeMaker id={markerInfo[0]} name={markerInfo[1]} />
+		<QrCodeMaker id={markerInfo[0]} name={markerInfo[1]} floor={markerInfo[2]} />
 	{/each}
 </div>
 

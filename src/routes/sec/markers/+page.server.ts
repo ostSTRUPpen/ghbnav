@@ -7,6 +7,6 @@ export async function load() {
 		.order('floor', { ascending: true });
 
 	return {
-		endingPoints: data ?? []
+		markers: data ?? []
 	};
 }

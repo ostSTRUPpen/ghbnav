@@ -404,13 +404,7 @@
 <svelte:window on:resize={resizeMap} />
 
 <main>
-	{#if error}
-		<p class="error_msg">{errMsg}</p>
-	{:else}
-		<div id="map" bind:this={map} />
-	{/if}
-
-	<div>
+	<div id="selection">
 		<!-- TODO viz main page-->
 		<label for="from">Odkud:</label>
 		<select id="from" name="from" bind:value={navFrom}>
@@ -421,6 +415,7 @@
 				{/if}
 			{/each}
 		</select>
+		<br />
 		<label for="to">Kam:</label>
 		<select id="to" name="to" bind:value={navTo}>
 			<option value="0">--Prosím vyberte konec cesty--</option>
@@ -430,9 +425,15 @@
 				{/if}
 			{/each}
 		</select>
+		<br />
 		<button on:click={navFromTo} disabled={isDisabled}>Navigovat</button>
 		<button on:click={clearNav}>Vymazat navigaci</button>
 	</div>
+	{#if error}
+		<p class="error_msg">{errMsg}</p>
+	{:else}
+		<div id="map" bind:this={map} />
+	{/if}
 </main>
 <link
 	rel="stylesheet"
@@ -442,7 +443,10 @@
 />
 
 <style>
-	main div {
+	#selection {
+		margin-bottom: 1em;
+	}
+	#map {
 		height: 700px;
 	}
 </style>

@@ -4,10 +4,15 @@
 
 	export let id: string;
 	export let name: string;
+	export let floor: string;
+
+	//TODO zadat aktuální adresu
+	const url_string: string = '';
+
 	onMount(() => {
 		//@ts-ignore
 		const qrcode = new QRCode(document.getElementById(`qr${id}`), {
-			text: `${base}/map/${id}`,
+			text: `${url_string}${base}/map/${id}`,
 			width: 305,
 			height: 305,
 			colorDark: '#000000',
@@ -21,7 +26,7 @@
 <table class="shell">
 	<thead>
 		<tr class="cut_text">
-			<th class="cut_text">{name}</th>
+			<th class="cut_text">{name} - {floor}</th>
 		</tr>
 	</thead>
 	<tbody>
