@@ -19,7 +19,6 @@
 	function startPrint() {
 		window.print();
 	}
-	// TODO přidat výpis přímo odkaz na domov navigace
 </script>
 
 <dialog id="error-dialog">

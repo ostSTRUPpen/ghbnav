@@ -19,7 +19,6 @@ import specializovane_ucebny from '$lib/images/icons/markers/specializovane_uceb
 import telovychova from '$lib/images/icons/markers/telovychova.png';
 import zachody from '$lib/images/icons/markers/zachody.png';
 
-//FIXME
 //@ts-ignore
 export function getMarkerIcons(L) {
 	const NavIcon = L.Icon.extend({

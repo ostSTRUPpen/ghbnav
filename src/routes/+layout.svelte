@@ -22,11 +22,11 @@
 	});
 </script>
 
-<header class="noPrintPdf">
+<header class="noPrintPdf pb-10">
 	<nav class="navbar bg-base-100">
 		<div class="flex-1">
 			<a
-				class="btn btn-wide text-primary btn-ghost no-animation hover:bg-base-100 normal-case text-4xl"
+				class="btn text-primary btn-ghost no-animation hover:bg-base-100 normal-case text-5xl"
 				href="{base}/"
 				target="_self"
 				rel="prev"
@@ -38,7 +38,7 @@
 			<ul class="menu menu-horizontal space-x-1">
 				<li>
 					<a
-						class="btn-ghost hover:text-primary px-3 hover:bg-base-100"
+						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
 						href="{base}/map"
 						target="_self"
 						rel="next"
@@ -49,7 +49,7 @@
 				{#if session}
 					<li>
 						<a
-							class="btn-ghost hover:text-primary px-3 hover:bg-base-100"
+							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
 							href="{base}/sec"
 							target="_self"
 							rel="nofollow"
@@ -59,7 +59,7 @@
 					</li>
 					<li>
 						<form
-							class="btn-ghost hover:text-primary hover:bg-base-100"
+							class="btn-ghost hover:text-primary hover:bg-base-100 text-xl"
 							method="POST"
 							action="/auth?/logout"
 						>
@@ -69,7 +69,7 @@
 				{:else}
 					<li>
 						<a
-							class="btn btn-ghost hover:text-primary hover:no-animation"
+							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-xl"
 							href="{base}/auth"
 							target="_self"
 							rel="nofollow"
@@ -78,6 +78,7 @@
 						</a>
 					</li>
 				{/if}
+				<!-- TODO přidat změnu light na dark mode-->
 			</ul>
 		</div>
 	</nav>

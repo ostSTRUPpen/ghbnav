@@ -9,14 +9,14 @@
 		floor_2,
 		floor_3,
 		floor_4,
-		getMarkerIcons,
-		iconImageDisplayNames
+		getMarkerIcons
 	} from '$lib/data/markerIcons.js';
 	import { goto } from '$app/navigation';
 	import { dijkstra } from '$lib/functions/findPath.js';
 	import { foundPath } from '$lib/data/store.js';
 	import { savePath } from '$lib/functions/pathSavingFunctions.js';
 	import { base } from '$app/paths';
+	import PathSelection from '$lib/elements/PathSelection.svelte';
 	export let data;
 
 	let { markers, nav_markers } = data;
@@ -24,24 +24,14 @@
 
 	let from: string = '',
 		to: string = '',
-		navFrom: string = '',
-		navTo: string = '',
-		fromMarkerFloor: number = 1,
-		preparedLocations: any[] = [];
+		fromMarkerFloor: number = 1;
 
 	from = $page.params.from;
 	to = $page.params.to;
 
-	navFrom = from;
-	navTo = to;
-
-	/**
-	 * TODO zprovoznit QRkódy a zobrazení nejpoužívanějších cest
-	 */
 	let currentFoundPath = [''];
 	foundPath.subscribe((value) => {
 		currentFoundPath = value;
-		//console.log(currentFoundPath);
 	});
 
 	let state = 'no_from-to';
@@ -199,25 +189,6 @@
 		};
 	}
 
-	$: {
-		let lastLocation: string = '';
-		for (let location of markers) {
-			if (location.icon !== lastLocation) {
-				lastLocation = location.icon;
-				preparedLocations.push({
-					id: 0,
-					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
-					can_nav: true
-				});
-			}
-			preparedLocations.push({
-				id: location.id,
-				name: `${location.display_name} (Patro: ${location.floor})`,
-				can_nav: location.can_nav
-			});
-		}
-	}
-
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
@@ -358,71 +329,26 @@
 		popup.setLatLng(e.latlng).setContent(e.latlng.toString()).openOn(map);
 	}
 
-	// Nav selection under the map element
-	let isDisabled: boolean = true;
-
-	function navFromTo() {
-		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
-	}
-	function clearNav() {
-		foundPath.update((n) => (n = ['']));
-		goto(`${base}/loading`).then(() => {
-			goto(`${base}/map`);
-		});
-	}
-
-	$: {
-		if (navFrom === '0' || navTo === '0' || navFrom === navTo) {
-			isDisabled = true;
-		} else {
-			isDisabled = false;
-		}
-	}
 	function resizeMap() {
 		if (map) {
 			map.invalidateSize();
 		}
 	}
-	// TODO Udělat zobrazení from a to floating
 </script>
 
 <svelte:window on:resize={resizeMap} />
-<!--<svelte:head>
-	<link rel="stylesheet" href="control.layers.minimap.css" />
-	<script src="L.Control.Layers.Minimap.js"></script>
-</svelte:head>-->
 
 <main>
-	<div id="selection">
-		<!-- TODO viz main page-->
-		<label for="from">Odkud:</label>
-		<select id="from" name="from" bind:value={navFrom} class="dark:bg-stone-400">
-			<option value="0">--Prosím vyberte začátek cesty--</option>
-			{#each preparedLocations as location}
-				{#if location.can_nav !== false}
-					<option value={location.id}>{location.name}</option>
-				{/if}
-			{/each}
-		</select>
-		<br />
-		<label for="to">Kam:</label>
-		<select id="to" name="to" bind:value={navTo} class="dark:bg-stone-400">
-			<option value="0">--Prosím vyberte konec cesty--</option>
-			{#each preparedLocations as location}
-				{#if location.can_nav !== false}
-					<option value={location.id}>{location.name}</option>
-				{/if}
-			{/each}
-		</select>
-		<br />
-		<button on:click={navFromTo} disabled={isDisabled}>Navigovat</button>
-		<button on:click={clearNav}>Vymazat navigaci</button>
+	<div class="space-y-5 flex h-screen flex-col">
+		<div class="px-5">
+			<PathSelection locations={markers} navFrom={from} navTo={to} showClearNavButton={true} />
+		</div>
+		{#if error}
+			<p class="error_msg">{errMsg}</p>
+		{:else}
+			<div id="map" class="flex-1" bind:this={map} />
+		{/if}
 	</div>
-	{#if error}
-		<p class="error_msg">{errMsg}</p>
-	{:else}
-		<div id="map" bind:this={map} />
-	{/if}
 </main>
 <link
 	rel="stylesheet"
@@ -430,12 +356,3 @@
 	integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
 	crossorigin=""
 />
-
-<style>
-	#selection {
-		margin-bottom: 1em;
-	}
-	#map {
-		height: 700px;
-	}
-</style>

@@ -1,6 +1,6 @@
 import { supabase } from '$lib/supabaseClient';
 
-export async function load({ locals: { getSession } }) {
+export async function load() {
 	const { data: markers, error: markers_error } = await supabase
 		.from('markers')
 		.select('id, display_name, floor, can_nav, icon')
@@ -12,7 +12,6 @@ export async function load({ locals: { getSession } }) {
 		.select('start_node, end_node, count')
 		.order('count', { ascending: false })
 		.limit(5);
-	console.log(stored_paths);
 	if (path_error) console.log(path_error);
 
 	const stored_paths_with_names = [];
@@ -29,7 +28,6 @@ export async function load({ locals: { getSession } }) {
 
 	return {
 		locations: markers ?? [],
-		stored_paths: stored_paths_with_names ?? [],
-		session: getSession()
+		stored_paths: stored_paths_with_names ?? []
 	};
 }

@@ -7,8 +7,6 @@
 	import { base } from '$app/paths';
 	import { printMarkersList } from '$lib/data/store.js';
 	const iconList = iconImageList;
-	// TODO - seřadit podle množství změn (nejvíc třídy a potom podle celkového počtu I guess)
-	// TODO přidat všechny ikony (už chybí jen 2 X (1. PP a 1. NP))
 
 	let localPrintMarkersList: Array<Array<string>> = [];
 
@@ -16,8 +14,6 @@
 	let { markers } = data;
 	$: ({ markers } = data);
 	let endingPoints: Array<App.others['enlargedMarkerObject']> = [];
-
-	// TODO seznam všech ikon a jejich displayname názvů
 
 	for (let marker of markers) {
 		endingPoints.push({

@@ -1,5 +1,5 @@
-<div class="loading"></div>
-<style>
+<div class="loading" />
+<!--<style>
 @keyframes tick { to { transform: rotate(359deg);}}
 
 .loading {
@@ -23,4 +23,4 @@
   background: #000;
   animation: tick 1s infinite linear;
 }
-</style>
+</style>-->

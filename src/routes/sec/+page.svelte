@@ -5,6 +5,7 @@
 
 <SecureAnchor page={`${base}/markers`} text={'Značky'} />
 
+<SecureAnchor page={`${base}/paths`} text={'Cesty'} />
 <!--TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
 	Vítejte
 	...

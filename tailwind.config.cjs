@@ -3,8 +3,7 @@ module.exports = {
 	plugins: [require('daisyui')],
 	daisyui: {
 		themes: [
-			'light',
-			'dark',
+			// TODO přidat dark mode
 			{
 				ghb_light: {
 					primary: '#fd8549',
