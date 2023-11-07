@@ -30,6 +30,7 @@
 	}
 
 	async function saveChanges(show: boolean = true) {
+		loadingDialog['showModal']();
 		let changedEndingPoints = [];
 		for (let endingPoint of endingPoints) {
 			if (
@@ -47,12 +48,15 @@
 		}
 		if (changedEndingPoints.length > 0 && show) {
 			await changeMarker(changedEndingPoints);
-			dialog['showModal']();
+			loadingDialog.close();
+			savingDialog['showModal']();
 		}
 	}
-	let dialog: any;
+	let savingDialog: any;
+	let loadingDialog: any;
 	onMount(() => {
-		dialog = document.getElementById('deletion-dialog');
+		savingDialog = document.getElementById('printing-dialog');
+		loadingDialog = document.getElementById('loading-dialog');
 	});
 
 	function cancelChanges() {
@@ -60,7 +64,6 @@
 	}
 
 	function addQRToPrint(id: string, name: string, floor: string, changeQR: boolean) {
-		console.log(changeQR);
 		if (!changeQR) {
 			localPrintMarkersList.push([id, name, floor]);
 		}
@@ -83,7 +86,7 @@
 	}
 
 	//Table design functions and variables
-	let lastFloor: number = 0;
+	/*let lastFloor: number = 0;
 	function checkForFloorChange(markerFloor: number) {
 		if (markerFloor === lastFloor) {
 			return '';
@@ -91,47 +94,68 @@
 			lastFloor = markerFloor;
 			return 'changed_floors';
 		}
-	}
+	}*/
 </script>
 
-<SecureAnchor page={''} text={'Zpět'} /> <br />
+<dialog id="loading-dialog" class="modal">
+	<div class="modal-box flex justify-center">
+		<span class="loading loading-dots loading-lg text-info" />
+	</div>
+</dialog>
 
-<dialog id="deletion-dialog">
-	<h1>Značky úspěšně upraveny</h1>
-	<button
-		on:click={() => {
-			dialog.close();
-			goto(`${base}/sec`, { replaceState: true });
-		}}>Ok</button
-	>
+<dialog id="printing-dialog" class="modal">
+	<div class="modal-box">
+		<p class="font-bold text-lg text-success">Hotovo!</p>
+		<p class="text-lg py-4">Značky úspěšně upraveny.</p>
+		<button
+			on:click={() => {
+				savingDialog.close();
+				goto(`${base}/sec`, { replaceState: true });
+			}}
+			class="modal-action btn btn-info">Ok</button
+		>
+	</div>
 </dialog>
 <!-- TODO přidat ukázku všech dostupných ikon-->
-<!-- TODO Víc graficky rozlišit patra a vylepšit grafiku tabulky-->
-<button on:click={printQRs}>Tisk QR kódů</button>
-<table>
+
+<div class="px-5 space-y-5">
+	<SecureAnchor page={''} text={'Zpět'} /> <br />
+	<button on:click={printQRs} class="btn btn-secondary">Tisk QR kódů</button>
+	<div class="divider" />
+</div>
+<table class="table table-pin-rows">
 	<thead>
-		<tr>
+		<tr class="text-lg">
 			<th>Patro</th>
 			<th>Název značky</th>
 			<th>Ikona</th>
 			<th>Navigovatelný</th>
-			<th>Nový QR kód <br /> <button on:click={printAllQRs}>Vytisknout všechny QR kódy</button></th>
+			<th
+				>Nový QR kód <br />
+				<button on:click={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button
+				></th
+			>
 		</tr>
 	</thead>
 	<tbody>
 		{#each endingPoints as endPoint}
-			<tr class={checkForFloorChange(endPoint.floor)}>
-				<td>{endPoint.floor}</td>
+			<!--<tr class={checkForFloorChange(endPoint.floor) + 'hover'}>-->
+			<tr class="hover">
+				<td class="text-xl text-primary">{endPoint.floor}</td>
 				<td
 					><input
 						type="text"
 						maxlength="50"
 						bind:value={endPoint.new_display_name}
-						class="dark:bg-stone-400"
+						class="input input-bordered"
 					/></td
 				>
 				<td>
-					<select id="icon" bind:value={endPoint.new_icon} class="dark:bg-stone-400">
+					<select
+						id="icon"
+						bind:value={endPoint.new_icon}
+						class="select select-bordered w-full max-w-xs"
+					>
 						{#each iconList as icon}
 							{#if endPoint.icon === icon['name']}
 								<option value={icon['name']} selected>{icon.displayname}</option>
@@ -142,7 +166,11 @@
 					</select>
 				</td>
 				<td>
-					<input type="checkbox" bind:checked={endPoint.new_can_nav} />
+					<input
+						type="checkbox"
+						bind:checked={endPoint.new_can_nav}
+						class="checkbox checkbox-success"
+					/>
 				</td>
 				<td>
 					<input
@@ -155,6 +183,7 @@
 								endPoint.genQR
 							)}
 						bind:checked={endPoint.genQR}
+						class="checkbox checkbox-secondary"
 					/>
 				</td>
 			</tr>
@@ -162,20 +191,11 @@
 	</tbody>
 	<tfoot>
 		<tr>
-			<td colspan="2"><button on:click={() => saveChanges(true)}>Uložit změny</button> </td><td
-				colspan="2"
-				><button on:click={cancelChanges}>Zrušit změny</button>
+			<td colspan="2"
+				><button on:click={() => saveChanges(true)} class="btn btn-success">Uložit změny</button>
+			</td><td colspan="2"
+				><button on:click={cancelChanges} class="btn btn-error">Zrušit změny</button>
 			</td></tr
 		>
 	</tfoot>
 </table>
-
-<style>
-	/* Table design */
-	table {
-		border-collapse: collapse;
-	}
-	.changed_floors {
-		border-top: 1pt solid black;
-	}
-</style>

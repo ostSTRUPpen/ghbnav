@@ -14,7 +14,7 @@
 	import { goto } from '$app/navigation';
 	import { dijkstra } from '$lib/functions/findPath.js';
 	import { foundPath } from '$lib/data/store.js';
-	import { savePath } from '$lib/functions/pathSavingFunctions.js';
+	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
 	import { base } from '$app/paths';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	export let data;
@@ -339,14 +339,14 @@
 <svelte:window on:resize={resizeMap} />
 
 <main>
-	<div class="space-y-5 flex h-screen flex-col">
+	<div class="space-y-5">
 		<div class="max-lg:flex max-lg:justify-center lg:px-5">
 			<PathSelection locations={markers} navFrom={from} navTo={to} showClearNavButton={true} />
 		</div>
 		{#if error}
 			<p class="error_msg">{errMsg}</p>
 		{:else}
-			<div id="map" class="flex-1" bind:this={map} />
+			<div id="map" class="max-sm:h-96 sm:h-[30rem]" bind:this={map} />
 		{/if}
 	</div>
 </main>

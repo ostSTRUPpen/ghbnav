@@ -1,9 +1,9 @@
 <script lang="ts">
-	//TODO test zda jsou oba údaje vyplněnné
+	//TODO test zda jsou oba údaje vyplněné
 </script>
 
-<div class="flex justify-center space-y-14">
-	<form method="POST" action="?/login">
+<div class="flex justify-center">
+	<form method="POST" action="?/login" class="space-y-2">
 		<h2 class="text-2xl">Přihlášení do rozhraní správce</h2>
 		<label for="from" class="label">
 			<span class="label-text text-lg">E-mail: </span>

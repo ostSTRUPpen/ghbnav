@@ -1,5 +1,5 @@
-import { supabase } from '$lib/supabaseClient';
-import type { RequestEvent } from '@sveltejs/kit';
+import { supabase as unAuthenticatedSupabase } from '$lib/supabaseClient.js';
+import { redirect, type RequestEvent } from '@sveltejs/kit';
 
 export async function POST(requestEvent: RequestEvent): Promise<Response> {
 	const { request } = requestEvent;
@@ -11,7 +11,7 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 		let UpdateCountRowID = '';
 		let UpdateCountCountValue = 0;
 		if (startNode && endNode && path.length > 1) {
-			const { data: stored_paths } = await supabase
+			const { data: stored_paths } = await unAuthenticatedSupabase
 				.from('stored_paths')
 				.select('id, starting_and_ending_point, count');
 			if (stored_paths !== null) {
@@ -25,7 +25,7 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 				}
 			}
 			if (canSave && !canUpdateCount) {
-				const { error } = await supabase
+				const { error } = await unAuthenticatedSupabase
 					.from('stored_paths')
 					.insert([
 						{
@@ -47,7 +47,7 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 			} else if (!canSave && canUpdateCount) {
 				console.log('here');
 				UpdateCountCountValue++;
-				const { error } = await supabase
+				const { error } = await unAuthenticatedSupabase
 					.from('stored_paths')
 					.update({ count: UpdateCountCountValue })
 					.eq('id', UpdateCountRowID);
@@ -76,6 +76,42 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 		const errMessage = error.message
 			? error.message
 			: 'An error has occurred while modifying stored paths';
+		return new Response(JSON.stringify({ message: errMessage }), {
+			status: 400
+		});
+	}
+}
+export async function DELETE({ request, locals: { supabase, getSession } }): Promise<Response> {
+	const session = await getSession();
+	if (!session) {
+		throw redirect(303, '/');
+	}
+	const { id } = await request.json();
+	console.log('h');
+	try {
+		const { error } = await supabase.from('stored_paths').delete().eq('id', id);
+
+		if (error) {
+			console.log(error);
+			return new Response(JSON.stringify({ message: error.message }), {
+				status: Number(error.code)
+			});
+		} else {
+			return new Response(
+				JSON.stringify({
+					message: `Path deleted successfully`,
+					success: true
+				}),
+				{ status: 201 }
+			);
+		}
+
+		// FIXME
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	} catch (error: any) {
+		const errMessage = error.message
+			? error.message
+			: 'An error has occurred while deleting stored path';
 		return new Response(JSON.stringify({ message: errMessage }), {
 			status: 400
 		});

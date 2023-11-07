@@ -53,7 +53,7 @@
 	}
 </script>
 
-<div>
+<div class="space-y-2">
 	<h2 class="text-xl">Navigace</h2>
 	<label for="from" class="label">
 		<span class="label-text">Odkud: </span>

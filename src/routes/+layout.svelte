@@ -22,7 +22,12 @@
 	});
 </script>
 
-<header class="noPrintPdf pb-10">
+<header class="print:hidden pb-10">
+	<!--<div
+		class="max-sm:bg-red-300 sm:bg-green-300 md:bg-blue-300 lg:bg-black xl:bg-orange-500 2xl:bg-yellow-300"
+	>
+		Size test
+	</div>-->
 	<nav class="navbar bg-base-100">
 		<div class="flex-1">
 			<a
@@ -87,11 +92,3 @@
 <main>
 	<slot class="print:bg-white" />
 </main>
-
-<style>
-	@media print {
-		.noPrintPdf {
-			display: none !important;
-		}
-	}
-</style>

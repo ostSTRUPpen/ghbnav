@@ -11,4 +11,4 @@
 </script>
 
 <!-- svelte-ignore a11y-invalid-attribute -->
-<a class="anchor" href="#" on:click={anchor}>{text}</a>
+<a class="link-secondary link text-xl" href="#" on:click={anchor}>{text}</a>

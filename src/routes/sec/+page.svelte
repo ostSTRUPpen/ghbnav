@@ -3,9 +3,12 @@
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 </script>
 
-<SecureAnchor page={`${base}/markers`} text={'Značky'} />
-
-<SecureAnchor page={`${base}/paths`} text={'Cesty'} />
+<div class="px-5">
+	<SecureAnchor page={`${base}/markers`} text={'Značky'} />
+	<br />
+	<br />
+	<SecureAnchor page={`${base}/paths`} text={'Cesty'} />
+</div>
 <!--TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
 	Vítejte
 	...

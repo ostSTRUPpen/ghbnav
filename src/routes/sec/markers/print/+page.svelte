@@ -30,18 +30,11 @@
 		}}>Ok</button
 	>
 </dialog>
-
-<button class="noPrintPdf" on:click={startPrint}>Tisk</button>
+<div class="px-5">
+	<button class="print:hidden btn btn-info" on:click={startPrint}>Tisk</button>
+</div>
 <div id="printElement">
 	{#each data as markerInfo}
 		<QrCodeMaker id={markerInfo[0]} name={markerInfo[1]} floor={markerInfo[2]} />
 	{/each}
 </div>
-
-<style>
-	@media print {
-		.noPrintPdf {
-			display: none;
-		}
-	}
-</style>
