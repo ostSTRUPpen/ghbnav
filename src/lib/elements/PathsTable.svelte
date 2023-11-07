@@ -13,8 +13,8 @@
 
 <div class="overflow-x-auto">
 	<h2 class="text-xl">{tableName}</h2>
-	<table class="table table-md">
-		<tr class="text-xl">
+	<table class="table table-sm md:table-md">
+		<tr class="text-md md:text-xl">
 			<!--TODO přidat možnost vymazat tabulku cest do admin panelu-->
 			<!-- TODO přidat ještě přednastavené cesty-->
 			<th>Začátek cesty</th>
@@ -24,7 +24,7 @@
 			{/if}
 		</tr>
 		{#each stored_paths as path}
-			<tr class="hover text-xl">
+			<tr class="hover text-md md:text-xl">
 				<td>{path.start_name}</td>
 				<td>{path.end_name}</td>
 				{#if showCount}

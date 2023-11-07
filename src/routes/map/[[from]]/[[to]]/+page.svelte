@@ -340,7 +340,7 @@
 
 <main>
 	<div class="space-y-5 flex h-screen flex-col">
-		<div class="px-5">
+		<div class="max-lg:flex max-lg:justify-center lg:px-5">
 			<PathSelection locations={markers} navFrom={from} navTo={to} showClearNavButton={true} />
 		</div>
 		{#if error}

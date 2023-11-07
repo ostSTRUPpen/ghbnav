@@ -3,7 +3,7 @@
 	import { onMount } from 'svelte';
 	import type { LayoutData } from './$types';
 	import { base } from '$app/paths';
-	import '../app.css';
+	import '../app.postcss';
 
 	export let data: LayoutData;
 
@@ -26,7 +26,7 @@
 	<nav class="navbar bg-base-100">
 		<div class="flex-1">
 			<a
-				class="btn text-primary btn-ghost no-animation hover:bg-base-100 normal-case text-5xl"
+				class="btn text-primary btn-ghost no-animation hover:bg-base-100 normal-case text-4xl sm:text-5xl"
 				href="{base}/"
 				target="_self"
 				rel="prev"
@@ -38,7 +38,7 @@
 			<ul class="menu menu-horizontal space-x-1">
 				<li>
 					<a
-						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
+						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-md sm:text-xl"
 						href="{base}/map"
 						target="_self"
 						rel="next"
@@ -49,7 +49,7 @@
 				{#if session}
 					<li>
 						<a
-							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
+							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-md sm:text-xl"
 							href="{base}/sec"
 							target="_self"
 							rel="nofollow"
@@ -59,7 +59,7 @@
 					</li>
 					<li>
 						<form
-							class="btn-ghost hover:text-primary hover:bg-base-100 text-xl"
+							class="btn-ghost hover:text-primary hover:bg-base-100 text-md sm:text-xl"
 							method="POST"
 							action="/auth?/logout"
 						>
@@ -69,7 +69,7 @@
 				{:else}
 					<li>
 						<a
-							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-xl"
+							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-md sm:text-xl"
 							href="{base}/auth"
 							target="_self"
 							rel="nofollow"

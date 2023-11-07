@@ -21,15 +21,28 @@
 	$: ({ locations, stored_paths } = data);
 </script>
 
-<main class="space-y-14">
+<!--<main class="space-y-14">->
 	<div class="w-screen flex justify-center">
 		<PathSelection {locations} />
 	</div>
-	<!-- TODO přidat přednastavené cesty-->
+	<-- TODO přidat přednastavené cesty->
 	<div class="w-screen flex justify-center">
 		<PathsTable {stored_paths} tableName={'Přednastavené cesty'} showCount={false} />
 	</div>
 	<div class="w-screen flex justify-center">
+		<PathsTable {stored_paths} tableName={'Časté cesty'} />
+	</div>
+</main>
+-->
+<main class="max-lg:space-y-14 lg:grid md:max-2xl:grid-cols-2 2xl:grid-cols-3 2xl:gap-4">
+	<div class="flex justify-center max-2xl:col-span-2">
+		<PathSelection {locations} />
+	</div>
+	<!-- TODO přidat přednastavené cesty-->
+	<div class="flex justify-center">
+		<PathsTable {stored_paths} tableName={'Přednastavené cesty'} showCount={false} />
+	</div>
+	<div class="flex justify-center">
 		<PathsTable {stored_paths} tableName={'Časté cesty'} />
 	</div>
 </main>
