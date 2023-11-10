@@ -220,7 +220,6 @@
 
 			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
 			// TODO zjistit co jsou X (1. PP a 1. NP)
-			console.log(fromMarkerFloor);
 			let markerList: any = [];
 			let pathList: any = [];
 			let canDrawPath: boolean = false;
@@ -233,7 +232,11 @@
 
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 0));
-			let zeroFloor = L.layerGroup([zeroFloorImg, ...markerList, L.polyline(pathList)]);
+			let zeroFloor = L.layerGroup([
+				zeroFloorImg,
+				...markerList,
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
+			]);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
 			if (canDrawPath === true)
@@ -242,7 +245,7 @@
 				// Map image
 				firstFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
 			]);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
@@ -252,7 +255,7 @@
 				// Map image
 				secondFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
 			]);
 
 			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
@@ -262,7 +265,7 @@
 				// Map image
 				thirdFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
 			]);
 
 			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
@@ -272,7 +275,7 @@
 				// Map image
 				fourthFloorImg,
 				...markerList,
-				L.polyline(pathList)
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
 			]);
 			markerList = [];
 			pathList = [];

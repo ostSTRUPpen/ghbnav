@@ -1,4 +1,4 @@
-//FIXME
+//FIXME ts
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 const findLowestWeightNode = (weights: object, processed: Array<string>) => {
@@ -20,7 +20,7 @@ const findLowestWeightNode = (weights: object, processed: Array<string>) => {
 
 	return lowestWeightNode;
 };
-//FIXME
+//FIXME ts
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function procesData(data: any, startNode: string, endNode: string) {
 	const graph: App.GraphTypes['graphObject'] = {};
@@ -57,7 +57,7 @@ export const dijkstra = (
 	// track paths
 	const parents = { endNode: null };
 	for (const child in graph[startNode as keyof typeof graph]) {
-		//FIXME
+		//FIXME ts
 		//@ts-ignore
 		parents[child] = startNode;
 	}
@@ -66,7 +66,6 @@ export const dijkstra = (
 	const processed: Array<string> = [];
 	//Next, we’ll set the initial value of the node being processed //using the lowestCostNode function. Then, we’ll begin a while loop, //which will continuously look for the cheapest node.
 	let node = findLowestWeightNode(weights, processed);
-	//console.log(node);
 
 	while (node) {
 		//Get the weight of the current node
@@ -75,15 +74,13 @@ export const dijkstra = (
 		const children: object = graph[node as keyof typeof graph];
 		//Loop through each of the children, and calculate the weight to reach that child node. We'll update the weight of that node in the weights object if it is lowest or the ONLY weight available
 		for (const n in children) {
-			//console.log(n);
 			if (n === startNode) {
 				continue;
 			}
 			const newWeight = weight + children[n as keyof typeof children];
-			//console.log(newWeight);
 			if (!weights[n] || weights[n] > newWeight) {
 				weights[n] = newWeight;
-				//FIXME
+				//FIXME ts
 				//@ts-ignore
 				parents[n] = node;
 			}

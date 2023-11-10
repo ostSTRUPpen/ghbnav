@@ -31,10 +31,10 @@
 	</thead>
 	<tbody>
 		<tr>
-			<th class="qrcode_td"><div id={`qr${id}`} /></th>
+			<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
 		</tr>
-		<tr><td class="link_text">{`${base}/map/${id}`}</td></tr>
-		<tr><td class="link_text">{base}</td></tr>
+		<tr><td class="link_text">{`${url_string}/map/${id}`}</td></tr>
+		<tr><td class="link_text">{url_string}</td></tr>
 	</tbody>
 </table>
 

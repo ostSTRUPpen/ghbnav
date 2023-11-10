@@ -6,13 +6,13 @@ export async function load() {
 		.select('id, x, y, display_name, floor, icon, can_nav')
 		.order('icon', { ascending: true })
 		.order('floor', { ascending: true });
-	if (error) console.log(error);
+	if (error) console.error(error);
 	const { data: nav_markers, error: navError } = await supabase
 		.from('nav_markers')
 		.select('id, x, y, floor, connected, special_type')
 		.order('floor', { ascending: true })
 		.order('id', { ascending: true });
-	if (navError) console.log(navError);
+	if (navError) console.error(navError);
 
 	return {
 		markers: markers ?? [],

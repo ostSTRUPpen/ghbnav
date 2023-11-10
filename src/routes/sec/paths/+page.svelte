@@ -1,35 +1,162 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { base } from '$app/paths';
+	import { iconImageDisplayNames } from '$lib/data/markerIcons.js';
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
-	import { deletePath } from '$lib/functions/dynamicPathManagementFunctions.js';
+	import {
+		deletePath,
+		updatePathVisibility
+	} from '$lib/functions/dynamicPathManagementFunctions.js';
+	import { updatePath } from '$lib/functions/presetPathManagementFunctions.js';
+	import { onMount } from 'svelte';
 
 	export let data;
-	let { locations, stored_paths } = data;
-	$: ({ locations, stored_paths } = data);
+	let { locations, stored_paths, preset_paths } = data;
+	$: ({ locations, stored_paths, preset_paths } = data);
+
+	let savingDialog: any;
+	let loadingDialog: any;
+	onMount(() => {
+		savingDialog = document.getElementById('printing-dialog');
+		loadingDialog = document.getElementById('loading-dialog');
+	});
+
+	function cancelChanges() {
+		goto(`${base}/sec`, { replaceState: true });
+	}
+
+	let preparedLocations: Array<any> = [];
+	$: {
+		let lastLocation: string = '';
+		for (let location of locations) {
+			if (location.icon !== lastLocation) {
+				lastLocation = location.icon;
+				preparedLocations.push({
+					id: 0,
+					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
+					can_nav: true,
+					disabled: true
+				});
+			}
+			preparedLocations.push({
+				id: location.id,
+				name: `${location.display_name} (Patro: ${location.floor})`,
+				can_nav: location.can_nav,
+				disabled: false
+			});
+		}
+	}
+	async function savePresetPathsChanges() {
+		loadingDialog['showModal']();
+		for (let preset_path of preset_paths) {
+			await updatePath(
+				preset_path.id,
+				preset_path.start_node,
+				preset_path.end_node,
+				preset_path.hidden
+			);
+		}
+		loadingDialog.close();
+		savingDialog['showModal']();
+	}
 </script>
 
-<!--
-	TODO
-	přidat modal pro načítání a reload stránky po smazání údajů
-	Přidat tabulku a formulář pro vytvoření nové předdefinované cesty
--->
+<dialog id="loading-dialog" class="modal">
+	<div class="modal-box flex justify-center">
+		<span class="loading loading-dots loading-lg text-info" />
+	</div>
+</dialog>
+
+<dialog id="printing-dialog" class="modal">
+	<div class="modal-box">
+		<p class="font-bold text-lg text-success">Hotovo!</p>
+		<p class="text-lg py-4">Cesty úspěšně upraveny.</p>
+		<button
+			on:click={() => {
+				savingDialog.close();
+				goto(`${base}/sec`, { replaceState: true });
+			}}
+			class="modal-action btn btn-info">Ok</button
+		>
+	</div>
+</dialog>
 
 <div class="space-y-5">
 	<div class="px-5">
 		<SecureAnchor page={''} text={'Zpět'} /> <br />
 	</div>
 	<div class="divider" />
-
-	<div class="divider" />
 	<div class="overflow-x-auto px-5">
-		<h2 class="text-xl">Uložené často používané cesty</h2>
+		<h2 class="text-xl">Přednastavené cesty</h2>
 		<table class="table table-sm md:table-md">
 			<thead>
 				<tr class="text-md md:text-xl">
-					<!--TODO přidat možnost vymazat tabulku cest do admin panelu-->
-					<!-- TODO přidat ještě přednastavené cesty-->
+					<th>Začátek cesty</th>
+					<th>Konec cesty</th>
+					<th>Pozice v seznamu</th>
+					<th>Skrýt</th>
+				</tr>
+			</thead>
+			<tbody>
+				{#each preset_paths as path}
+					<tr class="hover text-md md:text-xl">
+						<td>
+							<select bind:value={path.start_node} class="select select-bordered w-full max-w-xs">
+								{#each preparedLocations as location}
+									{#if location.can_nav !== false}
+										<option disabled={location.disabled} value={location.id}>{location.name}</option
+										>
+									{/if}
+								{/each}
+							</select>
+						</td>
+						<td>
+							<select bind:value={path.end_node} class="select select-bordered w-full max-w-xs">
+								{#each preparedLocations as location}
+									{#if location.can_nav !== false}
+										<option disabled={location.disabled} value={location.id}>{location.name}</option
+										>
+									{/if}
+								{/each}
+							</select>
+						</td>
+						<td>
+							<p class="text-md">{path.position}</p>
+						</td>
+						<td
+							><input
+								type="checkbox"
+								class="checkbox checked:checkbox-error"
+								bind:checked={path.hidden}
+							/></td
+						>
+					</tr>
+				{/each}
+			</tbody>
+			<tfoot>
+				<tr>
+					<td colspan="2"
+						><button on:click={() => savePresetPathsChanges()} class="btn btn-success"
+							>Uložit změny</button
+						>
+					</td><td colspan="2"
+						><button on:click={cancelChanges} class="btn btn-error">Zrušit změny</button>
+					</td></tr
+				>
+			</tfoot>
+		</table>
+	</div>
+
+	<div class="divider">Uložené často používané cesty</div>
+	<div class="overflow-x-auto px-5">
+		<h2 class="text-3xl">Uložené často používané cesty</h2>
+		<table class="table table-sm md:table-md">
+			<thead>
+				<tr class="text-md md:text-xl">
 					<th>Začátek cesty</th>
 					<th>Konec cesty</th>
 					<th>Použití</th>
+					<th>Skrýt</th>
 					<th>Správa</th>
 				</tr>
 			</thead>
@@ -40,6 +167,14 @@
 						<td>{path.end_name}</td>
 						<td>{path.count}</td>
 						<td
+							><input
+								type="checkbox"
+								class="checkbox checked:checkbox-error"
+								bind:checked={path.hidden}
+								on:click={() => updatePathVisibility(path.id, !path.hidden)}
+							/></td
+						>
+						<td
 							><button class="btn btn-error" on:click={() => deletePath(path.id)}>Vymazat</button
 							></td
 						>
@@ -49,6 +184,3 @@
 		</table>
 	</div>
 </div>
-<!-- TODO přidat tlačítko na vymazaní tabulky použitých cest-->
-
-<!-- TODO umožnit vytváření nových preset cest-->

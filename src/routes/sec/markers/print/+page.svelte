@@ -3,6 +3,7 @@
 	import { base } from '$app/paths';
 	import { printMarkersList } from '$lib/data/store';
 	import QrCodeMaker from '$lib/elements/QRCodeMaker.svelte';
+	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import { onMount } from 'svelte';
 
 	let data: Array<Array<string>> | Array<string> = [];
@@ -17,7 +18,10 @@
 	});
 
 	function startPrint() {
+		const theme = document.querySelector('html')?.getAttribute('data-theme');
+		document.querySelector('html')?.setAttribute('data-theme', 'ghb_light');
 		window.print();
+		if (typeof theme == 'string') document.querySelector('html')?.setAttribute('data-theme', theme);
 	}
 </script>
 
@@ -30,10 +34,12 @@
 		}}>Ok</button
 	>
 </dialog>
-<div class="px-5">
-	<button class="print:hidden btn btn-info" on:click={startPrint}>Tisk</button>
+<div class="px-5 print:hidden">
+	<button class="btn btn-info" on:click={startPrint}>Tisk</button>
+	<br />
+	<SecureAnchor page={'/markers'} text={'Zpět'} /> <br />
 </div>
-<div id="printElement">
+<div>
 	{#each data as markerInfo}
 		<QrCodeMaker id={markerInfo[0]} name={markerInfo[1]} floor={markerInfo[2]} />
 	{/each}

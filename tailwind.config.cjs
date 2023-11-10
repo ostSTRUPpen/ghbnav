@@ -4,7 +4,6 @@ module.exports = {
 	plugins: [require('daisyui')],
 	daisyui: {
 		themes: [
-			// TODO přidat dark mode
 			{
 				ghb_light: {
 					primary: '#fd8549',
@@ -24,6 +23,26 @@ module.exports = {
 					warning: '#dbad14',
 
 					error: '#e14c7e'
+				},
+				//TODO hezký dark mode?
+				ghb_dark: {
+					primary: '#fd8549',
+
+					secondary: '#f6fdfe',
+
+					accent: '#22d3ee',
+
+					neutral: '#312235',
+
+					'base-100': '#2f3c4c',
+
+					info: '#0284c7',
+
+					success: '#65a30d',
+
+					warning: '#d97706',
+
+					error: '#be123c'
 				}
 			}
 		]

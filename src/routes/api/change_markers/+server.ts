@@ -30,7 +30,7 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 			}),
 			{ status: 201 }
 		);
-		// FIXME
+		// FIXME ts
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		const errMessage = error.message

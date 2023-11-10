@@ -3,25 +3,45 @@ import { supabase } from '$lib/supabaseClient';
 export async function load() {
 	const { data: markers, error: markers_error } = await supabase
 		.from('markers')
-		.select('id, display_name, floor, can_nav, icon')
+		.select('id, display_name, can_nav, icon, floor')
 		.order('icon', { ascending: true })
 		.order('floor', { ascending: true });
-	if (markers_error) console.log(markers_error);
-	const { data: stored_paths, error: path_error } = await supabase
+
+	if (markers_error) console.error(markers_error);
+	const { data: stored_paths, error: dynamic_paths_error } = await supabase
 		.from('stored_paths')
-		.select('id, start_node, end_node, count')
-		.order('count', { ascending: false })
+		.select('id, start_node, end_node, count, hidden')
+		.order('count', { ascending: false });
+	if (dynamic_paths_error) console.error(dynamic_paths_error);
+
+	const { data: preset_paths, error: preset_path_error } = await supabase
+		.from('preset_paths')
+		.select('id, start_node, end_node, position, hidden')
+		.order('position', { ascending: true })
 		.limit(5);
-	if (path_error) console.log(path_error);
+	if (preset_path_error) console.error(preset_path_error);
 
 	const stored_paths_with_names = [];
-
 	for (const path of stored_paths ?? []) {
 		stored_paths_with_names.push({
 			id: path.id,
 			start_node: path.start_node,
 			end_node: path.end_node,
 			count: path.count,
+			hidden: path.hidden,
+			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
+			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
+		});
+	}
+
+	const preset_paths_with_names = [];
+	for (const path of preset_paths ?? []) {
+		preset_paths_with_names.push({
+			id: path.id,
+			start_node: path.start_node,
+			end_node: path.end_node,
+			position: path.position,
+			hidden: path.hidden,
 			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
 			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
 		});
@@ -29,6 +49,7 @@ export async function load() {
 
 	return {
 		locations: markers ?? [],
-		stored_paths: stored_paths_with_names ?? []
+		stored_paths: stored_paths_with_names ?? [],
+		preset_paths: preset_paths_with_names ?? []
 	};
 }

@@ -116,11 +116,25 @@
 		>
 	</div>
 </dialog>
-<!-- TODO přidat ukázku všech dostupných ikon-->
 
 <div class="px-5 space-y-5">
+	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+	<div tabindex="0" class="collapse collapse-arrow border border-secondary bg-base-100">
+		<div class="collapse-title text-xl font-medium text-primary">Ikony</div>
+		<div class="collapse-content bg-accent">
+			{#each iconList as icon}
+				<div class="float-left px-5">
+					<label for="img_icon" class="label">
+						<span class="label-text text-secondary text-lg">{icon.displayname}</span>
+					</label>
+					<img id="img_icon" src={icon.image} alt={icon.displayname} class="flex justify-center" />
+				</div>
+			{/each}
+		</div>
+	</div>
 	<SecureAnchor page={''} text={'Zpět'} /> <br />
 	<button on:click={printQRs} class="btn btn-secondary">Tisk QR kódů</button>
+	<button on:click={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button>
 	<div class="divider" />
 </div>
 <table class="table table-pin-rows">
@@ -130,11 +144,7 @@
 			<th>Název značky</th>
 			<th>Ikona</th>
 			<th>Navigovatelný</th>
-			<th
-				>Nový QR kód <br />
-				<button on:click={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button
-				></th
-			>
+			<th>Nový QR kód <br /> </th>
 		</tr>
 	</thead>
 	<tbody>

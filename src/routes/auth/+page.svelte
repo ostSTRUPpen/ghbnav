@@ -1,7 +1,3 @@
-<script lang="ts">
-	//TODO test zda jsou oba údaje vyplněné
-</script>
-
 <div class="flex justify-center">
 	<form method="POST" action="?/login" class="space-y-2">
 		<h2 class="text-2xl">Přihlášení do rozhraní správce</h2>

@@ -41,15 +41,8 @@
 
 <div>
 	<!---->
-	<p class="marker-paragraph">{text + ' (' + id + ')'}</p>
+	<p class="text-lg text-center">{text}</p>
 	{#if canNav}
-		<button class="navigate-button" on:click={navTo}>{buttonText}</button>
+		<button class="btn btn-secondary" on:click={navTo}>{buttonText}</button>
 	{/if}
 </div>
-
-<style>
-	button {
-		text-decoration: underline;
-		color: blue;
-	}
-</style>
