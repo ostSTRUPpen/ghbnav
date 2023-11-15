@@ -1,11 +1,14 @@
 import { supabase } from '$lib/supabaseClient';
 
 export async function load() {
-	const { data } = await supabase
+	const { data, error } = await supabase
 		.from('markers')
-		.select('id, display_name, floor, icon, can_nav')
+		.select('id, display_name, floor, icon, can_nav, icons(position)')
+		.order('icons (position)', { ascending: true })
 		.order('floor', { ascending: true })
-		.order('icon', { ascending: true });
+		.order('display_name', { ascending: true });
+	if (error) console.error(error);
+
 	const { data: icons, error: iconError } = await supabase
 		.from('icons')
 		.select('id, image, display_name')

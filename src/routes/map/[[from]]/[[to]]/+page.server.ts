@@ -3,9 +3,10 @@ import { supabase } from '$lib/supabaseClient';
 export async function load() {
 	const { data: markers, error } = await supabase
 		.from('markers')
-		.select('id, x, y, display_name, floor, icon, can_nav')
-		.order('icon', { ascending: true })
-		.order('floor', { ascending: true });
+		.select('id, x, y, display_name, floor, icon, can_nav, icons(position)')
+		.order('icons (position)', { ascending: true })
+		.order('floor', { ascending: true })
+		.order('display_name', { ascending: true });
 	if (error) console.error(error);
 	const { data: nav_markers, error: navError } = await supabase
 		.from('nav_markers')
