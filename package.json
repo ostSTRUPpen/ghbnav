@@ -42,7 +42,6 @@
 		"@types/geojson": "^7946.0.10",
 		"@types/leaflet": "^1.9.3",
 		"leaflet": "^1.9.4",
-		"supabase": "^1.74.2",
-		"theme-change": "^2.5.0"
+		"supabase": "^1.74.2"
 	}
 }

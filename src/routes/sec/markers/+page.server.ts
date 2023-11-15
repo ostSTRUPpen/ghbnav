@@ -6,8 +6,76 @@ export async function load() {
 		.select('id, display_name, floor, icon, can_nav')
 		.order('floor', { ascending: true })
 		.order('icon', { ascending: true });
-
+	const { data: icons, error: iconError } = await supabase
+		.from('icons')
+		.select('id, image, display_name')
+		.order('position', { ascending: true });
+	if (iconError) console.error(iconError);
+	const iconList = [];
+	for (const icon of icons ?? []) {
+		iconList.push({
+			name: icon.id,
+			image: icon.image as string,
+			displayname: icon.display_name
+		});
+	}
 	return {
-		markers: data ?? []
+		markers: data ?? [],
+		iconList: iconList ?? []
 	};
 }
+/*
+export const iconList = [
+	// NEW
+	{
+		name: 'administrace',
+		image: administrace,
+		displayname: 'Administrace'
+	},
+	{
+		name: 'jazykove_ucebny',
+		image: jazykove_ucebny,
+		displayname: 'Jazykové učebny'
+	},
+	{
+		name: 'kabinety',
+		image: kabinety,
+		displayname: 'Kabinety'
+	},
+	{
+		name: 'kmenove_ucebny',
+		image: kmenove_ucebny,
+		displayname: 'Kmenové učebny'
+	},
+	{
+		name: 'ostatni',
+		image: ostatni,
+		displayname: 'Ostatní'
+	},
+	{
+		name: 'prostory',
+		image: prostory,
+		displayname: 'Prostory'
+	},
+	{
+		name: 'sluzby',
+		image: sluzby,
+		displayname: 'Služby'
+	},
+	{
+		name: 'specializovane_ucebny',
+		image: specializovane_ucebny,
+		displayname: 'Specializované učebny'
+	},
+	{
+		name: 'telovychova',
+		image: telovychova,
+		displayname: 'Tělovýchova'
+	},
+	{
+		name: 'zachody',
+		image: zachody,
+		displayname: 'Záchody'
+	}
+];
+*/

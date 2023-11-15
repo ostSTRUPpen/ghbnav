@@ -4,14 +4,14 @@
 	import type { LayoutData } from './$types';
 	import { base } from '$app/paths';
 	import '../app.postcss';
-	import { themeChange } from 'theme-change';
 
 	export let data: LayoutData;
+
+	let darkMode: boolean;
 
 	$: ({ supabase, session } = data);
 
 	onMount(() => {
-		themeChange(false);
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((event, _session) => {
@@ -20,8 +20,37 @@
 			}
 		});
 
+		if (typeof window !== 'undefined') {
+			//https://www.scottspence.com/posts/cookie-based-theme-selection-in-sveltekit-with-daisyui
+			const theme = window.localStorage.getItem('theme');
+			if (theme) {
+				document.documentElement.setAttribute('data-theme', theme);
+				//condition ? true_expression : false_expression
+				theme === 'ghb_dark' ? (darkMode = true) : (darkMode = false);
+			}
+		}
+
 		return () => subscription.unsubscribe();
 	});
+
+	function set_theme(event: Event) {
+		//https://www.scottspence.com/posts/cookie-based-theme-selection-in-sveltekit-with-daisyui
+		const checkbox = event.target as HTMLInputElement;
+		const checked = checkbox.checked;
+		let theme;
+
+		if (checked) {
+			theme = 'ghb_dark';
+		} else {
+			theme = 'ghb_light';
+		}
+		const one_year = 60 * 60 * 24 * 365;
+		window.localStorage.setItem('theme', theme);
+		document.cookie = `theme=${theme}; max-age=${one_year}; path=/; SameSite=Strict;`;
+		document.documentElement.setAttribute('data-theme', theme);
+		//condition ? true_expression : false_expression
+		theme === 'ghb_dark' ? (darkMode = true) : (darkMode = false);
+	}
 </script>
 
 <header class="print:hidden pb-10">
@@ -88,11 +117,7 @@
 				<li>
 					<label class="swap swap-rotate">
 						<!-- this hidden checkbox controls the state -->
-						<input
-							type="checkbox"
-							data-toggle-theme="ghb_dark,ghb_light"
-							data-act-class="ACTIVECLASS"
-						/>
+						<input type="checkbox" on:change={set_theme} bind:checked={darkMode} />
 
 						<!-- sun icon -->
 						<svg

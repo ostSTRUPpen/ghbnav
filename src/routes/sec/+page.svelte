@@ -13,3 +13,9 @@
 	Vítejte
 	...
 -->
+<!--TODO 
+	Přidat tabulku ikon (id, display_name, image_id, position), která umožní úpravu pořadí skupin v seznamu a umožní skupiny přejmenovat. 
+	Upravit tabulku markeru, aby se vázala na ikony.
+	Upravit zobrazování a načítání ikon a markerů v seznamech, aby odpovídalo údajům z tabulky 
+	Přidat další skupiny a (ikony)
+-->

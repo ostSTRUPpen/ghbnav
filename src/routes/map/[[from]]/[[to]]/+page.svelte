@@ -19,8 +19,8 @@
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	export let data;
 
-	let { markers, nav_markers } = data;
-	$: ({ markers, nav_markers } = data);
+	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = data;
+	$: ({ markers, nav_markers, iconImageDisplayNames, iconIdImage } = data);
 
 	let from: string = '',
 		to: string = '',
@@ -192,7 +192,7 @@
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
-			const markerIcons = getMarkerIcons(L);
+			const markerIcons = getMarkerIcons(L, iconIdImage);
 			fromMarkerFloor = markers.find((obj) => obj.id === from)?.floor ?? 1;
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [
@@ -344,7 +344,13 @@
 <main>
 	<div class="space-y-5">
 		<div class="max-lg:flex max-lg:justify-center lg:px-5">
-			<PathSelection locations={markers} navFrom={from} navTo={to} showClearNavButton={true} />
+			<PathSelection
+				locations={markers}
+				navFrom={from}
+				navTo={to}
+				showClearNavButton={true}
+				{iconImageDisplayNames}
+			/>
 		</div>
 		{#if error}
 			<p class="error_msg">{errMsg}</p>

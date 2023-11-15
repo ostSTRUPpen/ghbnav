@@ -14,8 +14,27 @@ export async function load() {
 		.order('id', { ascending: true });
 	if (navError) console.error(navError);
 
+	const { data: icons, error: iconError } = await supabase
+		.from('icons')
+		.select('id, display_name, image')
+		.order('position', { ascending: true });
+	if (iconError) console.error(iconError);
+	const iconImageDisplayNames = new Object();
+	for (const icon of icons ?? []) {
+		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;
+	}
+	const iconIdImage = [];
+	for (const icon of icons ?? []) {
+		iconIdImage.push({
+			id: icon.id,
+			image: icon.image
+		});
+	}
+
 	return {
 		markers: markers ?? [],
-		nav_markers: nav_markers ?? []
+		nav_markers: nav_markers ?? [],
+		iconImageDisplayNames: iconImageDisplayNames ?? [],
+		iconIdImage: iconIdImage ?? []
 	};
 }

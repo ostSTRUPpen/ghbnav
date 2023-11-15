@@ -48,9 +48,20 @@ export async function load() {
 		});
 	}
 
+	const { data: icons, error: iconError } = await supabase
+		.from('icons')
+		.select('id, display_name')
+		.order('position', { ascending: true });
+	if (iconError) console.error(iconError);
+	const iconImageDisplayNames = new Object();
+	for (const icon of icons ?? []) {
+		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;
+	}
+
 	return {
 		locations: markers ?? [],
 		stored_paths: stored_paths_with_names ?? [],
-		preset_paths: preset_paths_with_names ?? []
+		preset_paths: preset_paths_with_names ?? [],
+		iconImageDisplayNames: iconImageDisplayNames ?? []
 	};
 }

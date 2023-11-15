@@ -3,16 +3,15 @@
 	import { changeMarker } from '../../../lib/functions/markerManagementFunctions.js';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { iconImageList } from '$lib/data/markerIcons.js';
 	import { base } from '$app/paths';
 	import { printMarkersList } from '$lib/data/store.js';
-	const iconList = iconImageList;
+	import { iconImages } from '$lib/data/markerIcons.js';
 
 	let localPrintMarkersList: Array<Array<string>> = [];
 
 	export let data;
-	let { markers } = data;
-	$: ({ markers } = data);
+	let { markers, iconList } = data;
+	$: ({ markers, iconList } = data);
 	let endingPoints: Array<App.others['enlargedMarkerObject']> = [];
 
 	for (let marker of markers) {
@@ -127,7 +126,12 @@
 					<label for="img_icon" class="label">
 						<span class="label-text text-secondary text-lg">{icon.displayname}</span>
 					</label>
-					<img id="img_icon" src={icon.image} alt={icon.displayname} class="flex justify-center" />
+					<img
+						id="img_icon"
+						src={iconImages[icon.image]}
+						alt={icon.displayname}
+						class="flex justify-center"
+					/>
 				</div>
 			{/each}
 		</div>

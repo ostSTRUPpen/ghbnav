@@ -1,8 +1,10 @@
+import { sequence } from '@sveltejs/kit/hooks';
+
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 import { redirect, type Handle } from '@sveltejs/kit';
 
-export const handle: Handle = async ({ event, resolve }) => {
+const sessionCheck: Handle = async ({ event, resolve }) => {
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
@@ -40,3 +42,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 		}
 	});
 };
+
+const colorCheck: Handle = async ({ event, resolve }) => {
+	const theme = event.cookies.get('theme');
+	const themes = ['ghb_light', 'ghb_dark'];
+
+	if (!theme || !themes.includes(theme)) {
+		return await resolve(event);
+	}
+
+	return await resolve(event, {
+		transformPageChunk: ({ html }) => {
+			return html.replace('data-theme=""', `data-theme="${theme}"`);
+		}
+	});
+};
+
+export const handle = sequence(colorCheck, sessionCheck);

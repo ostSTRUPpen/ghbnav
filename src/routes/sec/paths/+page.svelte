@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { iconImageDisplayNames } from '$lib/data/markerIcons.js';
 	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import {
 		deletePath,
@@ -11,8 +10,8 @@
 	import { onMount } from 'svelte';
 
 	export let data;
-	let { locations, stored_paths, preset_paths } = data;
-	$: ({ locations, stored_paths, preset_paths } = data);
+	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
+	$: ({ locations, stored_paths, preset_paths, iconImageDisplayNames } = data);
 
 	let savingDialog: any;
 	let loadingDialog: any;

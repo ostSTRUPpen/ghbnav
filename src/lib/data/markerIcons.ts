@@ -19,8 +19,23 @@ import specializovane_ucebny from '$lib/images/icons/markers/specializovane_uceb
 import telovychova from '$lib/images/icons/markers/telovychova.png';
 import zachody from '$lib/images/icons/markers/zachody.png';
 
-//@ts-ignore
-export function getMarkerIcons(L) {
+export const iconImages: Record<string, string> = {
+	administrace: administrace,
+	kmenove_ucebny: kmenove_ucebny,
+	jazykove_ucebny: jazykove_ucebny,
+	kabinety: kabinety,
+	ostatni: ostatni,
+	prostory: prostory,
+	sluzby: sluzby,
+	specializovane_ucebny: specializovane_ucebny,
+	telovychova: telovychova,
+	zachody: zachody
+};
+
+export { floor_0, floor_1, floor_2, floor_3, floor_4 };
+
+//@ts-expect-error
+export function getMarkerIcons(L, icons) {
 	const NavIcon = L.Icon.extend({
 		options: {
 			iconSize: [25, 25], // size of the icon
@@ -29,86 +44,11 @@ export function getMarkerIcons(L) {
 		}
 	});
 
-	const markerIcons = {
-		// NEW
-		administrace: new NavIcon({ iconUrl: administrace }),
-		jazykove_ucebny: new NavIcon({ iconUrl: jazykove_ucebny }),
-		kabinety: new NavIcon({ iconUrl: kabinety }),
-		kmenove_ucebny: new NavIcon({ iconUrl: kmenove_ucebny }),
-		ostatni: new NavIcon({ iconUrl: ostatni }),
-		prostory: new NavIcon({ iconUrl: prostory }),
-		sluzby: new NavIcon({ iconUrl: sluzby }),
-		specializovane_ucebny: new NavIcon({ iconUrl: specializovane_ucebny }),
-		telovychova: new NavIcon({ iconUrl: telovychova }),
-		zachody: new NavIcon({ iconUrl: zachody })
-	};
+	const markerIcons = new Object();
+	for (const icon of icons) {
+		markerIcons[icon.id as keyof typeof markerIcons] = new NavIcon({
+			iconUrl: iconImages[icon.image as keyof typeof iconImages]
+		});
+	}
 	return markerIcons;
 }
-export { floor_0, floor_1, floor_2, floor_3, floor_4 };
-
-export const iconImageList = [
-	// NEW
-	{
-		name: 'administrace',
-		image: administrace,
-		displayname: 'Administrace'
-	},
-	{
-		name: 'jazykove_ucebny',
-		image: jazykove_ucebny,
-		displayname: 'Jazykové učebny'
-	},
-	{
-		name: 'kabinety',
-		image: kabinety,
-		displayname: 'Kabinety'
-	},
-	{
-		name: 'kmenove_ucebny',
-		image: kmenove_ucebny,
-		displayname: 'Kmenové učebny'
-	},
-	{
-		name: 'ostatni',
-		image: ostatni,
-		displayname: 'Ostatní'
-	},
-	{
-		name: 'prostory',
-		image: prostory,
-		displayname: 'Prostory'
-	},
-	{
-		name: 'sluzby',
-		image: sluzby,
-		displayname: 'Služby'
-	},
-	{
-		name: 'specializovane_ucebny',
-		image: specializovane_ucebny,
-		displayname: 'Specializované učebny'
-	},
-	{
-		name: 'telovychova',
-		image: telovychova,
-		displayname: 'Tělovýchova'
-	},
-	{
-		name: 'zachody',
-		image: zachody,
-		displayname: 'Záchody'
-	}
-];
-
-export const iconImageDisplayNames = {
-	administrace: 'Administrace',
-	jazykove_ucebny: 'Jazykové učebny',
-	kabinety: 'Kabinety',
-	kmenove_ucebny: 'Kmenové učebny',
-	ostatni: 'Ostatní',
-	prostory: 'Prostory',
-	sluzby: 'Služby',
-	specializovane_ucebny: 'Specializované učebny',
-	telovychova: 'Tělovýchova',
-	zachody: 'Záchody'
-};

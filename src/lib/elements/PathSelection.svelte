@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { iconImageDisplayNames } from '$lib/data/markerIcons.js';
 	import { foundPath } from '$lib/data/store.js';
 
 	let preparedLocations: Array<any> = [];
@@ -9,7 +8,8 @@
 	export let locations: Array<any>,
 		navFrom: string = '',
 		navTo: string = '',
-		showClearNavButton: boolean = false;
+		showClearNavButton: boolean = false,
+		iconImageDisplayNames: object;
 
 	let isDisabled: boolean = true;
 

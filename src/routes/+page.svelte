@@ -9,13 +9,13 @@
 	*/
 
 	export let data;
-	let { locations, stored_paths, preset_paths } = data;
-	$: ({ locations, stored_paths, preset_paths } = data);
+	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
+	$: ({ locations, stored_paths, preset_paths, iconImageDisplayNames } = data);
 </script>
 
 <main class="max-lg:space-y-14 lg:grid md:max-2xl:grid-cols-2 2xl:grid-cols-3 2xl:gap-4">
 	<div class="flex justify-center max-2xl:col-span-2">
-		<PathSelection {locations} />
+		<PathSelection {locations} {iconImageDisplayNames} />
 	</div>
 	{#if preset_paths.length > 0}
 		<div class="flex justify-center">
