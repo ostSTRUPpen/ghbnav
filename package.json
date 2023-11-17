@@ -42,6 +42,8 @@
 		"@types/geojson": "^7946.0.10",
 		"@types/leaflet": "^1.9.3",
 		"leaflet": "^1.9.4",
-		"supabase": "^1.74.2"
+		"leaflet-textpath": "^1.2.3",
+		"supabase": "^1.74.2",
+		"svelte-dnd-action": "^0.9.31"
 	}
 }

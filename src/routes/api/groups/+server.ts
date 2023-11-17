@@ -5,14 +5,11 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 	if (!session) {
 		throw redirect(303, '/');
 	}
-	const { id, start_node, end_node, hidden } = await request.json();
+	const { id, display_name, image, position } = await request.json();
 	try {
 		const { error } = await supabase
-			// RLS error FIXME
-			// Pokud vypnu RLS, tak vše funguje, jak má
-			// Pokud zapnu RLS, tak i když je UPDATE public, tak to nefunguje
-			.from('preset_paths')
-			.update({ hidden: hidden, start_node: start_node, end_node: end_node })
+			.from('icons')
+			.update({ display_name: display_name, image: image, position: position })
 			.eq('id', id)
 			.select();
 		if (error) {
@@ -23,7 +20,7 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 		} else {
 			return new Response(
 				JSON.stringify({
-					message: `Path updated successfully`,
+					message: `Icon updated successfully`,
 					success: true
 				}),
 				{ status: 201 }
@@ -33,9 +30,7 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 		// FIXME ts
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
-		const errMessage = error.message
-			? error.message
-			: 'An error has occurred while updating preset paths';
+		const errMessage = error.message ? error.message : 'An error has occurred while updating icon';
 		return new Response(JSON.stringify({ message: errMessage }), {
 			status: 400
 		});

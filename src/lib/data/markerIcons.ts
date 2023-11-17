@@ -18,6 +18,8 @@ import sluzby from '$lib/images/icons/markers/sluzby.png';
 import specializovane_ucebny from '$lib/images/icons/markers/specializovane_ucebny.png';
 import telovychova from '$lib/images/icons/markers/telovychova.png';
 import zachody from '$lib/images/icons/markers/zachody.png';
+import satny from '$lib/images/icons/markers/satny.png';
+import schody from '$lib/images/icons/markers/schody.png';
 
 export const iconImages: Record<string, string> = {
 	administrace: administrace,
@@ -29,7 +31,9 @@ export const iconImages: Record<string, string> = {
 	sluzby: sluzby,
 	specializovane_ucebny: specializovane_ucebny,
 	telovychova: telovychova,
-	zachody: zachody
+	zachody: zachody,
+	satny: satny,
+	schody: schody
 };
 
 export { floor_0, floor_1, floor_2, floor_3, floor_4 };

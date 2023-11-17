@@ -192,6 +192,8 @@
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
+			//@ts-expect-error
+			const textPath = await import('leaflet-textpath');
 			const markerIcons = getMarkerIcons(L, iconIdImage);
 			fromMarkerFloor = markers.find((obj) => obj.id === from)?.floor ?? 1;
 
@@ -235,7 +237,11 @@
 			let zeroFloor = L.layerGroup([
 				zeroFloorImg,
 				...markerList,
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
+				//@ts-expect-error
+				L.polyline(pathList, { color: 'rgb(47, 60, 76)' }).setText('  ►  ', {
+					repeat: true,
+					attributes: { fill: 'rgb(253, 133, 73)' }
+				})
 			]);
 
 			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
@@ -245,7 +251,11 @@
 				// Map image
 				firstFloorImg,
 				...markerList,
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
+				//@ts-expect-error
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+					repeat: true,
+					attributes: { fill: 'rgb(253, 133, 73)' }
+				})
 			]);
 
 			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
@@ -255,7 +265,11 @@
 				// Map image
 				secondFloorImg,
 				...markerList,
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
+				//@ts-expect-error
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+					repeat: true,
+					attributes: { fill: 'rgb(253, 133, 73)' }
+				})
 			]);
 
 			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
@@ -265,7 +279,11 @@
 				// Map image
 				thirdFloorImg,
 				...markerList,
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
+				//@ts-expect-error
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+					repeat: true,
+					attributes: { fill: 'rgb(253, 133, 73)' }
+				})
 			]);
 
 			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
@@ -275,7 +293,11 @@
 				// Map image
 				fourthFloorImg,
 				...markerList,
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' })
+				//@ts-expect-error
+				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+					repeat: true,
+					attributes: { fill: 'rgb(253, 133, 73)' }
+				})
 			]);
 			markerList = [];
 			pathList = [];

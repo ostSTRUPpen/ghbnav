@@ -24,7 +24,6 @@ module.exports = {
 
 					error: '#e14c7e'
 				},
-				//TODO hezký dark mode?
 				ghb_dark: {
 					primary: '#fd8549',
 
