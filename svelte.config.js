@@ -1,6 +1,8 @@
 import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/kit/vite';
 
+//IMPORTANT Ctrl+Shift ve stránce zobrazuje, z čeho pochází její jednotlivé části
+
 //const dev = process.argv.includes('dev');
 
 /** @type {import('@sveltejs/kit').Config} */

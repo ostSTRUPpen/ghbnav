@@ -13,7 +13,7 @@
 
 {#if paths.length > 0}
 	<div class="overflow-x-auto">
-		<h2 class="text-xl">{tableName}</h2>
+		<h2 class="max-sm:text-center text-xl">{tableName}</h2>
 		<table class="table table-sm md:table-md">
 			<thead>
 				<tr class="text-md md:text-xl">

@@ -12,7 +12,7 @@
 	<br />
 	<SecureAnchor page={`${base}/groups`} text={'Skupiny'} />
 </div>
-<!--TODO Přidat návod, jak aplikaci používat (aby to pochopil i blbec) 
-	Vítejte
-	...
--->
+
+<!--TODO přidat pozdravení a možná nějaký basic návod-->
+<!--TODO upravit zobrazení úspěchu při uložení, tak aby odpovídalo pravdě (v závislosti na zprávě, kterou vrátí DB) (Pokud ERROR, tak ho musím vypsat!)-->
+<!--TODO U věcí, co se ukládají sami (např viditelnost cesty) přidat fajfku/loading/křížek podle toho, jestli je uložená/ukládá se/došlo k chybě (po najetí na křížek se zobrazí ERROR text)-->

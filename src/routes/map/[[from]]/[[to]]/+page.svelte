@@ -189,10 +189,16 @@
 		};
 	}
 
+	//Path display settings
+	const pathColor = 'rgb(47, 60, 76)';
+	const pathText = '        ►        ';
+	const pathTextColor = 'rgb(253, 133, 73)';
+	const pathTextSize = '25px';
+	const pathTextOffset = 8;
+
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
-			//@ts-expect-error
 			const textPath = await import('leaflet-textpath');
 			const markerIcons = getMarkerIcons(L, iconIdImage);
 			fromMarkerFloor = markers.find((obj) => obj.id === from)?.floor ?? 1;
@@ -220,8 +226,6 @@
 
 			popup = L.popup();
 
-			// TODO Určit jaké WC je jaké -> WC(M, Ž, U) / WC(M, Ž) / WC(M) (M = muži, Ž = ženy, U = učitelé)
-			// TODO zjistit co jsou X (1. PP a 1. NP)
 			let markerList: any = [];
 			let pathList: any = [];
 			let canDrawPath: boolean = false;
@@ -235,12 +239,16 @@
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 0));
 			let zeroFloor = L.layerGroup([
+				// Map
 				zeroFloorImg,
+				// Markers
 				...markerList,
+				// Path
 				//@ts-expect-error
-				L.polyline(pathList, { color: 'rgb(47, 60, 76)' }).setText('  ►  ', {
+				L.polyline(pathList, { color: pathColor }).setText(pathText, {
 					repeat: true,
-					attributes: { fill: 'rgb(253, 133, 73)' }
+					offset: pathTextOffset,
+					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
 				})
 			]);
 
@@ -248,13 +256,13 @@
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 1));
 			let firstFloor = L.layerGroup([
-				// Map image
 				firstFloorImg,
 				...markerList,
 				//@ts-expect-error
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+				L.polyline(pathList, { color: pathColor }).setText(pathText, {
 					repeat: true,
-					attributes: { fill: 'rgb(253, 133, 73)' }
+					offset: pathTextOffset,
+					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
 				})
 			]);
 
@@ -262,13 +270,13 @@
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 2));
 			let secondFloor = L.layerGroup([
-				// Map image
 				secondFloorImg,
 				...markerList,
 				//@ts-expect-error
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+				L.polyline(pathList, { color: pathColor }).setText(pathText, {
 					repeat: true,
-					attributes: { fill: 'rgb(253, 133, 73)' }
+					offset: pathTextOffset,
+					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
 				})
 			]);
 
@@ -276,13 +284,13 @@
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 3));
 			let thirdFloor = L.layerGroup([
-				// Map image
 				thirdFloorImg,
 				...markerList,
 				//@ts-expect-error
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+				L.polyline(pathList, { color: pathColor }).setText(pathText, {
 					repeat: true,
-					attributes: { fill: 'rgb(253, 133, 73)' }
+					offset: pathTextOffset,
+					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
 				})
 			]);
 
@@ -290,13 +298,13 @@
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 4));
 			let fourthFloor = L.layerGroup([
-				// Map image
 				fourthFloorImg,
 				...markerList,
 				//@ts-expect-error
-				L.polyline(pathList, { color: 'rgb(253, 133, 73)' }).setText('  ►  ', {
+				L.polyline(pathList, { color: pathColor }).setText(pathText, {
 					repeat: true,
-					attributes: { fill: 'rgb(253, 133, 73)' }
+					offset: pathTextOffset,
+					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
 				})
 			]);
 			markerList = [];
