@@ -3,7 +3,7 @@ export async function updatePath(
 	start_node: string,
 	end_node: string,
 	hidden: boolean
-): Promise<object> {
+): Promise<SerializedServerResponse> {
 	const response = await fetch('../../../../api/preset_paths', {
 		method: 'PATCH',
 		body: JSON.stringify({ id, start_node, end_node, hidden }),
@@ -11,6 +11,6 @@ export async function updatePath(
 			'Content-Type': 'application/json'
 		}
 	});
-	const data = await response.json();
-	return data;
+	const data: SerializedServerResponse = await response.json();
+	return data ?? { message: 'Failed to JSON', code: '500' };
 }

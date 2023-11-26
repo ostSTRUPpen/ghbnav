@@ -8,16 +8,21 @@
 	} from '$lib/functions/dynamicPathManagementFunctions.js';
 	import { updatePath } from '$lib/functions/presetPathManagementFunctions.js';
 	import { onMount } from 'svelte';
+	import { invalidateAll } from '$app/navigation';
 
 	export let data;
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
 	$: ({ locations, stored_paths, preset_paths, iconImageDisplayNames } = data);
 
-	let savingDialog: any;
+	let successDialog: any;
 	let loadingDialog: any;
+	let errorDialog: any;
+	let errors: SerializedServerResponse[] = [];
+
 	onMount(() => {
-		savingDialog = document.getElementById('printing-dialog');
+		successDialog = document.getElementById('success-dialog');
 		loadingDialog = document.getElementById('loading-dialog');
+		errorDialog = document.getElementById('error-dialog');
 	});
 
 	function cancelChanges() {
@@ -48,15 +53,29 @@
 	async function savePresetPathsChanges() {
 		loadingDialog['showModal']();
 		for (let preset_path of preset_paths) {
-			await updatePath(
+			const response: SerializedServerResponse = await updatePath(
 				preset_path.id,
 				preset_path.start_node,
 				preset_path.end_node,
 				preset_path.hidden
 			);
+
+			if (response.code !== '200' && response.code !== '201') {
+				errors.push(response);
+			}
 		}
+		errors = errors;
 		loadingDialog.close();
-		savingDialog['showModal']();
+		if (errors.length > 0) {
+			errorDialog['showModal']();
+		} else {
+			successDialog['showModal']();
+		}
+	}
+
+	async function deleteStoredPath(id: string) {
+		await deletePath(id);
+		invalidateAll();
 	}
 </script>
 
@@ -66,13 +85,33 @@
 	</div>
 </dialog>
 
-<dialog id="printing-dialog" class="modal">
+<dialog id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Cesty úspěšně upraveny.</p>
 		<button
 			on:click={() => {
-				savingDialog.close();
+				successDialog.close();
+				goto(`${base}/sec`, { replaceState: true });
+			}}
+			class="modal-action btn btn-info">Ok</button
+		>
+	</div>
+</dialog>
+
+<dialog id="error-dialog" class="modal">
+	<div class="modal-box">
+		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
+		<ul>
+			{#each errors as error}
+				<li class="text-error">
+					<span class="font-bold">{error.code}</span> - <span>{error.message}</span>
+				</li>
+			{/each}
+		</ul>
+		<button
+			on:click={() => {
+				errorDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
@@ -157,6 +196,7 @@
 					<th>Použití</th>
 					<th>Skrýt</th>
 					<th>Správa</th>
+					<th>Stav</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -174,7 +214,11 @@
 							/></td
 						>
 						<td
-							><button class="btn btn-error" on:click={() => deletePath(path.id)}>Vymazat</button
+							><button
+								class="btn btn-error"
+								on:click={() => {
+									deleteStoredPath(path.id);
+								}}>Vymazat</button
 							></td
 						>
 					</tr>

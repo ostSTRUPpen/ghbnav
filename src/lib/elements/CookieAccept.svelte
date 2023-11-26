@@ -7,7 +7,6 @@
 		if (typeof window !== 'undefined') {
 			//https://www.scottspence.com/posts/cookie-based-theme-selection-in-sveltekit-with-daisyui
 			const cookieAccepted = window.localStorage.getItem('cookieAccepted');
-			console.log(cookieAccepted);
 			if (cookieAccepted !== null) {
 				//condition ? true_expression : false_expression
 				cookieAccepted === 'true' ? (acceptedCookies = true) : (acceptedCookies = false);

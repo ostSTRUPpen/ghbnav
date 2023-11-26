@@ -2,11 +2,16 @@
 	const displayAboutMe = true;
 </script>
 
-<!--TODO vytvořit, tak aby nepřekáželo
-"Vytvořil Vojtěch Voldřich 2024A v roce 2023" A třeba nějaký kontakt na mě nebo tak
--->
 {#if displayAboutMe}
-	<div>
-		<p>test</p>
+	<div class="py-10 px-5">
+		<p>
+			Vytvořil <a
+				href="https://www.linkedin.com/in/vojt%C4%9Bch-vold%C5%99ich-955577277/"
+				rel="author"
+				target="_blank"
+				class="link-hover link-primary">Vojtěch Voldřich</a
+			>
+			<span class="text-primary">2024A</span> v roce 2023.
+		</p>
 	</div>
 {/if}

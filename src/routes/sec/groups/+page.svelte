@@ -11,11 +11,15 @@
 	export let data;
 	let { items, iconIdImageName } = data;
 
-	let savingDialog: any;
+	let successDialog: any;
 	let loadingDialog: any;
+	let errorDialog: any;
+	let errors: SerializedServerResponse[] = [];
+
 	onMount(() => {
-		savingDialog = document.getElementById('saving-dialog');
+		successDialog = document.getElementById('success-dialog');
 		loadingDialog = document.getElementById('loading-dialog');
+		errorDialog = document.getElementById('error-dialog');
 	});
 
 	const flipDurationMs = 200;
@@ -30,14 +34,22 @@
 		recountItemPosition(items);
 	}
 
-	function saveChanges() {
+	async function saveChanges() {
 		loadingDialog['showModal']();
 		recountItemPosition(items);
 		for (const item of items) {
-			updateGroup(item.id, item.display_name, item.image, item.position);
+			const response = await updateGroup(item.id, item.display_name, item.image, item.position);
+			if (response.code !== '200' && response.code !== '201') {
+				errors.push(response);
+			}
 		}
+		errors = errors;
 		loadingDialog.close();
-		savingDialog['showModal']();
+		if (errors.length > 0) {
+			errorDialog['showModal']();
+		} else {
+			successDialog['showModal']();
+		}
 	}
 
 	function cancelChanges() {
@@ -51,13 +63,33 @@
 	</div>
 </dialog>
 
-<dialog id="saving-dialog" class="modal">
+<dialog id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Skupiny úspěšně upraveny.</p>
 		<button
 			on:click={() => {
-				savingDialog.close();
+				successDialog.close();
+				goto(`${base}/sec`, { replaceState: true });
+			}}
+			class="modal-action btn btn-info">Ok</button
+		>
+	</div>
+</dialog>
+
+<dialog id="error-dialog" class="modal">
+	<div class="modal-box">
+		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
+		<ul>
+			{#each errors as error}
+				<li class="text-error">
+					<span class="font-bold">{error.code}</span> - <span>{error.message}</span>
+				</li>
+			{/each}
+		</ul>
+		<button
+			on:click={() => {
+				errorDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button

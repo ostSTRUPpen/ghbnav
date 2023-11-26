@@ -17,6 +17,7 @@
 	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
 	import { base } from '$app/paths';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
+	import Loading from '$lib/elements/Loading.svelte';
 	export let data;
 
 	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = data;

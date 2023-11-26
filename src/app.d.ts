@@ -12,19 +12,6 @@ declare global {
 			rawGraphObject: Array<{ [key: string]: number }>;
 			additionObject: Record<string, number>;
 		}
-		interface others {
-			enlargedMarkerObject: {
-				id: string;
-				display_name: string;
-				floor: number;
-				icon: string;
-				can_nav: boolean;
-				new_display_name: string;
-				new_icon: string;
-				new_can_nav: boolean;
-				genQR: boolean;
-			};
-		}
 		interface PageData {
 			session: Session | null;
 		}
@@ -43,4 +30,17 @@ declare global {
 			) => void;
 		}
 	}
+
+	declare type SerializedServerResponse = { message: string; code: string };
+	declare type enlargedMarkerObject = {
+		id: string;
+		display_name: string;
+		floor: number;
+		icon: string;
+		can_nav: boolean;
+		new_display_name: string;
+		new_icon: string;
+		new_can_nav: boolean;
+		genQR: boolean;
+	};
 }

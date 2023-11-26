@@ -13,25 +13,33 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 			.eq('id', id)
 			.select();
 		if (error) {
-			console.error(error);
-			return new Response(JSON.stringify({ message: error.message }), {
-				status: Number(error.code)
-			});
+			console.error(`Error: ${error.code} v groups.\n ${error.message}\n---END OF ERROR---`);
+			return new Response(
+				JSON.stringify({
+					message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+					code: error.code
+				}),
+				{
+					status: Number(error.code)
+				}
+			);
 		} else {
 			return new Response(
 				JSON.stringify({
-					message: `Icon updated successfully`,
-					success: true
+					message: `Skupina upravena!`,
+					code: '200'
 				}),
-				{ status: 201 }
+				{ status: 200 }
 			);
 		}
 
 		// FIXME ts
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
-		const errMessage = error.message ? error.message : 'An error has occurred while updating icon';
-		return new Response(JSON.stringify({ message: errMessage }), {
+		const errMessage = error.message
+			? error.message
+			: 'Při úpravě ikony došlo k chybě! Zkuste to prosím později.';
+		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
 	}

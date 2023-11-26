@@ -18,15 +18,25 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 				})
 				.eq('id', changedEndingPoint.id);
 			if (error) {
-				return new Response(JSON.stringify({ message: error.message }), {
-					status: Number(error.code)
-				});
+				console.error(
+					`Error: ${error.code} v change_markers.\n ${error.message}\n---END OF ERROR---`
+				);
+				return new Response(
+					JSON.stringify({
+						message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+						code: error.code
+					}),
+					{
+						status: Number(error.code)
+					}
+				);
 			}
 		}
 
 		return new Response(
 			JSON.stringify({
-				message: 'Markers updated successfully'
+				message: 'Značky úspěšně upraveny!',
+				code: '201'
 			}),
 			{ status: 201 }
 		);
@@ -35,7 +45,7 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
-			: 'An error has occurred while updating markers';
+			: 'Při úpravě značek došlo k chybě! Zkuste to prosím později.';
 		return new Response(JSON.stringify({ message: errMessage }), {
 			status: 400
 		});

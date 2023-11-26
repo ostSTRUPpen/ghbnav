@@ -8,25 +8,28 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 	const { id, start_node, end_node, hidden } = await request.json();
 	try {
 		const { error } = await supabase
-			// RLS error FIXME
-			// Pokud vypnu RLS, tak vše funguje, jak má
-			// Pokud zapnu RLS, tak i když je UPDATE public, tak to nefunguje
 			.from('preset_paths')
 			.update({ hidden: hidden, start_node: start_node, end_node: end_node })
 			.eq('id', id)
 			.select();
 		if (error) {
-			console.error(error);
-			return new Response(JSON.stringify({ message: error.message }), {
-				status: Number(error.code)
-			});
+			console.error(`Error: ${error.code} v preset_paths.\n ${error.message}\n---END OF ERROR---`);
+			return new Response(
+				JSON.stringify({
+					message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+					code: error.code
+				}),
+				{
+					status: Number(error.code)
+				}
+			);
 		} else {
 			return new Response(
 				JSON.stringify({
-					message: `Path updated successfully`,
-					success: true
+					message: `Cesta upravena!`,
+					code: '200'
 				}),
-				{ status: 201 }
+				{ status: 200 }
 			);
 		}
 
@@ -35,8 +38,8 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
-			: 'An error has occurred while updating preset paths';
-		return new Response(JSON.stringify({ message: errMessage }), {
+			: 'Při úpravě cesty došlo k chybě! Zkuste to prosím později.';
+		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
 	}

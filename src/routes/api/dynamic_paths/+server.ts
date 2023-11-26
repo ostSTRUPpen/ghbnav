@@ -37,10 +37,18 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 					])
 					.select();
 				if (error) {
-					console.error(error);
-					return new Response(JSON.stringify({ message: error.message }), {
-						status: Number(error.code)
-					});
+					console.error(
+						`Error: ${error.code} v dynamic_paths.\n ${error.message}\n---END OF ERROR---`
+					);
+					return new Response(
+						JSON.stringify({
+							message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+							code: error.code
+						}),
+						{
+							status: Number(error.code)
+						}
+					);
 				}
 			} else if (!canSave && canUpdateCount) {
 				UpdateCountCountValue++;
@@ -50,20 +58,32 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 					.eq('id', UpdateCountRowID)
 					.select();
 				if (error) {
-					console.error(error);
-					return new Response(JSON.stringify({ message: error.message }), {
-						status: Number(error.code)
-					});
+					console.error(
+						`Error: ${error.code} v dynamic_paths.\n ${error.message}\n---END OF ERROR---`
+					);
+					return new Response(
+						JSON.stringify({
+							message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+							code: error.code
+						}),
+						{
+							status: Number(error.code)
+						}
+					);
 				}
 			}
 		} else {
-			return new Response(JSON.stringify({ message: 'Data missing' }), {
-				status: 400
-			});
+			return new Response(
+				JSON.stringify({ message: 'Chybí potřebné údaje. Zkuste to prosím znovu', code: '400' }),
+				{
+					status: 400
+				}
+			);
 		}
 		return new Response(
 			JSON.stringify({
-				message: 'Stored paths modified successfully'
+				message: 'Uložené cesty, úspěšně upraveny!',
+				code: '201'
 			}),
 			{ status: 201 }
 		);
@@ -72,8 +92,8 @@ export async function POST(requestEvent: RequestEvent): Promise<Response> {
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
-			: 'An error has occurred while modifying stored paths';
-		return new Response(JSON.stringify({ message: errMessage }), {
+			: 'Při úpravě uložených cest došlo k chybě! Zkuste to prosím později.';
+		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
 	}
@@ -93,15 +113,21 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 			.select();
 
 		if (error) {
-			console.error(error);
-			return new Response(JSON.stringify({ message: error.message }), {
-				status: Number(error.code)
-			});
+			console.error(`Error: ${error.code} v dynamic_paths.\n ${error.message}\n---END OF ERROR---`);
+			return new Response(
+				JSON.stringify({
+					message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+					code: error.code
+				}),
+				{
+					status: Number(error.code)
+				}
+			);
 		} else {
 			return new Response(
 				JSON.stringify({
-					message: `Path counted successfully`,
-					success: true
+					message: `Cesta započtena!`,
+					code: 201
 				}),
 				{ status: 201 }
 			);
@@ -112,8 +138,8 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
-			: 'An error has occurred while deleting stored path';
-		return new Response(JSON.stringify({ message: errMessage }), {
+			: 'Při zápočtu cesty došlo k chybě! Zkuste to prosím později.';
+		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
 	}
@@ -130,17 +156,23 @@ export async function DELETE({ request, locals: { supabase, getSession } }): Pro
 		const { error } = await supabase.from('stored_paths').delete().eq('id', id);
 
 		if (error) {
-			console.error(error);
-			return new Response(JSON.stringify({ message: error.message }), {
-				status: Number(error.code)
-			});
+			console.error(`Error: ${error.code} v dynamic_paths.\n ${error.message}\n---END OF ERROR---`);
+			return new Response(
+				JSON.stringify({
+					message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
+					code: error.code
+				}),
+				{
+					status: Number(error.code)
+				}
+			);
 		} else {
 			return new Response(
 				JSON.stringify({
-					message: `Path deleted successfully`,
-					success: true
+					message: `Cesta smazána!`,
+					code: '200'
 				}),
-				{ status: 201 }
+				{ status: 200 }
 			);
 		}
 
@@ -149,8 +181,8 @@ export async function DELETE({ request, locals: { supabase, getSession } }): Pro
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
-			: 'An error has occurred while deleting stored path';
-		return new Response(JSON.stringify({ message: errMessage }), {
+			: 'Při mazání cesty došlo k chybě! Zkuste to prosím později';
+		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
 	}

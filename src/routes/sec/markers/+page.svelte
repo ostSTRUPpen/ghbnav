@@ -7,12 +7,13 @@
 	import { printMarkersList } from '$lib/data/store.js';
 	import { iconImages } from '$lib/data/markerIcons.js';
 
-	let localPrintMarkersList: Array<Array<string>> = [];
-
 	export let data;
 	let { markers, iconList } = data;
 	$: ({ markers, iconList } = data);
-	let endingPoints: Array<App.others['enlargedMarkerObject']> = [];
+
+	let localPrintMarkersList: Array<Array<string>> = [];
+	let savingError: SerializedServerResponse = { message: '', code: '' };
+	let endingPoints: Array<enlargedMarkerObject> = [];
 
 	for (let marker of markers) {
 		endingPoints.push({
@@ -27,6 +28,15 @@
 			genQR: false
 		});
 	}
+
+	let successDialog: any;
+	let loadingDialog: any;
+	let errorDialog: any;
+	onMount(() => {
+		successDialog = document.getElementById('success-dialog');
+		loadingDialog = document.getElementById('loading-dialog');
+		errorDialog = document.getElementById('error-dialog');
+	});
 
 	async function saveChanges(show: boolean = true) {
 		loadingDialog['showModal']();
@@ -46,17 +56,16 @@
 			}
 		}
 		if (changedEndingPoints.length > 0 && show) {
-			await changeMarker(changedEndingPoints);
+			const response = await changeMarker(changedEndingPoints);
 			loadingDialog.close();
-			savingDialog['showModal']();
+			if (response.code !== '200' && response.code !== '201') {
+				savingError = response;
+				errorDialog['showModal']();
+			} else {
+				successDialog['showModal']();
+			}
 		}
 	}
-	let savingDialog: any;
-	let loadingDialog: any;
-	onMount(() => {
-		savingDialog = document.getElementById('printing-dialog');
-		loadingDialog = document.getElementById('loading-dialog');
-	});
 
 	function cancelChanges() {
 		goto(`${base}/sec`, { replaceState: true });
@@ -102,13 +111,31 @@
 	</div>
 </dialog>
 
-<dialog id="printing-dialog" class="modal">
+<dialog id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Značky úspěšně upraveny.</p>
 		<button
 			on:click={() => {
-				savingDialog.close();
+				successDialog.close();
+				goto(`${base}/sec`, { replaceState: true });
+			}}
+			class="modal-action btn btn-info">Ok</button
+		>
+	</div>
+</dialog>
+
+<dialog id="error-dialog" class="modal">
+	<div class="modal-box">
+		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
+		<ul>
+			<li class="text-error">
+				<span class="font-bold">{savingError.code}</span> - <span>{savingError.message}</span>
+			</li>
+		</ul>
+		<button
+			on:click={() => {
+				errorDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button

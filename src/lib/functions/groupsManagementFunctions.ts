@@ -3,7 +3,7 @@ export async function updateGroup(
 	display_name: string,
 	image: string,
 	position: number
-): Promise<object> {
+): Promise<SerializedServerResponse> {
 	const response = await fetch('../../../../api/groups', {
 		method: 'PATCH',
 		body: JSON.stringify({ id, display_name, image, position }),
@@ -11,6 +11,6 @@ export async function updateGroup(
 			'Content-Type': 'application/json'
 		}
 	});
-	const data = await response.json();
-	return data;
+	const data: SerializedServerResponse = await response.json();
+	return data ?? { message: 'Failed to JSON', code: '500' };
 }

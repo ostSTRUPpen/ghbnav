@@ -2,7 +2,7 @@ export async function savePath(
 	startNode: string,
 	endNode: string,
 	path: Array<string>
-): Promise<object> {
+): Promise<SerializedServerResponse> {
 	const response = await fetch('../../../../api/dynamic_paths', {
 		method: 'POST',
 		body: JSON.stringify({ startNode, endNode, path }),
@@ -10,11 +10,14 @@ export async function savePath(
 			'Content-Type': 'application/json'
 		}
 	});
-	const data = await response.json();
-	return data;
+	const data: SerializedServerResponse = await response.json();
+	return data ?? { message: 'Failed to JSON', code: '500' };
 }
 
-export async function updatePathVisibility(id: string, hidden: boolean): Promise<object> {
+export async function updatePathVisibility(
+	id: string,
+	hidden: boolean
+): Promise<SerializedServerResponse> {
 	const response = await fetch('../../../../api/dynamic_paths', {
 		method: 'PATCH',
 		body: JSON.stringify({ id, hidden }),
@@ -22,11 +25,11 @@ export async function updatePathVisibility(id: string, hidden: boolean): Promise
 			'Content-Type': 'application/json'
 		}
 	});
-	const data = await response.json();
-	return data;
+	const data: SerializedServerResponse = await response.json();
+	return data ?? { message: 'Failed to JSON', code: '500' };
 }
 
-export async function deletePath(id: string): Promise<object> {
+export async function deletePath(id: string): Promise<SerializedServerResponse> {
 	const response = await fetch('../../../../api/dynamic_paths', {
 		method: 'DELETE',
 		body: JSON.stringify({ id }),
@@ -34,6 +37,6 @@ export async function deletePath(id: string): Promise<object> {
 			'Content-Type': 'application/json'
 		}
 	});
-	const data = await response.json();
-	return data;
+	const data: SerializedServerResponse = await response.json();
+	return data ?? { message: 'Failed to JSON', code: '500' };
 }
