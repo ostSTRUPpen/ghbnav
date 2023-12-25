@@ -58,7 +58,7 @@ export async function load() {
 	for (const icon of icons ?? []) {
 		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;
 	}
-	console.log('here');
+
 	return {
 		locations: markers ?? [],
 		stored_paths: stored_paths_with_names ?? [],
