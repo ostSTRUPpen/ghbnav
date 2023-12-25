@@ -147,11 +147,11 @@
 	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 	<div tabindex="0" class="collapse collapse-arrow border border-secondary bg-base-100">
 		<div class="collapse-title text-xl font-medium text-primary">Ikony</div>
-		<div class="collapse-content bg-white">
+		<div class="collapse-content bg-accent">
 			{#each iconList as icon}
 				<div class="float-left px-5">
 					<label for="img_icon" class="label">
-						<span class="label-text text-black text-lg">{icon.displayname}</span>
+						<span class="label-text text-secondary text-lg">{icon.displayname}</span>
 					</label>
 					<img
 						id="img_icon"

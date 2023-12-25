@@ -3,7 +3,7 @@
 </script>
 
 {#if displayAboutMe}
-	<div class="py-10 px-5 print:hidden">
+	<div class="py-10 px-5">
 		<p>
 			Vytvořil <a
 				href="https://www.linkedin.com/in/vojt%C4%9Bch-vold%C5%99ich-955577277/"
