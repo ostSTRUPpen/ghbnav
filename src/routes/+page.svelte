@@ -5,6 +5,7 @@
 	/* TODO
 		Upravit pro docker
 		Až to bude připravené na publikaci, tak vymazat všechny uložené cesty
+		https://www.linkedin.com/pulse/what-self-hosting-how-self-host-using-docker-przemys%C5%82aw-kuciel-1c/
 		Rozdat všude QR kódy
 	*/
 
