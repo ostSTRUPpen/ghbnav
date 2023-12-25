@@ -140,7 +140,12 @@
 								{#each iconIdImageName as icon}
 									<option value={icon.id}>{icon.display_name} </option>{/each}
 							</select>
-							<img src={iconImages[item.image]} alt={item.display_name} />
+							<!--TODO možná odstranit padding - záleží na ikonách-->
+							<img
+								src={iconImages[item.image]}
+								alt={item.display_name}
+								class="bg-white px-1 py-1"
+							/>
 						</td>
 						<td class="text-md md:text-xl">{item.position}</td>
 					</tr>
