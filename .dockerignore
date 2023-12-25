@@ -10,7 +10,6 @@ supabase
 .eslintrc.cjs
 .graphqlrc
 .editorconfig
-.svelte-kit
 .vscode
 .env
 secret.txt
