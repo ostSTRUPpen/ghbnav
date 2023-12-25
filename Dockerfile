@@ -1,7 +1,6 @@
 FROM node:18-alpine AS builder
 ARG SUPABASE_URL
 ARG SUPABASE_KEY
-ARG HOST_ORIGIN
 WORKDIR /app
 COPY package*.json .
 RUN npm ci

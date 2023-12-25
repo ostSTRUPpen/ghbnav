@@ -12,6 +12,7 @@ supabase
 .editorconfig
 .svelte-kit
 .vscode
+.env
 secret.txt
 stuff.lnk
 node_modules
