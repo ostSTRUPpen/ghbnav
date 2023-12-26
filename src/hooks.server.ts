@@ -6,11 +6,13 @@ import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
 import { redirect, type Handle } from '@sveltejs/kit';
 
 const sessionCheck: Handle = async ({ event, resolve }) => {
+	console.log(PUBLIC_SUPABASE_URL);
 	event.locals.supabase = createSupabaseServerClient({
 		supabaseUrl: PUBLIC_SUPABASE_URL,
 		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
 		event
 	});
+	console.log(event);
 
 	/**
 	 * a little helper that is written for convenience so that instead
@@ -21,6 +23,7 @@ const sessionCheck: Handle = async ({ event, resolve }) => {
 		const {
 			data: { session }
 		} = await event.locals.supabase.auth.getSession();
+		console.log(session);
 		return session;
 	};
 
