@@ -52,6 +52,7 @@ import { AuthApiError } from '@supabase/supabase-js';
 export const actions: Actions = {
 	login: async ({ request, locals: { supabase } }) => {
 		const formData = await request.formData();
+		console.log(formData);
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
@@ -61,6 +62,7 @@ export const actions: Actions = {
 		});
 
 		if (error) {
+			console.log(error);
 			if (error instanceof AuthApiError && error.status === 400) {
 				return fail(400, {
 					error: 'Invalid credentials.',
