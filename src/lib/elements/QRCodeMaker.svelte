@@ -7,7 +7,7 @@
 	export let floor: string;
 
 	//TODO zadat aktuální adresu
-	const url_string: string = '';
+	const url_string: string = 'https://ghbnav.cz';
 
 	onMount(() => {
 		//@ts-ignore

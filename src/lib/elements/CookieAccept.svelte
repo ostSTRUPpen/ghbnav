@@ -25,8 +25,8 @@
 {#if !acceptedCookies}
 	<div class="toast toast-center">
 		<div class="alert alert-info">
-			<p class="text-sm sm:text-sm md:text-lg lg:text-xl">
-				Tato stránka využívá soubory cookies pro zajištění správné funkcionality.
+			<p class="text-ellipsis text-sm md:text-lg lg:text-xl">
+				Tato stránka využívá soubory cookies <br class="sm:hidden" /> pro zajištění správné funkcionality.
 			</p>
 			<button class="btn btn-success" on:click={saveCookieAccept}>Rozumím</button>
 		</div>

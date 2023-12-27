@@ -78,7 +78,7 @@
 				{:else}
 					<li>
 						<a
-							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-md sm:text-xl"
+							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-md sm:text-xl max-sm:hidden"
 							href="{base}/auth"
 							target="_self"
 							rel="nofollow"

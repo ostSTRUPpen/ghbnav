@@ -318,7 +318,7 @@
 			};
 			map = L.map('map', {
 				crs: L.CRS.Simple, // CRS.Simple, which represents a square grid:
-				minZoom: -5,
+				minZoom: -4,
 				maxZoom: 0,
 				layers: [Object.values(floors)[fromMarkerFloor]],
 				maxBounds: L.latLngBounds(L.latLng(-1000, 11000), L.latLng(5000, -1000)),

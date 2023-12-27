@@ -20,6 +20,7 @@ import telovychova from '$lib/images/icons/markers/telovychova.png';
 import zachody from '$lib/images/icons/markers/zachody.png';
 import satny from '$lib/images/icons/markers/satny.png';
 import schody from '$lib/images/icons/markers/schody.png';
+import vv_a_hv from '$lib/images/icons/markers/vv_a_hv.png';
 
 export const iconImages: Record<string, string> = {
 	administrace: administrace,
@@ -30,6 +31,7 @@ export const iconImages: Record<string, string> = {
 	prostory: prostory,
 	sluzby: sluzby,
 	specializovane_ucebny: specializovane_ucebny,
+	vv_a_hv: vv_a_hv,
 	telovychova: telovychova,
 	zachody: zachody,
 	satny: satny,
@@ -42,8 +44,8 @@ export { floor_0, floor_1, floor_2, floor_3, floor_4 };
 export function getMarkerIcons(L, icons) {
 	const NavIcon = L.Icon.extend({
 		options: {
-			iconSize: [25, 25], // size of the icon
-			iconAnchor: [12.5, 12.5], // point of the icon which will correspond to marker's location
+			iconSize: [30, 30], // size of the icon
+			iconAnchor: [15, 15], // point of the icon which will correspond to marker's location
 			popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
 		}
 	});
