@@ -20,3 +20,4 @@ build
 package
 .eslintignore
 ghbnav.code-workspace
+droplet_backup

@@ -17,6 +17,7 @@
 	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
 	import { base } from '$app/paths';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
+	import Loading from '$lib/elements/Loading.svelte';
 	export let data;
 
 	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = data;
@@ -24,7 +25,8 @@
 
 	let from: string = '',
 		to: string = '',
-		fromMarkerFloor: number = 1;
+		fromMarkerFloor: number = 1,
+		loading = true;
 
 	from = $page.params.from;
 	to = $page.params.to;
@@ -52,7 +54,6 @@
 	let errMsg: string = '';
 
 	let map: any;
-	let popup: any;
 
 	function createMarkers(
 		L: any,
@@ -224,8 +225,6 @@
 				[1915, 8868]
 			]);
 
-			popup = L.popup();
-
 			let markerList: any = [];
 			let pathList: any = [];
 			let canDrawPath: boolean = false;
@@ -330,7 +329,8 @@
 			]);
 
 			L.control.layers(floors).addTo(map);
-
+			loading = false;
+			loading = loading;
 			if (state === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
@@ -357,11 +357,6 @@
 			}
 		}
 	});
-
-	function onMapClick(e: any) {
-		popup.setLatLng(e.latlng).setContent(e.latlng.toString()).openOn(map);
-	}
-
 	function resizeMap() {
 		if (map) {
 			map.invalidateSize();
@@ -382,6 +377,9 @@
 				{iconImageDisplayNames}
 			/>
 		</div>
+		{#if loading}
+			<Loading />
+		{/if}
 		{#if error}
 			<p class="error_msg">{errMsg}</p>
 		{:else}

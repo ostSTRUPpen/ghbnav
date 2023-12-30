@@ -23,7 +23,6 @@
 	}
 	function navTo() {
 		if (buttonType === 'no_from-to') {
-			//FIX?ME Určitě musí existovat lepší způsob
 			foundPath.update((n) => (n = ['']));
 			goto(`${base}/loading`).then(() => goto(`${base}/map/${id}`));
 		} else if (buttonType === 'no_to') {
@@ -40,7 +39,6 @@
 </script>
 
 <div>
-	<!---->
 	<p class="text-lg text-center">{text}</p>
 	{#if canNav}
 		<button class="btn btn-secondary" on:click={navTo}>{buttonText}</button>

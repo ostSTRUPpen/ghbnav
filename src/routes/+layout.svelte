@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import type { LayoutData } from './$types';
@@ -9,8 +10,6 @@
 	import AboutMe from '$lib/elements/AboutMe.svelte';
 
 	export let data: LayoutData;
-
-	let darkMode: boolean;
 
 	$: ({ supabase, session } = data);
 
@@ -100,6 +99,8 @@
 </main>
 
 <footer>
-	<CookieAccept />
+	{#if !(/\/map/.test($page.url.pathname) || /\/loading/.test($page.url.pathname) || /\/sec/.test($page.url.pathname))}
+		<CookieAccept />
+	{/if}
 	<AboutMe />
 </footer>
