@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // floor plans
-import floor_0 from '$lib/images/floor_0.jpg';
-import floor_1 from '$lib/images/floor_1.jpg';
-import floor_2 from '$lib/images/floor_2.jpg';
-import floor_3 from '$lib/images/floor_3.jpg';
-import floor_4 from '$lib/images/floor_4.jpg';
+import floor_0 from '$lib/images/floors/floor_0.jpg';
+import floor_1 from '$lib/images/floors/floor_1.jpg';
+import floor_2 from '$lib/images/floors/floor_2.jpg';
+import floor_3 from '$lib/images/floors/floor_3.jpg';
+import floor_4 from '$lib/images/floors/floor_4.jpg';
 
 // icons
 import administrace from '$lib/images/icons/markers/administrace.png';
