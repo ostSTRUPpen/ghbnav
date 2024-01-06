@@ -25,7 +25,7 @@
 	});
 </script>
 
-<header class="print:hidden pb-10">
+<header class="print:hidden sm:pb-5 md:pb-10">
 	<!--<div
 		class="max-sm:bg-red-300 sm:bg-green-300 md:bg-blue-300 lg:bg-black xl:bg-orange-500 2xl:bg-yellow-300"
 	>
@@ -46,7 +46,7 @@
 			<ul class="menu menu-horizontal space-x-1">
 				<li>
 					<a
-						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-md sm:text-xl"
+						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
 						href="{base}/map"
 						target="_self"
 						rel="next"
@@ -57,7 +57,7 @@
 				{#if session}
 					<li>
 						<a
-							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-md sm:text-xl"
+							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
 							href="{base}/sec"
 							target="_self"
 							rel="nofollow"

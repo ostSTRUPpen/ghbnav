@@ -367,8 +367,8 @@
 <svelte:window on:resize={resizeMap} />
 
 <main>
-	<div class="space-y-5">
-		<div class="max-lg:flex max-lg:justify-center lg:px-5">
+	<div>
+		<div class="max-lg:flex max-lg:justify-center lg:px-5 pb-2">
 			<PathSelection
 				locations={markers}
 				navFrom={from}
