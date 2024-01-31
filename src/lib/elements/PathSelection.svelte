@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import { foundPath } from '$lib/data/store.js';
+	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
 
 	let preparedLocations: Array<any> = [];
 
@@ -9,12 +9,21 @@
 		navFrom: string = '',
 		navTo: string = '',
 		showClearNavButton: boolean = false,
-		iconImageDisplayNames: object;
+		iconImageDisplayNames: object,
+        printQR: boolean = false;
 
 	let isDisabled: boolean = true;
 
 	function navFromTo() {
-		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
+        if(printQR){ 
+            //TODO nahradit ">" za šipku
+            printMarkersList.update((n) => (n = [[`${navFrom}/${navTo}`, `${locations.find((obj) => obj.id === navFrom)?.display_name} > ${locations.find((obj) => obj.id === navTo)?.display_name}`, '']]));
+            printSettingsString.update((n) => (n = 'path'));
+            goto(`${base}/sec/markers/print`, { replaceState: true });
+        }
+        else {
+		    goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
+        }
 	}
 	function clearNav() {
 		foundPath.update((n) => (n = ['']));

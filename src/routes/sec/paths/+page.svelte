@@ -9,6 +9,7 @@
 	import { updatePath } from '$lib/functions/presetPathManagementFunctions.js';
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
+    import PathSelection from '$lib/elements/PathSelection.svelte';
 
 	export let data;
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
@@ -183,6 +184,13 @@
 				>
 			</tfoot>
 		</table>
+	</div>
+    <div class="divider">Generování vlastních cest</div>
+    <!--//TODO přidat výběr bod->bod nebo bod->skupina nebo skupina->bod 
+        //TODO Udělat element pro výběr skupina bod
+    -->
+    <div class="flex justify-center max-2xl:col-span-2">
+		<PathSelection {locations} {iconImageDisplayNames} printQR={true}/>
 	</div>
 
 	<div class="divider">Uložené často používané cesty</div>

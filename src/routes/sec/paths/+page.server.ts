@@ -11,7 +11,8 @@ export async function load() {
 	const { data: stored_paths, error: dynamic_paths_error } = await supabase
 		.from('stored_paths')
 		.select('id, start_node, end_node, count, hidden')
-		.order('count', { ascending: false });
+		.order('count', { ascending: false })
+        .limit(5);
 	if (dynamic_paths_error) console.error(dynamic_paths_error);
 
 	const { data: preset_paths, error: preset_path_error } = await supabase
