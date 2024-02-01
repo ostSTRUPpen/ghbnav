@@ -7,9 +7,9 @@
 	import { onMount } from 'svelte';
 
 	let printData: Array<Array<string>> | Array<string> = [];
-    let printSettings: string = "";
+	let printSettings: string = '';
 	printMarkersList.subscribe((value: string[] | string[][]) => (printData = value));
-    printSettingsString.subscribe((value: string) => (printSettings = value));
+	printSettingsString.subscribe((value: string) => (printSettings = value));
 
 	let dialog: any;
 
@@ -24,7 +24,8 @@
 		const theme = document.querySelector('html')?.getAttribute('printData-theme');
 		document.querySelector('html')?.setAttribute('printData-theme', 'ghb_light');
 		window.print();
-		if (typeof theme == 'string') document.querySelector('html')?.setAttribute('printData-theme', theme);
+		if (typeof theme == 'string')
+			document.querySelector('html')?.setAttribute('printData-theme', theme);
 	}
 </script>
 
@@ -40,10 +41,15 @@
 <div class="px-5 print:hidden">
 	<button class="btn btn-info" on:click={startPrint}>Tisk</button>
 	<br />
-	<SecureAnchor page={'/markers'} text={'Zpět'} /> <br />
+	<SecureAnchor page={'/'} text={'Zpět'} /> <br />
 </div>
 <div>
 	{#each printData as markerInfo}
-		<QrCodeMaker id={markerInfo[0]} name={markerInfo[1]} floor={markerInfo[2]} settings={printSettings} />
+		<QrCodeMaker
+			id={markerInfo[0]}
+			name={markerInfo[1]}
+			floor={markerInfo[2]}
+			settings={printSettings}
+		/>
 	{/each}
 </div>

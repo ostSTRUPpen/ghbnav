@@ -12,7 +12,7 @@ export async function load() {
 		.from('stored_paths')
 		.select('id, start_node, end_node, count, hidden')
 		.order('count', { ascending: false })
-        .limit(5);
+		.limit(5);
 	if (dynamic_paths_error) console.error(dynamic_paths_error);
 
 	const { data: preset_paths, error: preset_path_error } = await supabase

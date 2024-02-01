@@ -9,7 +9,8 @@
 	import { updatePath } from '$lib/functions/presetPathManagementFunctions.js';
 	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
-    import PathSelection from '$lib/elements/PathSelection.svelte';
+	import PathSelection from '$lib/elements/PathSelection.svelte';
+	import PathGenerator from '$lib/elements/PathGenerator.svelte';
 
 	export let data;
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
@@ -19,6 +20,7 @@
 	let loadingDialog: any;
 	let errorDialog: any;
 	let errors: SerializedServerResponse[] = [];
+	let pathSelectorChosen: string = 'bod_bod';
 
 	onMount(() => {
 		successDialog = document.getElementById('success-dialog');
@@ -185,14 +187,39 @@
 			</tfoot>
 		</table>
 	</div>
-    <div class="divider">Generování vlastních cest</div>
-    <!--//TODO přidat výběr bod->bod nebo bod->skupina nebo skupina->bod 
-        //TODO Udělat element pro výběr skupina bod
-    -->
-    <div class="flex justify-center max-2xl:col-span-2">
-		<PathSelection {locations} {iconImageDisplayNames} printQR={true}/>
+	<div class="divider">Generování vlastních cest</div>
+	<div>
+		<h2 class="text-3xl">Generování vlastních cest</h2>
+		{#each ['bod_bod', 'bod_skupina', 'skupina_bod'] as pathSelectorType}
+			<label>
+				<input
+					type="radio"
+					name="path_selector_type"
+					value={pathSelectorType}
+					bind:group={pathSelectorChosen}
+				/>
+				{#if pathSelectorType === 'bod_bod'}
+					Výběr cesty z bodu A na bod B.
+				{:else if pathSelectorType === 'bod_skupina'}
+					Výběr cesty z bodu A na skupinu B. (Generuje pro každý bod ze skupiny.)
+				{:else if pathSelectorType === 'skupina_bod'}
+					Výběr cesty z bodu A na skupinu B. (Generuje pro každý bod ze skupiny.)
+				{:else}
+					<p class="text-error">Došlo k chybě. Zkuste to prosím znovu</p>
+				{/if}
+			</label>
+			<br />
+		{/each}
+		{#if pathSelectorChosen === 'bod_bod'}
+			<div class="flex justify-center max-2xl:col-span-2">
+				<PathSelection {locations} {iconImageDisplayNames} printQR={true} />
+			</div>
+		{:else}
+			<div class="flex justify-center max-2xl:col-span-2">
+				<PathGenerator {locations} {iconImageDisplayNames} settings={pathSelectorChosen} />
+			</div>
+		{/if}
 	</div>
-
 	<div class="divider">Uložené často používané cesty</div>
 	<div class="overflow-x-auto px-5">
 		<h2 class="text-3xl">Uložené často používané cesty</h2>

@@ -140,7 +140,6 @@
 								{#each iconIdImageName as icon}
 									<option value={icon.id}>{icon.display_name} </option>{/each}
 							</select>
-							<!--TODO možná odstranit padding - záleží na ikonách-->
 							<img
 								src={iconImages[item.image]}
 								alt={item.display_name}
