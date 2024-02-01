@@ -5,10 +5,9 @@
 	export let id: string;
 	export let name: string;
 	export let floor: string;
-    export let settings: string = "marker";
+	export let settings: string = 'marker';
 
-	//TODO zadat aktuální adresu
-	const url_string: string = 'https://ghbnav.cz';
+	const url_string: string = 'https://mapa.ghb.cz';
 
 	onMount(() => {
 		//@ts-ignore
@@ -24,37 +23,37 @@
 	});
 </script>
 
-{#if settings == "marker"}
-<table class="shell">
-	<thead>
-		<tr class="cut_text">
-			<th class="cut_text">{name} - {floor}</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
-		</tr>
-		<tr><td class="link_text">{`${url_string}/map/${id}`}</td></tr>
-		<tr><td class="link_text">{url_string}</td></tr>
-	</tbody>
-</table>
-{:else if settings == "path"}
-<table class="shell">
-	<thead>
-		<tr class="cut_text">
-			<th class="cut_text">{name}</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
-		</tr>
-		<tr><td class="link_text">{url_string}</td></tr>
-	</tbody>
-</table>
+{#if settings == 'marker'}
+	<table class="shell">
+		<thead>
+			<tr class="cut_text">
+				<th class="cut_text">{name} - {floor}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
+			</tr>
+			<tr><td class="link_text">{`${url_string}/map/${id}`}</td></tr>
+			<tr><td class="link_text">{url_string}</td></tr>
+		</tbody>
+	</table>
+{:else if settings == 'path'}
+	<table class="shell">
+		<thead>
+			<tr class="cut_text">
+				<th class="cut_text">{name}</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
+			</tr>
+			<tr><td class="link_text">{url_string}</td></tr>
+		</tbody>
+	</table>
 {:else}
-    <p class="txt-error">Došlo k chybě - zkuste to prosím znovu.</p>
+	<p class="txt-error">Došlo k chybě - zkuste to prosím znovu.</p>
 {/if}
 
 <style>

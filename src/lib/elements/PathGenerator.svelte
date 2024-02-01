@@ -114,7 +114,15 @@
 	{:else}
 		<div>
 			<h2 class="text-xl">Generování cest ze skupiny do budu</h2>
-			<select id="to" name="to" bind:value={navTo} class="select select-bordered w-full max-w-xs">
+			<label for="from" class="label">
+				<span class="label-text">Odkud: </span>
+			</label>
+			<select
+				id="from"
+				name="from"
+				bind:value={navFrom}
+				class="select select-bordered w-full max-w-xs"
+			>
 				<option value="0" disabled selected>--Prosím vyberte startovací skupinu cesty--</option>
 				{#each preparedGroups as group}
 					<option value={group.id}>{group.name}</option>
@@ -123,12 +131,7 @@
 			<label for="to" class="label">
 				<span class="label-text">Kam: </span>
 			</label>
-			<select
-				id="from"
-				name="from"
-				bind:value={navFrom}
-				class="select select-bordered w-full max-w-xs"
-			>
+			<select id="to" name="to" bind:value={navTo} class="select select-bordered w-full max-w-xs">
 				<option value="0" disabled selected>--Prosím vyberte konečný bod cesty--</option>
 				{#each preparedLocations as location}
 					{#if location.can_nav !== false}

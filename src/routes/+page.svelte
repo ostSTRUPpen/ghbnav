@@ -3,7 +3,6 @@
 	import PathsTable from '$lib/elements/PathsTable.svelte';
 
 	/* TODO
-		Upravit pro docker
 		Až to bude připravené na publikaci, tak vymazat všechny uložené cesty
 		Rozdat všude QR kódy
 	*/

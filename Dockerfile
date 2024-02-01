@@ -17,11 +17,10 @@ WORKDIR /app
 COPY --from=builder /app/build build/
 COPY --from=builder /app/node_modules node_modules/
 COPY package.json .
-EXPOSE 5173
-# FIXME
+EXPOSE 3000
 # If set (or changed) in docker run -> 404 on any +page content (+layout works fine...)
 # If not set -> login and logout fails
 # If set before the image creation and matches the real url -> everything works
-ENV ORIGIN=http://localhost:5173 
+ENV ORIGIN=https://mapa.ghb.cz
 ENV NODE_ENV=production
 CMD [ "node", "build" ]

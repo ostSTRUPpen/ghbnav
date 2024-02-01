@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
-	import { printMarkersList } from '$lib/data/store.js';
+	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import { iconImages } from '$lib/data/markerIcons.js';
 
 	export let data;
@@ -89,20 +89,10 @@
 
 	function printQRs() {
 		printMarkersList.update((n) => (n = localPrintMarkersList));
+		printSettingsString.update((n) => (n = 'marker'));
 		saveChanges(false);
 		goto(`${base}/sec/markers/print`, { replaceState: true });
 	}
-
-	//Table design functions and variables
-	/*let lastFloor: number = 0;
-	function checkForFloorChange(markerFloor: number) {
-		if (markerFloor === lastFloor) {
-			return '';
-		} else {
-			lastFloor = markerFloor;
-			return 'changed_floors';
-		}
-	}*/
 </script>
 
 <dialog id="loading-dialog" class="modal">
