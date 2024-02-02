@@ -7,7 +7,7 @@
 		showCount: boolean = true;
 
 	function navFromTo(navFrom: string, navTo: string) {
-		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
+		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`,{ replaceState: true }));
 	}
 </script>
 

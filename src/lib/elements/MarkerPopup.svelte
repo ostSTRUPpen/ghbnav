@@ -24,12 +24,12 @@
 	function navTo() {
 		if (buttonType === 'no_from-to') {
 			foundPath.update((n) => (n = ['']));
-			goto(`${base}/loading`).then(() => goto(`${base}/map/${id}`));
+			goto(`${base}/loading`).then(() => goto(`${base}/map/${id}`, { replaceState: true }));
 		} else if (buttonType === 'no_to') {
-			goto(`${base}/loading`).then(() => goto(`${base}/map/${fromNodeId}/${id}`));
+			goto(`${base}/loading`).then(() => goto(`${base}/map/${fromNodeId}/${id}`, { replaceState: true }));
 		} else if (buttonType === 'ready') {
 			goto(`${base}/loading`).then(() => {
-				goto(`${base}/map/${fromNodeId}/${id}`);
+				goto(`${base}/map/${fromNodeId}/${id}`, { replaceState: true });
 			});
 		} else if (canNav === false) {
 		} else {

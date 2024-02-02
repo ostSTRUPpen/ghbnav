@@ -31,13 +31,13 @@
 			printSettingsString.update((n) => (n = 'path'));
 			goto(`${base}/sec/markers/print`, { replaceState: true });
 		} else {
-			goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`));
+			goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`, { replaceState: true }));
 		}
 	}
 	function clearNav() {
 		foundPath.update((n) => (n = ['']));
 		goto(`${base}/loading`).then(() => {
-			goto(`${base}/map`);
+			goto(`${base}/map`, { replaceState: true });
 		});
 	}
 

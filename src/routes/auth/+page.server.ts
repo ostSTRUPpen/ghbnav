@@ -55,6 +55,23 @@ export const actions: Actions = {
 		const email = formData.get('email') as string;
 		const password = formData.get('password') as string;
 
+        if(!email || email.length>22 || !email.match(/^.+@.+\..+$/)){
+            return fail(400, {
+                error: 'Špatně zadané přihlašovací údaje',
+                values: {
+                    email
+                }
+            });
+        }
+        if(!password || password.length>50) {
+            return fail(400, {
+                error: 'Špatně zadané přihlašovací údaje',
+                values: {
+                    email
+                }
+            });
+        }
+
 		const { error } = await supabase.auth.signInWithPassword({
 			email,
 			password
@@ -64,7 +81,7 @@ export const actions: Actions = {
 			console.error(error);
 			if (error instanceof AuthApiError && error.status === 400) {
 				return fail(400, {
-					error: 'Invalid credentials.',
+					error: 'Špatně zadané přihlašovací údaje',
 					values: {
 						email
 					}

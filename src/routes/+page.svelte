@@ -3,11 +3,6 @@
 	import PathsTable from '$lib/elements/PathsTable.svelte';
 
 	/* TODO
-		Zkusit caching
-		Nějak upravit display uložených cest (pokud skryje 1. pět, tak nemůže už skrýt další 
-		(protože on je neuvidí (myslím - možná je stejná úprava potřeba i u zobrazení public)))
-		-Asi u něj nějaký přepínač pro zobrazení skrytých a public prostě už netahání skrytých z db
-
 		Až to bude připravené na publikaci, tak vymazat všechny uložené cesty
 		
 		Napsat článek

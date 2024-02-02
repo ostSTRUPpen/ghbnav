@@ -334,7 +334,7 @@
 			if (state === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
-					goto(`${base}/loading`).then(() => goto(`${base}/map/${from}`));
+					goto(`${base}/loading`).then(() => goto(`${base}/map/${from}`, { replaceState: true }));
 				} else if (
 					currentFoundPath[0] !== from ||
 					currentFoundPath[currentFoundPath.length - 1] !== to
@@ -350,7 +350,7 @@
 						foundPath.update((n) => (n = response.path));
 						const data = await savePath(from, to, response.path);
 						goto(`${base}/loading`).then(() => {
-							goto(`${base}/map/${from}/${to}`);
+							goto(`${base}/map/${from}/${to}`, { replaceState: true });
 						});
 					}
 				}
