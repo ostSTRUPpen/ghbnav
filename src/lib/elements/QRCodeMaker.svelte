@@ -39,10 +39,10 @@
 		</tbody>
 	</table>
 {:else if settings == 'path'}
-	<table class="shell">
+	<table class="no_cut_shell">
 		<thead>
-			<tr class="cut_text">
-				<th class="cut_text">{name}</th>
+			<tr class="no_cut_text">
+				<th class="no_cut_text">{name}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -63,6 +63,12 @@
 		margin: 10px 10px 10px 10px;
 	}
 
+	.no_cut_shell {
+		float: left;
+		border: 1px black solid;
+		margin: 10px 10px 10px 10px;
+	}
+
 	.qrcode_td {
 		/*padding: 10px 10px 10px 10px;*/
 		text-align: center;
@@ -73,6 +79,10 @@
 	}
 	.cut_text {
 		border-bottom: 1px black dashed;
+		padding: 10px 10px 10px 10px;
+	}
+	.no_cut_text {
+		border-bottom: 1px black solid;
 		padding: 10px 10px 10px 10px;
 	}
 	.link_text {
@@ -87,8 +97,15 @@
 	}
 	@media print {
 		.shell {
+			color: black;
 			float: left;
 			border: 1px black dashed;
+			margin: 5px 5px 5px 5px;
+		}
+		.no_cut_shell {
+			color: black;
+			float: left;
+			border: 1px black solid;
 			margin: 5px 5px 5px 5px;
 		}
 		#qrcode {
@@ -105,6 +122,10 @@
 		}
 		.cut_text {
 			border-bottom: 1px black dashed;
+			padding: 5px 5px 5px 5px;
+		}
+		.no_cut_text {
+			border-bottom: 1px black solid;
 			padding: 5px 5px 5px 5px;
 		}
 		.link_text {
