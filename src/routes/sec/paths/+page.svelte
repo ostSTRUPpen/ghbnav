@@ -189,12 +189,13 @@
 	</div>
 	<div class="divider">Generování vlastních cest</div>
 	<div>
-		<h2 class="text-3xl">Generování vlastních cest</h2>
+		<h2 class="text-3xl py-5">Generování vlastních cest</h2>
 		{#each ['bod_bod', 'bod_skupina', 'skupina_bod'] as pathSelectorType}
 			<label>
 				<input
 					type="radio"
 					name="path_selector_type"
+                    class="radio radio-secondary radio-xs"
 					value={pathSelectorType}
 					bind:group={pathSelectorChosen}
 				/>
@@ -211,11 +212,11 @@
 			<br />
 		{/each}
 		{#if pathSelectorChosen === 'bod_bod'}
-			<div class="flex justify-center max-2xl:col-span-2">
+			<div class="flex justify-center max-2xl:col-span-2 py-2">
 				<PathSelection {locations} {iconImageDisplayNames} printQR={true} />
 			</div>
 		{:else}
-			<div class="flex justify-center max-2xl:col-span-2">
+			<div class="flex justify-center max-2xl:col-span-2 py-2">
 				<PathGenerator {locations} {iconImageDisplayNames} settings={pathSelectorChosen} />
 			</div>
 		{/if}
