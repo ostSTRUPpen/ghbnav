@@ -204,7 +204,7 @@
 				{:else if pathSelectorType === 'bod_skupina'}
 					Výběr cesty z bodu A na skupinu B. (Generuje pro každý bod ze skupiny.)
 				{:else if pathSelectorType === 'skupina_bod'}
-					Výběr cesty z bodu A na skupinu B. (Generuje pro každý bod ze skupiny.)
+					Výběr cesty ze skupiny A do bodu B. (Generuje pro každý bod ze skupiny.)
 				{:else}
 					<p class="text-error">Došlo k chybě. Zkuste to prosím znovu</p>
 				{/if}

@@ -113,7 +113,7 @@
 		</div>
 	{:else}
 		<div>
-			<h2 class="text-xl">Generování cest ze skupiny do budu</h2>
+			<h2 class="text-xl">Generování cest ze skupiny do bodu</h2>
 			<label for="from" class="label">
 				<span class="label-text">Odkud: </span>
 			</label>

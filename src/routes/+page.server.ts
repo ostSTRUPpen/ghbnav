@@ -3,7 +3,7 @@ import { supabase } from '$lib/supabaseClient';
 export async function load({ setHeaders }) {
 
     setHeaders({
-      'Cache-Control': `max-age=0, s-maxage=${60}`,
+      'Cache-Control': `max-age=${60}, s-maxage=${60}`,
     })
 
 

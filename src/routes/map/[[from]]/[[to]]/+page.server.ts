@@ -9,7 +9,7 @@ export async function load({ setHeaders }) {
 	const { data: markers, error } = await supabase
 		.from('markers')
 		.select('id, x, y, display_name, floor, icon, can_nav, icons(position)')
-        .eq('can_nav', true)
+        //.eq('can_nav', true) Nezobrazí se v mapě
 		.order('icons (position)', { ascending: true })
 		.order('floor', { ascending: true })
 		.order('display_name', { ascending: true });

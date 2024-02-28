@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { onMount } from 'svelte';
+    import QR from '@svelte-put/qr/img/QR.svelte';
 
 	export let id: string;
 	export let name: string;
@@ -9,7 +10,7 @@
 
 	const url_string: string = 'https://mapa.ghb.cz';
 
-	onMount(() => {
+	/*onMount(() => {
 		//@ts-ignore
 		const qrcode = new QRCode(document.getElementById(`qr${id}`), {
 			text: `${url_string}${base}/map/${id}`,
@@ -20,7 +21,7 @@
 			//@ts-ignore
 			correctLevel: QRCode.CorrectLevel.H
 		});
-	});
+	});*/
 </script>
 
 {#if settings == 'marker'}
@@ -31,9 +32,18 @@
 			</tr>
 		</thead>
 		<tbody>
-			<tr>
+            <tr>
+                <!--TODO zkusit funkčnost-->
+            <QR
+  data={`${url_string}${base}/map/${id}`}
+  moduleFill="violet"
+  anchorOuterFill="red"
+  anchorInnerFill="violet"
+/>
+</tr>
+			<!--<tr>
 				<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
-			</tr>
+			</tr>-->
 			<tr><td class="link_text">{`${url_string}/map/${id}`}</td></tr>
 			<tr><td class="link_text">{url_string}</td></tr>
 		</tbody>
