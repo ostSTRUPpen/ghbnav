@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { base } from '$app/paths';
-	import { onMount } from 'svelte';
-    import QR from '@svelte-put/qr/img/QR.svelte';
+	//https://svelte-put.vnphanquang.com/docs/qr
+	// @ts-nocheck
+	import QR from '@svelte-put/qr/img/QR.svelte';
+	const dev = import.meta.env.DEV;
 
 	export let id: string;
 	export let name: string;
@@ -9,19 +10,13 @@
 	export let settings: string = 'marker';
 
 	const url_string: string = 'https://mapa.ghb.cz';
+	let url: string = '';
 
-	/*onMount(() => {
-		//@ts-ignore
-		const qrcode = new QRCode(document.getElementById(`qr${id}`), {
-			text: `${url_string}${base}/map/${id}`,
-			width: 305,
-			height: 305,
-			colorDark: '#000000',
-			colorLight: '#ffffff',
-			//@ts-ignore
-			correctLevel: QRCode.CorrectLevel.H
-		});
-	});*/
+	if (dev) {
+		url = 'http://localhost:5173';
+	} else {
+		url = url_string;
+	}
 </script>
 
 {#if settings == 'marker'}
@@ -32,38 +27,37 @@
 			</tr>
 		</thead>
 		<tbody>
-            <tr>
-                <!--TODO zkusit funkčnost-->
-            <QR
-  data={`${url_string}${base}/map/${id}`}
-  moduleFill="violet"
-  anchorOuterFill="red"
-  anchorInnerFill="violet"
-/>
-</tr>
-			<!--<tr>
-				<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
-			</tr>-->
-			<tr><td class="link_text">{`${url_string}/map/${id}`}</td></tr>
-			<tr><td class="link_text">{url_string}</td></tr>
+			<tr>
+				<td class="flex justify-center qrcode_td">
+					<QR data={`${url_string}/map/${id}`} logo={`${url}/qr_icon.svg`} shape="square" let:src>
+						<img {src} alt="qr" width="400" />
+					</QR>
+				</td>
+			</tr>
+			<tr><td class="link_text text-sm">{`${url_string}/map/${id}`}</td></tr>
+			<tr><td class="link_text text-lg">{url_string}</td></tr>
 		</tbody>
 	</table>
 {:else if settings == 'path'}
 	<table class="no_cut_shell">
 		<thead>
 			<tr class="no_cut_text">
-				<th class="no_cut_text">{name}</th>
+				<th class="no_cut_text text-2xl">{name}</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr>
-				<th class="flex justify-center qrcode_td"><div id={`qr${id}`} /></th>
+				<td class="flex justify-center qrcode_td">
+					<QR data={`${url_string}/map/${id}`} logo={`${url}/qr_icon.svg`} shape="square" let:src>
+						<img {src} alt="qr" width="300" />
+					</QR>
+				</td>
 			</tr>
-			<tr><td class="link_text">{url_string}</td></tr>
+			<tr><td class="link_text text-lg">{url_string}</td></tr>
 		</tbody>
 	</table>
 {:else}
-	<p class="txt-error">Došlo k chybě - zkuste to prosím znovu.</p>
+	<p class="text-error text-xl flex justify-center">Došlo k chybě - zkuste to prosím znovu.</p>
 {/if}
 
 <style>
@@ -117,10 +111,6 @@
 			float: left;
 			border: 1px black solid;
 			margin: 5px 5px 5px 5px;
-		}
-		#qrcode {
-			width: 128px;
-			height: 128px;
 		}
 		.qrcode_td {
 			/*padding: 5px 5px 5px 5px;*/

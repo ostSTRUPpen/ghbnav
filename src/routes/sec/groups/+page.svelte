@@ -1,5 +1,4 @@
 <script lang="ts">
-	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import { dndzone } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { iconImages } from '$lib/data/markerIcons';
@@ -66,7 +65,8 @@
 <dialog id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
-		<p class="text-lg py-4">Skupiny úspěšně upraveny.</p>
+		<p class="text-lg py-4">Skupiny úspěšně upraveny</p>
+		<p class="font-bold text-lg text-warning">Změny se projeví až po pěti minutách!</p>
 		<button
 			on:click={() => {
 				successDialog.close();
@@ -99,7 +99,7 @@
 
 <div class="space-y-5">
 	<div class="px-5">
-		<SecureAnchor page={''} text={'Zpět'} /> <br />
+		<a class="link-secondary link text-xl" href="/sec">Zpět</a>
 	</div>
 	<div class="divider" />
 	<div class="overflow-x-auto px-5">

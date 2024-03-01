@@ -152,6 +152,7 @@
 		}
 		return lineList;
 	}*/
+
 	function drawPath(path: any, markers: any, navMarkers: any, floor: number) {
 		let lineList: Array<Array<Array<string>>> = [];
 		let floorLineList: Array<Array<string>> = [];
@@ -183,6 +184,10 @@
 				}
 			}
 		}
+		/*TODO přidám proměnou stairsFloors, která bude obsahovat id schodiště a zda má jít nahoru nebo dolů
+		Tento objekt předám markers list a schodiště si to odchytí a místo tlačítka pro změnu cíle budou mít tlačítko pro změnu patra
+		PROBLÉM! neumím měnit patra softwareově
+		*/
 		lineList.push(floorLineList);
 
 		return {

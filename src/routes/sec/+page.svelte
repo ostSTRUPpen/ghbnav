@@ -1,15 +1,10 @@
-<script lang="ts">
-	import { base } from '$app/paths';
-	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
-</script>
-
 <div class="text-center">
 	<h2 class="text-3xl py-5 text-primary">Dobrý den!</h2>
-	<SecureAnchor page={`${base}/markers`} text={'Značky'} />
+	<a class="link-secondary link text-xl" href="/sec/markers">Značky</a>
 	<br />
 	<br />
-	<SecureAnchor page={`${base}/paths`} text={'Cesty'} />
+	<a class="link-secondary link text-xl" href="/sec/paths">Cesty</a>
 	<br />
 	<br />
-	<SecureAnchor page={`${base}/groups`} text={'Skupiny'} />
+	<a class="link-secondary link text-xl" href="/sec/groups">Skupiny</a>
 </div>

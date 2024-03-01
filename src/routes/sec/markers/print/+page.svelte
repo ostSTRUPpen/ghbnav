@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
 	import { printMarkersList, printSettingsString } from '$lib/data/store';
 	import QrCodeMaker from '$lib/elements/QRCodeMaker.svelte';
-	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import { onMount } from 'svelte';
 
 	let printData: Array<Array<string>> | Array<string> = [];
@@ -34,14 +32,14 @@
 	<button
 		on:click={() => {
 			dialog.close();
-			goto(`${base}/sec`, { replaceState: true });
+			goto('/sec', { replaceState: true });
 		}}>Ok</button
 	>
 </dialog>
 <div class="px-5 print:hidden">
 	<button class="btn btn-info" on:click={startPrint}>Tisk</button>
 	<br />
-	<SecureAnchor page={'/'} text={'Zpět'} /> <br />
+	<a class="link-secondary link text-xl" href="/sec">Zpět</a>
 </div>
 <div>
 	{#each printData as markerInfo}

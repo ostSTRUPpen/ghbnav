@@ -1,5 +1,4 @@
 <script lang="ts">
-	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import { changeMarker } from '../../../lib/functions/markerManagementFunctions.js';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -68,7 +67,7 @@
 	}
 
 	function cancelChanges() {
-		goto(`${base}/sec`, { replaceState: true });
+		goto(`/sec`, { replaceState: true });
 	}
 
 	function addQRToPrint(id: string, name: string, floor: string, changeQR: boolean) {
@@ -91,7 +90,7 @@
 		printMarkersList.update((n) => (n = localPrintMarkersList));
 		printSettingsString.update((n) => (n = 'marker'));
 		saveChanges(false);
-		goto(`${base}/sec/markers/print`, { replaceState: true });
+		goto(`/sec/markers/print`, { replaceState: true });
 	}
 </script>
 
@@ -105,6 +104,7 @@
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Značky úspěšně upraveny.</p>
+		<p class="font-bold text-lg text-warning">Změny se projeví až po pěti minutách!</p>
 		<button
 			on:click={() => {
 				successDialog.close();
@@ -153,7 +153,7 @@
 			{/each}
 		</div>
 	</div>
-	<SecureAnchor page={''} text={'Zpět'} /> <br />
+	<a class="link-secondary link text-xl" href="/sec">Zpět</a> <br />
 	<button on:click={printQRs} class="btn btn-secondary">Tisk QR kódů</button>
 	<button on:click={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button>
 	<div class="divider" />

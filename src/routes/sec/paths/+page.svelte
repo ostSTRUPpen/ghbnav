@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
-	import SecureAnchor from '$lib/elements/SecureAnchor.svelte';
 	import {
 		deletePath,
 		updatePathVisibility
@@ -92,6 +91,7 @@
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Cesty úspěšně upraveny.</p>
+		<p class="font-bold text-lg text-warning">Změny se projeví až po pěti minutách!</p>
 		<button
 			on:click={() => {
 				successDialog.close();
@@ -124,7 +124,7 @@
 
 <div class="space-y-5">
 	<div class="px-5">
-		<SecureAnchor page={''} text={'Zpět'} /> <br />
+		<a class="link-secondary link text-xl" href="/sec">Zpět</a> <br />
 	</div>
 	<div class="divider" />
 	<div class="overflow-x-auto px-5">
@@ -195,7 +195,7 @@
 				<input
 					type="radio"
 					name="path_selector_type"
-                    class="radio radio-secondary radio-xs"
+					class="radio radio-secondary radio-xs"
 					value={pathSelectorType}
 					bind:group={pathSelectorChosen}
 				/>
