@@ -2,10 +2,20 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import Loading from '$lib/elements/Loading.svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
+    let returnToHomePage: boolean;
     onMount(()=> {
-        setTimeout(() => {goto(`${base}/`, { replaceState: true });}, 5000);
+        returnToHomePage = true;
+        setTimeout(() => {
+            if(returnToHomePage) {
+                goto(`${base}/`, { replaceState: true });
+            }
+        }, 10000);
+    })
+
+    onDestroy(() => {
+        returnToHomePage = false
     })
 </script>
 
