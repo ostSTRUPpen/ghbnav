@@ -14,7 +14,8 @@ export async function PATCH({ request, locals: { supabase, getSession } }): Prom
 				.update({
 					display_name: changedEndingPoint.display_name,
 					icon: changedEndingPoint.icon,
-					can_nav: changedEndingPoint.can_nav
+					can_nav: changedEndingPoint.can_nav,
+                    building_location: changedEndingPoint.building_location
 				})
 				.eq('id', changedEndingPoint.id);
 			if (error) {

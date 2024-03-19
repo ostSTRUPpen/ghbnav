@@ -26,7 +26,7 @@
 	let from: string = '',
 		to: string = '',
 		fromMarkerFloor: number = 1,
-		loading = true;
+		loading = true, finalMarkerFloor: number = -5;
 
 	from = $page.params.from;
 	to = $page.params.to;
@@ -39,14 +39,18 @@
 	let state = 'no_from-to';
 	if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
 		state = 'ready';
+        finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor
 	} else if (from !== undefined && from.length > 5) {
 		state = 'no_to';
+        finalMarkerFloor = -5
 	}
 	$: {
 		if (from !== undefined && to !== undefined) {
 			state = 'ready';
+            finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor
 		} else if (from !== undefined) {
 			state = 'no_to';
+            finalMarkerFloor = -5
 		}
 	}
 
@@ -69,10 +73,10 @@
 			tempButtonType = mainButtonType;
 			if (marker.floor === floor) {
 				// If this if statement fails, the whole page fails to load - so I double check it
-				if (marker.icon !== '' && marker.icon in iconList) {
-					if (marker.can_nav === false) {
+				if (marker.can_nav === false) {
 						tempButtonType = 'do_not_nav';
 					}
+                if (marker.icon !== '' && marker.icon in iconList) {
 
 					markerList.push(
 						// All cords are YX... its not my fault
@@ -86,7 +90,9 @@
 										id: marker.id,
 										buttonType: tempButtonType,
 										fromNodeId,
-										canNav: marker.can_nav
+										canNav: marker.can_nav,
+                                        markerIcon: marker.icon,
+                                        moveToFloor: finalMarkerFloor,
 									}
 								});
 								return container;
@@ -94,9 +100,7 @@
 							.openPopup()
 					);
 				} else {
-					if (marker.can_nav === false) {
-						tempButtonType = 'do_not_nav';
-					}
+					
 					markerList.push(
 						// All cords are YX... its not my fault
 						L.marker([marker.y, marker.x])
@@ -109,7 +113,9 @@
 										id: marker.id,
 										buttonType: tempButtonType,
 										fromNodeId,
-										canNav: marker.can_nav
+										canNav: marker.can_nav,
+                                        markerIcon: marker.icon,
+                                        moveToFloor: finalMarkerFloor,
 									}
 								});
 								return container;
@@ -186,7 +192,7 @@
 		}
 		/*TODO přidám proměnou stairsFloors, která bude obsahovat id schodiště a zda má jít nahoru nebo dolů
 		Tento objekt předám markers list a schodiště si to odchytí a místo tlačítka pro změnu cíle budou mít tlačítko pro změnu patra
-		PROBLÉM! neumím měnit patra softwareově
+		PROBLÉM! neumím měnit patra přes software
 		*/
 		lineList.push(floorLineList);
 
@@ -205,6 +211,7 @@
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
+            //@ts-expect-error 
 			const textPath = await import('leaflet-textpath');
 			const markerIcons = getMarkerIcons(L, iconIdImage);
 			fromMarkerFloor = markers.find((obj) => obj.id === from)?.floor ?? 1;

@@ -3,7 +3,7 @@ import { supabase } from '$lib/supabaseClient';
 export async function load() {
 	const { data, error } = await supabase
 		.from('markers')
-		.select('id, display_name, floor, icon, can_nav, icons(position)')
+		.select('id, display_name, floor, icon, can_nav, building_location ,icons(position)')
 		.order('icons (position)', { ascending: true })
 		.order('floor', { ascending: true })
 		.order('display_name', { ascending: true });

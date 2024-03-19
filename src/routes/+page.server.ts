@@ -9,7 +9,7 @@ export async function load({ setHeaders }) {
 
 	const { data: markers, error: markers_error } = await supabase
 		.from('markers')
-		.select('id, display_name, floor, can_nav, icon, icons(position)')
+		.select('id, display_name, floor, can_nav, icon, building_location, icons(position)')
         .eq('can_nav', true)
 		.order('icons (position)', { ascending: true })
 		.order('floor', { ascending: true })

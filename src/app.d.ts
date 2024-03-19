@@ -36,11 +36,13 @@ declare global {
 		id: string;
 		display_name: string;
 		floor: number;
+        building_location: string
 		icon: string;
 		can_nav: boolean;
 		new_display_name: string;
 		new_icon: string;
 		new_can_nav: boolean;
+        new_building_location: string
 		genQR: boolean;
 	};
 }

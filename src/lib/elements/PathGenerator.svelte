@@ -48,7 +48,7 @@
 			}
 			preparedLocations.push({
 				id: location.id,
-				name: `${location.display_name} (Patro: ${location.floor})`,
+				name: `${location.display_name} (Patro: ${location.floor}, ${location.building_location})`,
 				can_nav: location.can_nav,
 				nav_group: location.icon,
 				disabled: false

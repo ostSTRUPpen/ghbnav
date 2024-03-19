@@ -5,6 +5,8 @@
 	import { base } from '$app/paths';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import { iconImages } from '$lib/data/markerIcons.js';
+	import { building } from '$app/environment';
+	import { buildingLocationsList } from '$lib/data/staticData.js';
 
 	export let data;
 	let { markers, iconList } = data;
@@ -19,11 +21,13 @@
 			id: marker.id,
 			display_name: marker.display_name,
 			floor: marker.floor,
+            building_location: marker.building_location,
 			icon: marker.icon,
 			can_nav: marker.can_nav,
 			new_display_name: marker.display_name,
 			new_icon: marker.icon,
 			new_can_nav: marker.can_nav,
+            new_building_location: marker.building_location,
 			genQR: false
 		});
 	}
@@ -44,13 +48,15 @@
 			if (
 				endingPoint.new_display_name !== '' ||
 				endingPoint.new_icon !== endingPoint.icon ||
-				endingPoint.new_can_nav !== endingPoint.can_nav
+				endingPoint.new_can_nav !== endingPoint.can_nav ||
+                endingPoint.new_building_location !== endingPoint.building_location
 			) {
 				changedEndingPoints.push({
 					id: endingPoint.id,
 					display_name: endingPoint.new_display_name,
 					icon: endingPoint.new_icon,
-					can_nav: endingPoint.new_can_nav
+					can_nav: endingPoint.new_can_nav,
+                    building_location: endingPoint.new_building_location
 				});
 			}
 		}
@@ -162,6 +168,7 @@
 	<thead>
 		<tr class="text-lg">
 			<th>Patro</th>
+            <th>Budova</th>
 			<th>Název značky</th>
 			<th>Ikona</th>
 			<th>Navigovatelný</th>
@@ -173,6 +180,19 @@
 			<!--<tr class={checkForFloorChange(endPoint.floor) + 'hover'}>-->
 			<tr class="hover">
 				<td class="text-xl text-primary">{endPoint.floor}</td>
+                <td class="text-xl text-primary"><select
+                    id="icon"
+                    bind:value={endPoint.new_building_location}
+                    class="select select-bordered w-full max-w-xs"
+                >
+                    {#each buildingLocationsList as buildingLocation}
+                        {#if endPoint.icon === buildingLocation.name}
+                            <option value={buildingLocation.name} selected>{buildingLocation.name}</option>
+                        {:else}
+                            <option value={buildingLocation.name}>{buildingLocation.name}</option>
+                        {/if}
+                    {/each}
+                </select></td>
 				<td
 					><input
 						type="text"
