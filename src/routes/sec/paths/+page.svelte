@@ -10,6 +10,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import PathGenerator from '$lib/elements/PathGenerator.svelte';
+	import { buildingLocationsList } from '$lib/data/staticData.js';
 
 	export let data;
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
@@ -46,7 +47,11 @@
 			}
 			preparedLocations.push({
 				id: location.id,
-				name: `${location.display_name} (Patro: ${location.floor}, ${location.building_location})`,
+				name: `${location.display_name} (Patro: ${location.floor}, ${
+					buildingLocationsList.filter(
+						(buildingLocation) => buildingLocation.name === location.building_location
+					)[0].displayName
+				})`,
 				can_nav: location.can_nav,
 				disabled: false
 			});

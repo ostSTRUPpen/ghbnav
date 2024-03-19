@@ -2,13 +2,6 @@
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import PathsTable from '$lib/elements/PathsTable.svelte';
 
-	/* TODO
-		Až to bude připravené na publikaci, tak vymazat všechny uložené cesty
-		
-		Napsat článek
-		Rozdat všude QR kódy
-	*/
-
 	export let data;
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
 	$: ({ locations, stored_paths, preset_paths, iconImageDisplayNames } = data);

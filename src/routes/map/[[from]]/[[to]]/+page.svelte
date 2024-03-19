@@ -18,15 +18,18 @@
 	import { base } from '$app/paths';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import Loading from '$lib/elements/Loading.svelte';
+	import type { LayerGroup, Map } from 'leaflet';
 	export let data;
 
 	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = data;
 	$: ({ markers, nav_markers, iconImageDisplayNames, iconIdImage } = data);
 
+	let floors: Record<string, LayerGroup>;
 	let from: string = '',
 		to: string = '',
 		fromMarkerFloor: number = 1,
-		loading = true, finalMarkerFloor: number = -5;
+		loading = true,
+		finalMarkerFloor: number = -5;
 
 	from = $page.params.from;
 	to = $page.params.to;
@@ -39,18 +42,18 @@
 	let state = 'no_from-to';
 	if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
 		state = 'ready';
-        finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor
+		finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
 	} else if (from !== undefined && from.length > 5) {
 		state = 'no_to';
-        finalMarkerFloor = -5
+		finalMarkerFloor = -5;
 	}
 	$: {
 		if (from !== undefined && to !== undefined) {
 			state = 'ready';
-            finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor
+			finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
 		} else if (from !== undefined) {
 			state = 'no_to';
-            finalMarkerFloor = -5
+			finalMarkerFloor = -5;
 		}
 	}
 
@@ -74,10 +77,9 @@
 			if (marker.floor === floor) {
 				// If this if statement fails, the whole page fails to load - so I double check it
 				if (marker.can_nav === false) {
-						tempButtonType = 'do_not_nav';
-					}
-                if (marker.icon !== '' && marker.icon in iconList) {
-
+					tempButtonType = 'do_not_nav';
+				}
+				if (marker.icon !== '' && marker.icon in iconList) {
 					markerList.push(
 						// All cords are YX... its not my fault
 						L.marker([marker.y, marker.x], { icon: iconList[marker.icon] })
@@ -91,8 +93,10 @@
 										buttonType: tempButtonType,
 										fromNodeId,
 										canNav: marker.can_nav,
-                                        markerIcon: marker.icon,
-                                        moveToFloor: finalMarkerFloor,
+										markerIcon: marker.icon,
+										moveToFloor: finalMarkerFloor,
+										map: map,
+										floors: floors
 									}
 								});
 								return container;
@@ -100,7 +104,6 @@
 							.openPopup()
 					);
 				} else {
-					
 					markerList.push(
 						// All cords are YX... its not my fault
 						L.marker([marker.y, marker.x])
@@ -114,8 +117,10 @@
 										buttonType: tempButtonType,
 										fromNodeId,
 										canNav: marker.can_nav,
-                                        markerIcon: marker.icon,
-                                        moveToFloor: finalMarkerFloor,
+										markerIcon: marker.icon,
+										moveToFloor: finalMarkerFloor,
+										map: map,
+										floors: floors
 									}
 								});
 								return container;
@@ -190,10 +195,6 @@
 				}
 			}
 		}
-		/*TODO přidám proměnou stairsFloors, která bude obsahovat id schodiště a zda má jít nahoru nebo dolů
-		Tento objekt předám markers list a schodiště si to odchytí a místo tlačítka pro změnu cíle budou mít tlačítko pro změnu patra
-		PROBLÉM! neumím měnit patra přes software
-		*/
 		lineList.push(floorLineList);
 
 		return {
@@ -211,10 +212,10 @@
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
-            //@ts-expect-error 
+			//@ts-ignore
 			const textPath = await import('leaflet-textpath');
 			const markerIcons = getMarkerIcons(L, iconIdImage);
-			fromMarkerFloor = markers.find((obj) => obj.id === from)?.floor ?? 1;
+			fromMarkerFloor = markers.find((obj: { id: string }) => obj.id === from)?.floor ?? 1;
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [
 				[0, 0],
@@ -320,7 +321,7 @@
 			]);
 			markerList = [];
 			pathList = [];
-			let floors = {
+			floors = {
 				'1. PP': zeroFloor,
 				'1. NP': firstFloor,
 				'2. NP': secondFloor,
@@ -339,8 +340,8 @@
 				[0, 0],
 				[3000, 10000]
 			]);
-
 			L.control.layers(floors).addTo(map);
+
 			loading = false;
 			loading = loading;
 			if (state === 'ready') {
@@ -373,6 +374,12 @@
 		if (map) {
 			map.invalidateSize();
 		}
+	}
+	function changeLayer(newLayer: number) {
+		map.eachLayer((layer: any) => {
+			map.removeLayer(layer);
+		});
+		Object.values(floors)[newLayer].addTo(map);
 	}
 </script>
 

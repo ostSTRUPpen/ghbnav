@@ -1,3 +1,5 @@
 export const buildingLocationsList = [
-    {name: "Nová budova"}, {name: "Stará budova"}, {name:"Kozí ulička"}
-]
+	{ name: 'nova', displayName: 'Nová budova' },
+	{ name: 'stara', displayName: 'Stará budova' },
+	{ name: 'kozi', displayName: 'Kozí ulička' }
+];

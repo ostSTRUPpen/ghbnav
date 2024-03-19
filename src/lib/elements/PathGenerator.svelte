@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
+	import { buildingLocationsList } from '$lib/data/staticData';
 	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
 
 	let preparedLocations: Array<any> = [];
@@ -48,7 +49,11 @@
 			}
 			preparedLocations.push({
 				id: location.id,
-				name: `${location.display_name} (Patro: ${location.floor}, ${location.building_location})`,
+				name: `${location.display_name} (Patro: ${location.floor}, ${
+					buildingLocationsList.filter(
+						(buildingLocation) => buildingLocation.name === location.building_location
+					)[0].displayName
+				})`,
 				can_nav: location.can_nav,
 				nav_group: location.icon,
 				disabled: false
