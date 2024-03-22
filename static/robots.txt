@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /sec
+Disallow: /auth
+Disallow: /api
+Disallow: /loading

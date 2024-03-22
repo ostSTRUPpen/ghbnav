@@ -10,27 +10,49 @@
 	export let fromNodeId: string;
 	export let canNav: boolean;
 	export let markerIcon: string;
-	export let moveToFloor: number;
+	export let endingFloor: number;
 	export let map: Map;
 	export let floors: Record<string, LayerGroup>;
+	export let currentFloor: number;
 
+	let floorToMoveTo: number;
+	let shouldChangeFloors: boolean = false;
 	let buttonText = '';
 	let bonusText: string = '';
 	const floorNames = ['1. PP', '1. NP', '2. NP', '3. NP', '4. NP'];
 
 	if (buttonType === 'no_from-to') {
 		buttonText = 'Zde stojím';
+		shouldChangeFloors = false;
 	} else if (buttonType === 'no_to') {
 		buttonText = 'Navigovat';
+		shouldChangeFloors = false;
 	} else if (buttonType === 'ready' && markerIcon !== 'schody') {
 		buttonText = 'Změnit cíl navigace';
-	} else if (buttonType === 'ready' && markerIcon === 'schody') {
-		if (moveToFloor !== -5) {
-			bonusText = `Přesuňte se do ${floorNames[moveToFloor]}.`;
-			buttonText = `Změnit patro na ${floorNames[moveToFloor]}`;
+		shouldChangeFloors = false;
+	} else if (buttonType === 'ready' && markerIcon === 'schody' && endingFloor !== -5) {
+		if (endingFloor > currentFloor && currentFloor < 4) {
+			floorToMoveTo = currentFloor + 1;
+			shouldChangeFloors = true;
+			bonusText = `Přesuňte se do ${floorNames[floorToMoveTo]}.`;
+			buttonText = `Změnit patro na ${floorNames[floorToMoveTo]}`;
+		} else if (endingFloor < currentFloor && currentFloor > 0) {
+			floorToMoveTo = currentFloor - 1;
+			shouldChangeFloors = true;
+			bonusText = `Přesuňte se do ${floorNames[floorToMoveTo]}.`;
+			buttonText = `Změnit patro na ${floorNames[floorToMoveTo]}`;
+		} else {
+			if (currentFloor === 0) {
+				bonusText = `Jste na správném patře, ale ${floorNames[0]} není plně průchozí. Možná bude nutné přejít na patro ${floorNames[1]}, prosím následujte mapu.`;
+			} else if (currentFloor === 4) {
+				bonusText = `Jste na správném patře, ale ${floorNames[4]} není plně průchozí. Možná bude nutné přejít na patro ${floorNames[3]}, prosím následujte mapu.`;
+			}
+			buttonText = 'Změnit cíl navigace';
+			shouldChangeFloors = false;
 		}
 	} else if (canNav === false) {
 		buttonText = 'Nelze navigovat';
+		shouldChangeFloors = false;
 	} else {
 		buttonText = 'Došlo k chybě';
 	}
@@ -43,8 +65,13 @@
 	}
 
 	function navTo() {
-		if (buttonType === 'ready' && markerIcon === 'schody' && moveToFloor !== -5) {
-			changeLayer(moveToFloor);
+		if (
+			buttonType === 'ready' &&
+			markerIcon === 'schody' &&
+			endingFloor !== -5 &&
+			shouldChangeFloors
+		) {
+			changeLayer(floorToMoveTo);
 		} else {
 			if (buttonType === 'no_from-to') {
 				foundPath.update((n) => (n = ['']));

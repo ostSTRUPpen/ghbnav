@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // floor plans
-import floor_0 from '$lib/images/floors/floor_0.jpg';
-import floor_1 from '$lib/images/floors/floor_1.jpg';
-import floor_2 from '$lib/images/floors/floor_2.jpg';
-import floor_3 from '$lib/images/floors/floor_3.jpg';
-import floor_4 from '$lib/images/floors/floor_4.jpg';
+import floor_0 from '$lib/images/floors/webp/floor_0.webp';
+import floor_1 from '$lib/images/floors/webp/floor_1.webp';
+import floor_2 from '$lib/images/floors/webp/floor_2.webp';
+import floor_3 from '$lib/images/floors/webp/floor_3.webp';
+import floor_4 from '$lib/images/floors/webp/floor_4.webp';
 
 // icons
-import administrace from '$lib/images/icons/markers/administrace.png';
-import kmenove_ucebny from '$lib/images/icons/markers/kmenove_ucebny.png';
-import jazykove_ucebny from '$lib/images/icons/markers/jazykove_ucebny.png';
-import kabinety from '$lib/images/icons/markers/kabinety.png';
-import ostatni from '$lib/images/icons/markers/ostatni.png';
-import prostory from '$lib/images/icons/markers/prostory.png';
-import sluzby from '$lib/images/icons/markers/sluzby.png';
-import specializovane_ucebny from '$lib/images/icons/markers/specializovane_ucebny.png';
-import telovychova from '$lib/images/icons/markers/telovychova.png';
-import zachody from '$lib/images/icons/markers/zachody.png';
-import satny from '$lib/images/icons/markers/satny.png';
-import schody from '$lib/images/icons/markers/schody.png';
-import vv_a_hv from '$lib/images/icons/markers/vv_a_hv.png';
+import administrace from '$lib/images/icons/markers/webp/administrace.webp';
+import kmenove_ucebny from '$lib/images/icons/markers/webp/kmenove_ucebny.webp';
+import jazykove_ucebny from '$lib/images/icons/markers/webp/jazykove_ucebny.webp';
+import kabinety from '$lib/images/icons/markers/webp/kabinety.webp';
+import ostatni from '$lib/images/icons/markers/webp/ostatni.webp';
+import prostory from '$lib/images/icons/markers/webp/prostory.webp';
+import sluzby from '$lib/images/icons/markers/webp/sluzby.webp';
+import specializovane_ucebny from '$lib/images/icons/markers/webp/specializovane_ucebny.webp';
+import telovychova from '$lib/images/icons/markers/webp/telovychova.webp';
+import zachody from '$lib/images/icons/markers/webp/zachody.webp';
+import satny from '$lib/images/icons/markers/webp/satny.webp';
+import schody from '$lib/images/icons/markers/webp/schody.webp';
+import vv_a_hv from '$lib/images/icons/markers/webp/vv_a_hv.webp';
 
 export const iconImages: Record<string, string> = {
 	administrace: administrace,

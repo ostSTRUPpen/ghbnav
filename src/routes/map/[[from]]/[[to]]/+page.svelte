@@ -94,9 +94,10 @@
 										fromNodeId,
 										canNav: marker.can_nav,
 										markerIcon: marker.icon,
-										moveToFloor: finalMarkerFloor,
+										endingFloor: finalMarkerFloor,
 										map: map,
-										floors: floors
+										floors: floors,
+										currentFloor: floor
 									}
 								});
 								return container;
@@ -118,9 +119,10 @@
 										fromNodeId,
 										canNav: marker.can_nav,
 										markerIcon: marker.icon,
-										moveToFloor: finalMarkerFloor,
+										endingFloor: finalMarkerFloor,
 										map: map,
-										floors: floors
+										floors: floors,
+										currentFloor: floor
 									}
 								});
 								return container;
@@ -374,12 +376,6 @@
 		if (map) {
 			map.invalidateSize();
 		}
-	}
-	function changeLayer(newLayer: number) {
-		map.eachLayer((layer: any) => {
-			map.removeLayer(layer);
-		});
-		Object.values(floors)[newLayer].addTo(map);
 	}
 </script>
 

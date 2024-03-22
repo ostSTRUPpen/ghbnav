@@ -6,7 +6,7 @@
 	<div class="py-10 px-5 print:hidden">
 		<p>
 			Vytvořil <a
-				href="https://www.linkedin.com/in/vojt%C4%9Bch-vold%C5%99ich-955577277/"
+				href="https://www.linkedin.com/in/vojtěch-voldřich"
 				rel="author"
 				target="_blank"
 				class="link-hover link-primary">Vojtěch Voldřich</a

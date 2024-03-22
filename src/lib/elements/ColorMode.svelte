@@ -35,7 +35,8 @@
 	}
 </script>
 
-<label class="swap swap-rotate">
+<label class="swap swap-rotate" aria-label="modeChangeLabel">
+	<p hidden id="modeChangeLabel">Změna barevného schéma mezi světlým a tmavým</p>
 	<!-- this hidden checkbox controls the state -->
 	<input type="checkbox" on:change={set_theme} bind:checked={darkMode} />
 

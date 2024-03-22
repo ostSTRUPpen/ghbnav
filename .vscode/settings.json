@@ -104,21 +104,22 @@
 		"zIndex"
 	],
 	"cSpell.words": [
-        "badatelna",
-        "daisyui",
-        "disp",
-        "dndzone",
-        "jazykovka",
-        "latlng",
-        "maxage",
-        "Navigovatelný",
-        "qrcode",
-        "skeletonlabs",
-        "spinkarna",
-        "Spinkárna",
-        "supabase",
-        "tailwindcss",
-        "textpath",
-        "Váhovna"
-    ]
+		"badatelna",
+		"daisyui",
+		"disp",
+		"dndzone",
+		"jazykovka",
+		"latlng",
+		"maxage",
+		"Navigovatelný",
+		"qrcode",
+		"skeletonlabs",
+		"spinkarna",
+		"Spinkárna",
+		"supabase",
+		"tailwindcss",
+		"textpath",
+		"urlset",
+		"Váhovna"
+	]
 }
