@@ -19,16 +19,37 @@
 			for (let location of locations.filter((obj) => obj.icon === navTo)) {
 				pathsForGeneration.push([
 					`${navFrom}/${location.id}`,
-					`${locations.find((obj) => obj.id === navFrom)?.display_name} → ${location.display_name}`
+					`${locations.find((obj) => obj.id === navFrom)?.display_name} → ${location.display_name}`,
+					location.display_name
 				]);
 			}
 		} else {
 			for (let location of locations.filter((obj) => obj.icon === navFrom)) {
 				pathsForGeneration.push([
 					`${location.id}/${navTo}`,
-					`${location.display_name} → ${locations.find((obj) => obj.id === navTo)?.display_name}`
+					`${location.display_name} → ${locations.find((obj) => obj.id === navTo)?.display_name}`,
+					location.display_name
 				]);
 			}
+		}
+		//Zajišťuje seřazení Qr kódů pro jednotlivé třídy do formátu -> 1.A, 2.A. 3.A, 4.A  5.A, 6.A, 7.A, 8.A  1.C, 1.D., 2.C, 2.D 3.C, 3.D, 4.C, 4.D
+		// Z důvodu lehčí přehlednosti při tisku (4 QR kódy na A4)
+		if (navTo === 'kmenove_ucebny' || navFrom === 'kmenove_ucebny') {
+			pathsForGeneration.sort((a, b) => {
+				// Vybere jenom písmena (mělo by být jen jedno)
+				let classLetterA = a[2].replace(/[^a-dA-D]+/g, '').toLocaleLowerCase();
+				// Vybere jenom čísla (mělo by být jen jedno)
+				let classNumberA = Number(a[2].replace(/\D+/g, ''));
+				let classLetterB = b[2].replace(/[^a-dA-D]+/g, '').toLocaleLowerCase();
+				let classNumberB = Number(b[2].replace(/\D+/g, ''));
+				// Pokud jsou stejná písmena, tak je potřeba utvořit řadu podle čísel
+				if (classLetterA === classLetterB) {
+					return classNumberA - classNumberB;
+				} else {
+					// Jinak jsou hlavní písmena
+					return classLetterA.localeCompare(classLetterB);
+				}
+			});
 		}
 		printMarkersList.update((n) => (n = pathsForGeneration));
 		printSettingsString.update((n) => (n = 'path'));

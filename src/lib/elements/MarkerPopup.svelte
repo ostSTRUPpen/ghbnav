@@ -43,12 +43,20 @@
 			buttonText = `Změnit patro na ${floorNames[floorToMoveTo]}`;
 		} else {
 			if (currentFloor === 0) {
-				bonusText = `Jste na správném patře, ale ${floorNames[0]} není plně průchozí. Možná bude nutné přejít na patro ${floorNames[1]}, prosím následujte mapu.`;
+				floorToMoveTo = 1;
+				shouldChangeFloors = true;
+				bonusText = `Změna patra nemusí být nutná. Prosím následujte pokyny v mapě.`;
+				buttonText = `Změnit patro na ${floorNames[1]}`;
 			} else if (currentFloor === 4) {
-				bonusText = `Jste na správném patře, ale ${floorNames[4]} není plně průchozí. Možná bude nutné přejít na patro ${floorNames[3]}, prosím následujte mapu.`;
+				floorToMoveTo = 3;
+				shouldChangeFloors = true;
+				//`Jste na správném patře, ale ${floorNames[4]} není plně průchozí. Možná bude nutné přejít na patro ${floorNames[3]}, prosím následujte pokyny v mapě..`
+				bonusText = `Změna patra nemusí být nutná. Prosím následujte pokyny v mapě.`;
+				buttonText = `Změnit patro na ${floorNames[3]}`;
+			} else {
+				buttonText = 'Změnit cíl navigace';
+				shouldChangeFloors = false;
 			}
-			buttonText = 'Změnit cíl navigace';
-			shouldChangeFloors = false;
 		}
 	} else if (canNav === false) {
 		buttonText = 'Nelze navigovat';

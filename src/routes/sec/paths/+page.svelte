@@ -193,7 +193,7 @@
 		</table>
 	</div>
 	<div class="divider">Generování vlastních cest</div>
-	<div>
+	<div class="px-5">
 		<h2 class="text-3xl py-5">Generování vlastních cest</h2>
 		{#each ['bod_bod', 'bod_skupina', 'skupina_bod'] as pathSelectorType}
 			<label>
