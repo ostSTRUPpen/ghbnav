@@ -29,7 +29,13 @@
 		<tbody>
 			<tr>
 				<td class="flex justify-center qrcode_td">
-					<QR data={`${url_string}/map/${id}`} logo={`${url}/qr_icon.svg`} shape="square" let:src>
+					<QR
+						data={`${url_string}/map/${id}`}
+						logo={`${url}/qr_icon.svg`}
+						shape="square"
+						backgroundFill="white"
+						let:src
+					>
 						<img {src} alt="qr" width="400" />
 					</QR>
 				</td>
@@ -48,7 +54,13 @@
 		<tbody>
 			<tr>
 				<td class="flex justify-center qrcode_td">
-					<QR data={`${url_string}/map/${id}`} logo={`${url}/qr_icon.svg`} shape="square" let:src>
+					<QR
+						data={`${url_string}/map/${id}`}
+						logo={`${url}/qr_icon.svg`}
+						shape="square"
+						backgroundFill="white"
+						let:src
+					>
 						<img {src} alt="qr" width="300" />
 					</QR>
 				</td>
