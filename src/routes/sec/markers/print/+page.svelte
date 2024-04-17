@@ -9,12 +9,12 @@
 	printMarkersList.subscribe((value: string[] | string[][]) => (printData = value));
 	printSettingsString.subscribe((value: string) => (printSettings = value));
 
-	let dialog: any;
+	let errorDialog: any;
 
 	onMount(() => {
-		dialog = document.getElementById('error-dialog');
+		errorDialog = document.getElementById('error-dialog');
 		if (printData.length <= 0) {
-			dialog['showModal']();
+			errorDialog['showModal']();
 		}
 	});
 
@@ -27,14 +27,23 @@
 	}
 </script>
 
-<dialog id="error-dialog">
-	<h1>Seznam QR kódů je příliš krátký</h1>
-	<button
-		on:click={() => {
-			dialog.close();
-			goto('/sec', { replaceState: true });
-		}}>Ok</button
-	>
+<dialog id="error-dialog" class="modal">
+	<div class="modal-box">
+		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
+		<ul>
+			<li class="text-error">
+				<span class="font-bold">400</span> -
+				<span>Seznam QR kódů pro tisk je příliš krátký!</span>
+			</li>
+		</ul>
+		<button
+			on:click={() => {
+				errorDialog.close();
+				goto(`/sec`, { replaceState: true });
+			}}
+			class="modal-action btn btn-info">Ok</button
+		>
+	</div>
 </dialog>
 <div class="px-5 print:hidden">
 	<button class="btn btn-info" on:click={startPrint}>Tisk</button>
