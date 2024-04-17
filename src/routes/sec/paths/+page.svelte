@@ -265,6 +265,8 @@
 					</tr>
 				{/each}
 			</tbody>
+
+			<a href="/sec/paths/all" class="text-2xl link link-secondary">Zobrazit všechny cesty</a>
 		</table>
 	</div>
 </div>
