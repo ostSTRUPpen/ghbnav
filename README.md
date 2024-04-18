@@ -1,8 +1,15 @@
 # GHB nav
 
+
+<p align="center">
+  <img src="https://github.com/ostSTRUPpen/ghbnav/assets/62558669/33ba930c-dd79-4ef6-814d-84fd38f5ff7d" width="350" title="Obrázek z instagramového příspěvku představujícího aplikaci." alt="Obrázek z instagramového příspěvku představujícího aplikaci.">
+</p>
+
 Aplikace vyvinutá studentem oktávy Vojtou Voldřichem v roce 2023. Umožňuje navigaci pro prostorách Gymnázia Havlíčkův Brod. Součástí aplikace je i přehledné grafické rozhraní pro administraci.
 
 Aplikace též využívá QR kódů pro jednoduché určení polohy v budově.
+
+<img src="https://github.com/ostSTRUPpen/ghbnav/assets/62558669/87f6a48f-98fe-404d-94cf-9ca19a561bd4" width="200" title="Ukázkový QR kód" alt="Ukázkový QR kód">
 
 # Odkazy
 
@@ -12,6 +19,6 @@ Aplikace též využívá QR kódů pro jednoduché určení polohy v budově.
 
 # Vytvořili
 
-- Návrh aplikace, vývoj a údržba aplikace: [Vojtěch Voldřich](https://www.linkedin.com/in/vojtěch-voldřich)
+- Návrh, vývoj a údržba aplikace: [Vojtěch Voldřich](https://www.linkedin.com/in/vojtěch-voldřich)
 - Návrh ikon: Sára Egersdorfová
 - Grafické zpracování ikon: Monika Jarošová
