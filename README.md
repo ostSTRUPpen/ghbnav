@@ -1,8 +1,7 @@
 # GHB nav
 
-
 <p align="center">
-  <img src="https://github.com/ostSTRUPpen/ghbnav/assets/62558669/33ba930c-dd79-4ef6-814d-84fd38f5ff7d" width="350" title="Obrázek z instagramového příspěvku představujícího aplikaci." alt="Obrázek z instagramového příspěvku představujícího aplikaci.">
+  <img src="https://github.com/ostSTRUPpen/ghbnav/assets/62558669/33ba930c-dd79-4ef6-814d-84fd38f5ff7d" width="350" title="Obrázek z instagram příspěvku představujícího aplikaci." alt="Obrázek z instagram příspěvku představujícího aplikaci.">
 </p>
 
 Aplikace vyvinutá studentem oktávy Vojtou Voldřichem v roce 2023. Umožňuje navigaci pro prostorách Gymnázia Havlíčkův Brod. Součástí aplikace je i přehledné grafické rozhraní pro administraci.
