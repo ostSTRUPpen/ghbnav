@@ -10,7 +10,7 @@
 	import { invalidateAll } from '$app/navigation';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import PathGenerator from '$lib/elements/PathGenerator.svelte';
-	import { buildingLocationsList } from '$lib/data/staticData.js';
+	import { buildingLocationsList, staticSettings } from '$lib/data/staticData.js';
 
 	export let data;
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
@@ -227,6 +227,9 @@
 		{/if}
 	</div>
 	<div class="divider">Uložené často používané cesty</div>
+	{#if !staticSettings.storeDynamicPaths}
+		<p class="text-3xl text-error px-5">Ukládání dalších cest bylo zakázáno.</p>
+	{/if}
 	<div class="overflow-x-auto px-5">
 		<h2 class="text-3xl">Uložené často používané cesty</h2>
 		<table class="table table-sm md:table-md">

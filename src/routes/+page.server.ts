@@ -13,7 +13,6 @@ export async function load({ setHeaders }) {
 		.order('floor', { ascending: true })
 		.order('display_name', { ascending: true });
 	if (markers_error) console.error(markers_error);
-
 	const { data: stored_paths, error: path_error } = await supabase
 		.from('stored_paths')
 		.select('start_node, end_node, count, hidden')

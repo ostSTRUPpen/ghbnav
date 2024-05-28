@@ -1,8 +1,13 @@
+import { staticSettings } from "$lib/data/staticData";
+
 export async function savePath(
 	startNode: string,
 	endNode: string,
 	path: Array<string>
 ): Promise<SerializedServerResponse> {
+	if (!staticSettings.storeDynamicPaths) {
+		return { message: 'Path saving is disabled', code: '201' };
+	}
 	const response = await fetch('../../../../api/dynamic_paths', {
 		method: 'POST',
 		body: JSON.stringify({ startNode, endNode, path }),

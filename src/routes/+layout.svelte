@@ -8,6 +8,7 @@
 	import CookieAccept from '$lib/elements/CookieAccept.svelte';
 	import ColorMode from '$lib/elements/ColorMode.svelte';
 	import AboutMe from '$lib/elements/AboutMe.svelte';
+	import { staticSettings } from '$lib/data/staticData';
 
 	export let data: LayoutData;
 
@@ -102,5 +103,7 @@
 	{#if !(/\/map/.test($page.url.pathname) || /\/loading/.test($page.url.pathname) || /\/sec/.test($page.url.pathname))}
 		<CookieAccept />
 	{/if}
-	<AboutMe />
+	{#if staticSettings.displayAboutMe}
+		<AboutMe />
+	{/if}
 </footer>

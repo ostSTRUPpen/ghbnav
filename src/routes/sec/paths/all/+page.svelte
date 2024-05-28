@@ -4,6 +4,7 @@
 		updatePathVisibility
 	} from '$lib/functions/dynamicPathManagementFunctions.js';
 	import { invalidateAll } from '$app/navigation';
+	import { staticSettings } from '$lib/data/staticData.js';
 
 	export let data;
 	let { stored_paths } = data;
@@ -31,6 +32,9 @@
 	<div class="px-5">
 		<a class="link-secondary link text-xl" href="/sec/paths">Zpět</a> <br />
 	</div>
+	{#if !staticSettings.storeDynamicPaths}
+		<p class="text-3xl text-error px-5">Ukládání dalších cest bylo zakázáno.</p>
+	{/if}
 	<div class="px-5">
 		<h2 class="text-3xl">Všechny uložené cesty</h2>
 		<table class="table table-md md:table-lg">

@@ -1,7 +1,17 @@
+import { staticSettings } from '$lib/data/staticData.js';
 import { supabase as unAuthenticatedSupabase } from '$lib/supabaseClient.js';
 import { redirect, type RequestEvent } from '@sveltejs/kit';
 
 export async function POST(requestEvent: RequestEvent): Promise<Response> {
+	if (!staticSettings.storeDynamicPaths) {
+		return new Response(
+			JSON.stringify({
+				message: 'Ukládání cest bylo zakázáno!',
+				code: '201'
+			}),
+			{ status: 201 }
+		);
+	}
 	const { request } = requestEvent;
 	const { startNode, endNode, path } = await request.json();
 	try {
