@@ -1,19 +1,22 @@
-import { supabase } from '$lib/supabaseClient';
+export async function load({ locals }) {
+	const { sql } = locals;
+	let markers;
+	try {
+		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+	FROM markers
+	LEFT JOIN icons ON markers.icon = icons.id
+	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
-export async function load() {
-	const { data, error } = await supabase
-		.from('markers')
-		.select('id, display_name, floor, icon, can_nav, building_location ,icons(position)')
-		.order('icons (position)', { ascending: true })
-		.order('floor', { ascending: true })
-		.order('display_name', { ascending: true });
-	if (error) console.error(error);
+	let icons;
+	try {
+		icons = await sql`SELECT id, image, display_name FROM icons ORDER BY position ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
-	const { data: icons, error: iconError } = await supabase
-		.from('icons')
-		.select('id, image, display_name')
-		.order('position', { ascending: true });
-	if (iconError) console.error(iconError);
 	const iconList = [];
 	for (const icon of icons ?? []) {
 		iconList.push({
@@ -23,62 +26,7 @@ export async function load() {
 		});
 	}
 	return {
-		markers: data ?? [],
+		markers: markers ?? [],
 		iconList: iconList ?? []
 	};
 }
-/*
-export const iconList = [
-	// NEW
-	{
-		name: 'administrace',
-		image: administrace,
-		displayname: 'Administrace'
-	},
-	{
-		name: 'jazykove_ucebny',
-		image: jazykove_ucebny,
-		displayname: 'Jazykové učebny'
-	},
-	{
-		name: 'kabinety',
-		image: kabinety,
-		displayname: 'Kabinety'
-	},
-	{
-		name: 'kmenove_ucebny',
-		image: kmenove_ucebny,
-		displayname: 'Kmenové učebny'
-	},
-	{
-		name: 'ostatni',
-		image: ostatni,
-		displayname: 'Ostatní'
-	},
-	{
-		name: 'prostory',
-		image: prostory,
-		displayname: 'Prostory'
-	},
-	{
-		name: 'sluzby',
-		image: sluzby,
-		displayname: 'Služby'
-	},
-	{
-		name: 'specializovane_ucebny',
-		image: specializovane_ucebny,
-		displayname: 'Specializované učebny'
-	},
-	{
-		name: 'telovychova',
-		image: telovychova,
-		displayname: 'Tělovýchova'
-	},
-	{
-		name: 'zachody',
-		image: zachody,
-		displayname: 'Záchody'
-	}
-];
-*/

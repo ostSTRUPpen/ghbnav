@@ -1,9 +1,12 @@
 import { sequence } from '@sveltejs/kit/hooks';
+import { redirect, type Handle } from '@sveltejs/kit';
+import postgres from 'postgres';
 
 const PUBLIC_SUPABASE_URL = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
 const PUBLIC_SUPABASE_ANON_KEY = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
+
+import { PSQL_USERNAME, PSQL_PASSWORD, PSQL_HOST, PSQL_PORT, PSQL_DATABASE } from '$env/static/private';
 import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
-import { redirect, type Handle } from '@sveltejs/kit';
 
 const sessionCheck: Handle = async ({ event, resolve }) => {
 	event.locals.supabase = createSupabaseServerClient({
@@ -44,6 +47,18 @@ const sessionCheck: Handle = async ({ event, resolve }) => {
 	});
 };
 
+
+export const connectToPostgresSQL: Handle = async ({ event, resolve }) => {
+	const sql = postgres(`postgres://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}:${PSQL_PORT}/${PSQL_DATABASE}`);
+
+	event.locals = {
+		sql: sql
+	};
+
+	const response = await resolve(event);
+	return response;
+};
+
 const colorCheck: Handle = async ({ event, resolve }) => {
 	const theme = event.cookies.get('theme');
 	const themes = ['ghb_light', 'ghb_dark'];
@@ -59,4 +74,4 @@ const colorCheck: Handle = async ({ event, resolve }) => {
 	});
 };
 
-export const handle = sequence(colorCheck, sessionCheck);
+export const handle = sequence(colorCheck, connectToPostgresSQL, sessionCheck);

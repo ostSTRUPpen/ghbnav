@@ -1,21 +1,22 @@
-import { supabase } from '$lib/supabaseClient';
+export async function load({ locals }) {
+	const { sql } = locals;
+	let markers;
+	try {
+		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+	FROM markers
+	LEFT JOIN icons ON markers.icon = icons.id
+	WHERE can_nav = true 
+	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
-export async function load() {
-	const { data: markers, error: markers_error } = await supabase
-		.from('markers')
-		.select('id, display_name, can_nav, building_location, icon, floor, icons(position)')
-		.eq('can_nav', true)
-		.order('icons (position)', { ascending: true })
-		.order('floor', { ascending: true })
-		.order('display_name', { ascending: true });
-
-	if (markers_error) console.error(markers_error);
-
-	const { data: stored_paths, error: stored_paths_error } = await supabase
-		.from('stored_paths')
-		.select('id, start_node, end_node, count, hidden')
-		.order('count', { ascending: false });
-	if (stored_paths_error) console.error(stored_paths_error);
+	let stored_paths;
+	try {
+		stored_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths ORDER BY count DESC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	const stored_paths_with_names = [];
 	for (const path of stored_paths ?? []) {

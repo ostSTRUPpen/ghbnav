@@ -1,11 +1,13 @@
-import { SupabaseClient, Session } from '@supabase/supabase-js';
-import { Database } from './DatabaseDefinitions';
+/* import { SupabaseClient, Session } from '@supabase/supabase-js';
+import { Database } from './DatabaseDefinitions'; */
+import type { Sql } from 'postgres';
 
 declare global {
 	namespace App {
 		interface Locals {
 			supabase: SupabaseClient<Database>;
 			getSession(): Promise<Session | null>;
+			sql: Sql;
 		}
 		interface GraphTypes {
 			graphObject: { [key: string | number]: { [key: string | number]: number | string } };
@@ -36,13 +38,13 @@ declare global {
 		id: string;
 		display_name: string;
 		floor: number;
-        building_location: string
+		building_location: string
 		icon: string;
 		can_nav: boolean;
 		new_display_name: string;
 		new_icon: string;
 		new_can_nav: boolean;
-        new_building_location: string
+		new_building_location: string
 		genQR: boolean;
 	};
 }

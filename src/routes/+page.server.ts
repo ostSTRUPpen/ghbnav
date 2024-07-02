@@ -1,34 +1,34 @@
-import { supabase } from '$lib/supabaseClient';
-
-export async function load({ setHeaders }) {
+export async function load({ setHeaders, locals }) {
 	setHeaders({
 		'Cache-Control': `max-age=${60}, s-maxage=${60}`
 	});
 
-	const { data: markers, error: markers_error } = await supabase
-		.from('markers')
-		.select('id, display_name, floor, can_nav, icon, building_location, icons(position)')
-		.eq('can_nav', true)
-		.order('icons (position)', { ascending: true })
-		.order('floor', { ascending: true })
-		.order('display_name', { ascending: true });
-	if (markers_error) console.error(markers_error);
+	const { sql } = locals;
 
-	const { data: stored_paths, error: path_error } = await supabase
-		.from('stored_paths')
-		.select('start_node, end_node, count, hidden')
-		.eq('hidden', false)
-		.order('count', { ascending: false })
-		.limit(5);
-	if (path_error) console.error(path_error);
+	let markers;
+	try {
+		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+	FROM markers
+	LEFT JOIN icons ON markers.icon = icons.id
+	WHERE can_nav = true 
+	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
-	const { data: preset_paths, error: preset_path_error } = await supabase
-		.from('preset_paths')
-		.select('id, start_node, end_node, hidden')
-		.eq('hidden', false)
-		.order('position', { ascending: true })
-		.limit(5);
-	if (preset_path_error) console.error(preset_path_error);
+	let stored_paths;
+	try {
+		stored_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
+	} catch (error) {
+		console.error(error);
+	}
+
+	let preset_paths;
+	try {
+		preset_paths = await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths WHERE hidden = false ORDER BY position ASC LIMIT 5;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	const stored_paths_with_names = [];
 
@@ -55,11 +55,12 @@ export async function load({ setHeaders }) {
 		});
 	}
 
-	const { data: icons, error: iconError } = await supabase
-		.from('icons')
-		.select('id, display_name')
-		.order('position', { ascending: true });
-	if (iconError) console.error(iconError);
+	let icons;
+	try {
+		icons = await sql`SELECT id, display_name FROM icons ORDER BY position ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	const iconImageDisplayNames = new Object();
 	for (const icon of icons ?? []) {

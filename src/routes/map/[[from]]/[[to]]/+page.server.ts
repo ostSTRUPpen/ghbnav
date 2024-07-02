@@ -1,31 +1,34 @@
-import { supabase } from '$lib/supabaseClient';
-
-export async function load({ setHeaders }) {
+export async function load({ setHeaders, locals }) {
 	setHeaders({
 		'Cache-Control': `max-age=${60}, s-maxage=${60}`
 	});
+	const { sql } = locals;
 
-	const { data: markers, error } = await supabase
-		.from('markers')
-		.select('id, x, y, display_name, floor, icon, building_location, can_nav, icons(position)')
-		//.eq('can_nav', true) Nezobrazí se v mapě
-		.order('icons (position)', { ascending: true })
-		.order('floor', { ascending: true })
-		.order('display_name', { ascending: true });
-	if (error) console.error(error);
 
-	const { data: nav_markers, error: navError } = await supabase
-		.from('nav_markers')
-		.select('id, x, y, floor, connected, special_type')
-		.order('floor', { ascending: true })
-		.order('id', { ascending: true });
-	if (navError) console.error(navError);
+	let markers;
+	try {
+		markers = await sql`SELECT markers.id, markers.display_name, x, y, floor, can_nav, icon, building_location, icons.position 
+	FROM markers
+	LEFT JOIN icons ON markers.icon = icons.id
+	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
-	const { data: icons, error: iconError } = await supabase
-		.from('icons')
-		.select('id, display_name, image')
-		.order('position', { ascending: true });
-	if (iconError) console.error(iconError);
+	let nav_markers;
+	try {
+		nav_markers = await sql`SELECT nav_markers.id, x, y, floor, connected, special_type FROM nav_markers ORDER BY floor ASC, id ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
+
+	let icons;
+	try {
+		icons = await sql`SELECT id, display_name, image FROM icons ORDER BY position ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
+
 	const iconImageDisplayNames = new Object();
 	for (const icon of icons ?? []) {
 		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;

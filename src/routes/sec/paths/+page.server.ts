@@ -1,32 +1,29 @@
-import { supabase } from '$lib/supabaseClient';
-
-export async function load() {
-	const { data: markers, error: markers_error } = await supabase
-		.from('markers')
-		.select('id, display_name, can_nav, building_location, icon, floor, icons(position)')
-		.eq('can_nav', true)
-		.order('icons (position)', { ascending: true })
-		.order('floor', { ascending: true })
-		.order('display_name', { ascending: true });
-
-	if (markers_error) console.error(markers_error);
+export async function load({ locals }) {
+	const { sql } = locals;
+	let markers;
+	try {
+		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+	FROM markers
+	LEFT JOIN icons ON markers.icon = icons.id
+	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	//Ukládané cesty
-	const { data: stored_visible_paths, error: stored_visible_paths_error } = await supabase
-		.from('stored_paths')
-		.select('id, start_node, end_node, count, hidden')
-		.eq('hidden', false)
-		.order('count', { ascending: false })
-		.limit(5);
-	if (stored_visible_paths_error) console.error(stored_visible_paths_error);
+	let stored_visible_paths;
+	try {
+		stored_visible_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
+	} catch (error) {
+		console.error(error);
+	}
 
-	const { data: stored_hidden_paths, error: stored_hidden_paths_error } = await supabase
-		.from('stored_paths')
-		.select('id, start_node, end_node, count, hidden')
-		.eq('hidden', true)
-		.order('count', { ascending: false })
-		.limit(50);
-	if (stored_hidden_paths_error) console.error(stored_hidden_paths_error);
+	let stored_hidden_paths;
+	try {
+		stored_hidden_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = true ORDER BY count DESC LIMIT 50;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	const stored_paths_with_names = [];
 	for (const path of stored_visible_paths ?? []) {
@@ -53,12 +50,12 @@ export async function load() {
 	}
 
 	//Přednastavené cesty
-	const { data: preset_paths, error: preset_path_error } = await supabase
-		.from('preset_paths')
-		.select('id, start_node, end_node, position, hidden')
-		.order('position', { ascending: true })
-		.limit(5);
-	if (preset_path_error) console.error(preset_path_error);
+	let preset_paths;
+	try {
+		preset_paths = await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths ORDER BY position ASC LIMIT 5;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	const preset_paths_with_names = [];
 	for (const path of preset_paths ?? []) {
@@ -74,11 +71,12 @@ export async function load() {
 	}
 
 	//Ikony
-	const { data: icons, error: iconError } = await supabase
-		.from('icons')
-		.select('id, display_name')
-		.order('position', { ascending: true });
-	if (iconError) console.error(iconError);
+	let icons;
+	try {
+		icons = await sql`SELECT id, display_name FROM icons ORDER BY position ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 
 	const iconImageDisplayNames = new Object();
 	for (const icon of icons ?? []) {

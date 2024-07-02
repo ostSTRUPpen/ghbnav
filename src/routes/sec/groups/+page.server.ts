@@ -1,12 +1,12 @@
-import { supabase } from '$lib/supabaseClient';
+export async function load({ locals }) {
+	const { sql } = locals;
 
-export async function load() {
-	const { data: icons, error: iconError } = await supabase
-		.from('icons')
-		.select('id, display_name, image, position')
-		.order('position', { ascending: true });
-	if (iconError) console.error(iconError);
-
+	let icons;
+	try {
+		icons = await sql`SELECT id, display_name, image, position FROM icons ORDER BY position ASC;`;
+	} catch (error) {
+		console.error(error);
+	}
 	const iconIdImageName = [];
 	for (const icon of icons ?? []) {
 		iconIdImageName.push({
