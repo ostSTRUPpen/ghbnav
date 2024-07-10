@@ -1,5 +1,4 @@
 module.exports = {
-	// IMPORTANT https://tailwindcss.com/docs/content-configuration
 	content: ['./src/routes/**/*.{svelte,js,ts}', './src/lib/elements/**/*.{svelte,js,ts}'],
 	plugins: [require('daisyui')],
 	daisyui: {

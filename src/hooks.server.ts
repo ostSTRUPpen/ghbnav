@@ -1,62 +1,38 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect, type Handle } from '@sveltejs/kit';
 import postgres from 'postgres';
+import { PSQL_USERNAME, PSQL_PASSWORD, PSQL_HOST, PSQL_PORT, PSQL_DATABASE, POSTGRES_JS_SETTINGS_IDLE_TIMEOUT, POSTGRES_JS_SETTINGS_MAX_LIFETIME } from '$env/static/private';
 
-const PUBLIC_SUPABASE_URL = import.meta.env.VITE_PUBLIC_SUPABASE_URL;
-const PUBLIC_SUPABASE_ANON_KEY = import.meta.env.VITE_PUBLIC_SUPABASE_ANON_KEY;
-
-import { PSQL_USERNAME, PSQL_PASSWORD, PSQL_HOST, PSQL_PORT, PSQL_DATABASE } from '$env/static/private';
-import { createSupabaseServerClient } from '@supabase/auth-helpers-sveltekit';
+import { cleanupDBCodes, validateCodes } from '$lib/functions/userLoginsManagement.server';
 
 const sessionCheck: Handle = async ({ event, resolve }) => {
-	event.locals.supabase = createSupabaseServerClient({
-		supabaseUrl: PUBLIC_SUPABASE_URL,
-		supabaseKey: PUBLIC_SUPABASE_ANON_KEY,
-		event
-	});
+	const { sql } = event.locals;
 
-	/**
-	 * a little helper that is written for convenience so that instead
-	 * of calling `const { data: { session } } = await supabase.auth.getSession()`
-	 * you just call this `await getSession()`
-	 */
-	event.locals.getSession = async () => {
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-		return session;
-	};
-
+	event.locals.cookies = event.cookies;
+	event.locals.validateLogin = async () => {
+		const codes = await sql`SELECT * FROM login_codes;` as codesArray;
+		const cookies = event.locals.cookies.get('zi67OR1pZpQi3GVNMk96WO');
+		return validateCodes(codes, cookies);
+	}
 	if (event.url.pathname.startsWith('/sec')) {
-		const session = await event.locals.getSession();
-		if (!session) {
-			// the user is not signed in
+		cleanupDBCodes(sql)
+		const loggedIn = await event.locals.validateLogin();
+		if (!loggedIn) {
+			// the user is not logged in
 			throw redirect(303, '/');
 		}
 	}
-
-	return resolve(event, {
-		/**
-		 * There´s an issue with `filterSerializedResponseHeaders` not working when using `sequence`
-		 *
-		 * https://github.com/sveltejs/kit/issues/8061
-		 */
-		filterSerializedResponseHeaders(name) {
-			return name === 'content-range';
-		}
-	});
+	return resolve(event);
 };
 
 
 export const connectToPostgresSQL: Handle = async ({ event, resolve }) => {
-	const sql = postgres(`postgres://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}:${PSQL_PORT}/${PSQL_DATABASE}`);
-
-	event.locals = {
-		sql: sql
-	};
-
-	const response = await resolve(event);
-	return response;
+	const sql = postgres(`postgres://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}:${PSQL_PORT}/${PSQL_DATABASE}`, {
+		idle_timeout: Number(POSTGRES_JS_SETTINGS_IDLE_TIMEOUT),
+		max_lifetime: Number(POSTGRES_JS_SETTINGS_MAX_LIFETIME),
+	});
+	event.locals.sql = sql
+	return resolve(event);
 };
 
 const colorCheck: Handle = async ({ event, resolve }) => {
@@ -66,7 +42,6 @@ const colorCheck: Handle = async ({ event, resolve }) => {
 	if (!theme || !themes.includes(theme)) {
 		return await resolve(event);
 	}
-
 	return await resolve(event, {
 		transformPageChunk: ({ html }) => {
 			return html.replace('data-theme=""', `data-theme="${theme}"`);

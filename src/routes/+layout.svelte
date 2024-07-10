@@ -12,18 +12,8 @@
 
 	export let data: LayoutData;
 
-	$: ({ supabase, session } = data);
-
-	onMount(() => {
-		const {
-			data: { subscription }
-		} = supabase.auth.onAuthStateChange((event, _session) => {
-			if (_session?.expires_at !== session?.expires_at) {
-				invalidate('supabase:auth');
-			}
-		});
-		return () => subscription.unsubscribe();
-	});
+	let { loggedIn } = data;
+	$: ({ loggedIn } = data);
 </script>
 
 <header class="print:hidden sm:pb-5 md:pb-10">
@@ -55,7 +45,7 @@
 						Mapa
 					</a>
 				</li>
-				{#if session}
+				{#if loggedIn}
 					<li>
 						<a
 							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"

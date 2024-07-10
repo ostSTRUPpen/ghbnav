@@ -31,7 +31,6 @@ export async function load({ setHeaders, locals }) {
 	}
 
 	const stored_paths_with_names = [];
-
 	for (const path of stored_paths ?? []) {
 		stored_paths_with_names.push({
 			start_node: path.start_node,

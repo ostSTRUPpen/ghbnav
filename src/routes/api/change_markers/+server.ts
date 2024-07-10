@@ -1,37 +1,9 @@
-import { redirect } from '@sveltejs/kit';
-
-export async function PATCH({ request, locals: { supabase, getSession } }): Promise<Response> {
-	const session = await getSession();
-	if (!session) {
-		throw redirect(303, '/');
-	}
+export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 	const { changedEndingPoints } = await request.json();
 
 	try {
 		for (const changedEndingPoint of changedEndingPoints) {
-			const { error } = await supabase
-				.from('markers')
-				.update({
-					display_name: changedEndingPoint.display_name,
-					icon: changedEndingPoint.icon,
-					can_nav: changedEndingPoint.can_nav,
-                    building_location: changedEndingPoint.building_location
-				})
-				.eq('id', changedEndingPoint.id);
-			if (error) {
-				console.error(
-					`Error: ${error.code} v change_markers.\n ${error.message}\n---END OF ERROR---`
-				);
-				return new Response(
-					JSON.stringify({
-						message: 'Databáze odmítla požadavek! Zkuste to prosím později.',
-						code: error.code
-					}),
-					{
-						status: Number(error.code)
-					}
-				);
-			}
+			await sql`UPDATE markers SET display_name = ${changedEndingPoint.display_name}, icon = ${changedEndingPoint.icon}, can_nav = ${changedEndingPoint.can_nav}, building_location = ${changedEndingPoint.building_location} WHERE id = ${changedEndingPoint.id};`;
 		}
 
 		return new Response(
