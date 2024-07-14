@@ -1,3 +1,5 @@
+import { staticSettings } from '$lib/data/staticData.js';
+
 export async function load({ locals }) {
 	const { sql } = locals;
 	let markers;
@@ -11,42 +13,44 @@ export async function load({ locals }) {
 	}
 
 	//Ukládané cesty
-	let stored_visible_paths;
-	try {
-		stored_visible_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
-	} catch (error) {
-		console.error(error);
-	}
-
-	let stored_hidden_paths;
-	try {
-		stored_hidden_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = true ORDER BY count DESC LIMIT 50;`;
-	} catch (error) {
-		console.error(error);
-	}
-
 	const stored_paths_with_names = [];
-	for (const path of stored_visible_paths ?? []) {
-		stored_paths_with_names.push({
-			id: path.id,
-			start_node: path.start_node,
-			end_node: path.end_node,
-			count: path.count,
-			hidden: path.hidden,
-			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-		});
-	}
-	for (const path of stored_hidden_paths ?? []) {
-		stored_paths_with_names.push({
-			id: path.id,
-			start_node: path.start_node,
-			end_node: path.end_node,
-			count: path.count,
-			hidden: path.hidden,
-			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-		});
+	if (staticSettings.storeDynamicPaths) {
+		let stored_visible_paths;
+		let stored_hidden_paths;
+		try {
+			stored_visible_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
+		} catch (error) {
+			console.error(error);
+		}
+
+		try {
+			stored_hidden_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = true ORDER BY count DESC LIMIT 50;`;
+		} catch (error) {
+			console.error(error);
+		}
+
+		for (const path of stored_visible_paths ?? []) {
+			stored_paths_with_names.push({
+				id: path.id,
+				start_node: path.start_node,
+				end_node: path.end_node,
+				count: path.count,
+				hidden: path.hidden,
+				start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
+				end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
+			});
+		}
+		for (const path of stored_hidden_paths ?? []) {
+			stored_paths_with_names.push({
+				id: path.id,
+				start_node: path.start_node,
+				end_node: path.end_node,
+				count: path.count,
+				hidden: path.hidden,
+				start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
+				end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
+			});
+		}
 	}
 
 	//Přednastavené cesty

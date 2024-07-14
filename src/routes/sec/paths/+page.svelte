@@ -84,6 +84,18 @@
 		await deletePath(id);
 		invalidateAll();
 	}
+
+	// Trying to minimize database requests
+	// https://www.w3schools.com/js/js_popup.asp
+	function handleAllPathsLink() {
+		if (
+			confirm(
+				'Je vypnuté ukládání cest!\nStránka bude pravděpodobně prázdná.\nOpravdu chcete pokračovat?'
+			)
+		) {
+			goto('/sec/paths/all');
+		}
+	}
 </script>
 
 <dialog id="loading-dialog" class="modal">
@@ -268,8 +280,13 @@
 					</tr>
 				{/each}
 			</tbody>
-
-			<a href="/sec/paths/all" class="text-2xl link link-secondary">Zobrazit všechny cesty</a>
+			{#if staticSettings.storeDynamicPaths}
+				<a href="/sec/paths/all" class="text-2xl link link-secondary">Zobrazit všechny cesty</a>
+			{:else}
+				<button on:click={handleAllPathsLink} class="text-2xl link link-secondary"
+					>Zobrazit všechny cesty</button
+				>
+			{/if}
 		</table>
 	</div>
 </div>

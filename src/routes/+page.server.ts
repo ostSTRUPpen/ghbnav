@@ -1,3 +1,5 @@
+import { staticSettings } from '$lib/data/staticData.js';
+
 export async function load({ setHeaders, locals }) {
 	setHeaders({
 		'Cache-Control': `max-age=${60}, s-maxage=${60}`
@@ -17,10 +19,24 @@ export async function load({ setHeaders, locals }) {
 	}
 
 	let stored_paths;
-	try {
-		stored_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
-	} catch (error) {
-		console.error(error);
+	const stored_paths_with_names = [];
+	if (staticSettings.storeDynamicPaths) {
+		try {
+			stored_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
+		} catch (error) {
+			console.error(error);
+		}
+
+		for (const path of stored_paths ?? []) {
+			stored_paths_with_names.push({
+				start_node: path.start_node,
+				end_node: path.end_node,
+				count: path.count,
+				hidden: path.hidden,
+				start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
+				end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
+			});
+		}
 	}
 
 	let preset_paths;
@@ -28,18 +44,6 @@ export async function load({ setHeaders, locals }) {
 		preset_paths = await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths WHERE hidden = false ORDER BY position ASC LIMIT 5;`;
 	} catch (error) {
 		console.error(error);
-	}
-
-	const stored_paths_with_names = [];
-	for (const path of stored_paths ?? []) {
-		stored_paths_with_names.push({
-			start_node: path.start_node,
-			end_node: path.end_node,
-			count: path.count,
-			hidden: path.hidden,
-			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-		});
 	}
 
 	const preset_paths_with_names = [];

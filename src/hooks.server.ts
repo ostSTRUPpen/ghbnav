@@ -27,7 +27,7 @@ const sessionCheck: Handle = async ({ event, resolve }) => {
 
 
 export const connectToPostgresSQL: Handle = async ({ event, resolve }) => {
-	const sql = postgres(`postgres://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}:${PSQL_PORT}/${PSQL_DATABASE}`, {
+	const sql = postgres(`postgresql://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}${PSQL_PORT}/${PSQL_DATABASE}?sslmode=require`, {
 		idle_timeout: Number(POSTGRES_JS_SETTINGS_IDLE_TIMEOUT),
 		max_lifetime: Number(POSTGRES_JS_SETTINGS_MAX_LIFETIME),
 	});
