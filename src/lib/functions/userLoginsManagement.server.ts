@@ -1,5 +1,5 @@
 import { dev } from '$app/environment';
-import { Cookies } from '@sveltejs/kit';
+import type { Cookies } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
 import type { Sql } from 'postgres';
 
