@@ -214,9 +214,10 @@
 	onMount(async () => {
 		if (browser) {
 			const L = await import('leaflet');
-			//@ts-ignore
+			//@ts-expect-error
 			const textPath = await import('leaflet-textpath');
 			const markerIcons = getMarkerIcons(L, iconIdImage);
+			//@ts-expect-error
 			fromMarkerFloor = markers.find((obj: { id: string }) => obj.id === from)?.floor ?? 1;
 
 			const zeroFloorImg = L.imageOverlay(floor_0, [

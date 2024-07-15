@@ -10,8 +10,6 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 200 }
 		);
-		// FIXME ts
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		console.error(error)
 		const errMessage = error.message

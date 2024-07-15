@@ -2,6 +2,7 @@
 	export let form;
 </script>
 
+<!-- TODO smazat tenhle URL endpoint, komplet-->
 <form method="POST" action="?/login">
 	<label for="password" class="label">Prosím zadejte heslo pro GHBnav:</label>
 	<input type="password" name="password" class="input input-bordered" />

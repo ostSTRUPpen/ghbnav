@@ -1,12 +1,8 @@
-//FIXME ts
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 const findLowestWeightNode = (weights: object, processed: Array<string>) => {
 	const knownNodes = Object.keys(weights);
 
 	const lowestWeightNode = knownNodes.reduce((lowest: null | never | string, node: string) => {
 		if (lowest === null && !processed.includes(node)) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			lowest! = node;
 		}
 		if (
@@ -20,8 +16,7 @@ const findLowestWeightNode = (weights: object, processed: Array<string>) => {
 
 	return lowestWeightNode;
 };
-//FIXME ts
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function procesData(data: any, startNode: string, endNode: string) {
 	const graph: App.GraphTypes['graphObject'] = {};
 	for (const navMarker of data) {
@@ -55,10 +50,9 @@ export const dijkstra = (
 	const weights = Object.assign({ endNode: Infinity }, graph[startNode]);
 
 	// track paths
-	const parents = { endNode: null };
+	const parents: { [key: string]: string | null } = { endNode: null };
 	for (const child in graph[startNode as keyof typeof graph]) {
-		//FIXME ts
-		//@ts-ignore
+
 		parents[child] = startNode;
 	}
 
@@ -80,8 +74,7 @@ export const dijkstra = (
 			const newWeight = weight + children[n as keyof typeof children];
 			if (!weights[n] || weights[n] > newWeight) {
 				weights[n] = newWeight;
-				//FIXME ts
-				//@ts-ignore
+				//update the parent of the node
 				parents[n] = node;
 			}
 		}

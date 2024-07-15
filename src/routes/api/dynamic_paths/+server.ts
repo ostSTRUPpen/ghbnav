@@ -49,8 +49,6 @@ export async function POST({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 201 }
 		);
-		// FIXME ts
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
@@ -73,10 +71,6 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 201 }
 		);
-
-
-		// FIXME ts
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
@@ -100,9 +94,6 @@ export async function DELETE({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 200 }
 		);
-
-		// FIXME ts
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message

@@ -1,6 +1,5 @@
 <script lang="ts">
 	//https://svelte-put.vnphanquang.com/docs/qr
-	// @ts-nocheck
 	import QR from '@svelte-put/qr/img/QR.svelte';
 	const dev = import.meta.env.DEV;
 

@@ -1,6 +1,6 @@
 import { fail, type Actions } from "@sveltejs/kit";
 import bcrypt from 'bcrypt';
-
+// <!-- TODO smazat tenhle URL endpoint, komplet-->
 export const actions: Actions = {
 	login: async ({ request, locals: { sql, cookies } }) => {
 		const formData = await request.formData();

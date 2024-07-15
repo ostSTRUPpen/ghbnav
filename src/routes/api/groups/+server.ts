@@ -11,9 +11,6 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 200 }
 		);
-
-		// FIXME ts
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	} catch (error: any) {
 		const errMessage = error.message
 			? error.message
