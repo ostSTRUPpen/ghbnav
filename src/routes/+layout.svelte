@@ -86,6 +86,9 @@
 </header>
 
 <main>
+    <noscript>
+        <h2 class="text-error text-5xl px-5 py-3">Prosím povolte javascript pro správné fungování stránky!</h2>
+    </noscript>
 	<slot />
 </main>
 

@@ -11,3 +11,4 @@ vite.config.ts.timestamp-*
 stuff.lnk
 secret.txt
 .vscode
+postgres_server.bat
