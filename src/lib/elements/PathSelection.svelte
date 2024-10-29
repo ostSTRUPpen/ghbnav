@@ -70,10 +70,10 @@
 	}
 
 	$: {
-		if (navFrom === '0' || navTo === '0' || navFrom === navTo) {
-			isDisabled = true;
-		} else {
+		if (navFrom !== '' && navFrom !== navTo) {
 			isDisabled = false;
+		} else {
+			isDisabled = true;
 		}
 	}
 </script>
