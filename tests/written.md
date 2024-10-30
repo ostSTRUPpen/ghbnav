@@ -87,7 +87,18 @@
     - NE cookies banner?
     - "Zpět"
 - Funkcionalita
+    - Zobrazení ikon?
+    - "Vytisknout všechny QR kódy"?
+    - Jde změnit (s uložením)
+        - Budova
+        - Název
+        - Ikona
+        - Naviogvatelný
+        - Vytištění QR kódu?
+    - "Uložit změny"?
+    - "Zrušit změny"?
 - Data
+    - Načetla se všechna data o markerech? 
 
 ### /sec/markers/print
 - Vzhled
@@ -99,7 +110,14 @@
     - NE cookies banner?
     - "Zpět"
 - Funkcionalita
+    - Jsou QR kódy funkční?
+    - Mají GHBnav logo?
+    - Funguje tlačítko tisk?
+        - Bílé pozadí
+        - Správné rozložení QR kódů?
 - Data
+    - Jsou QR kódy?
+    - Jsou funkční? 
 
 ### /sec/paths
 - Vzhled
@@ -136,4 +154,11 @@
     - NE cookies banner?
     - "Zpět"
 - Funkcionalita
+    - Jde změnit:
+        - Název
+        - Ikona
+        - Pozice v seznamu
+    - "Uložit změny"?
+    - "Zrušit změny"? 
 - Data
+    - Načetly se skupiny?
