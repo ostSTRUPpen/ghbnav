@@ -18,6 +18,6 @@ Aplikace též využívá QR kódů pro jednoduché určení polohy v budově.
 
 # Vytvořili
 
-- Návrh, vývoj a údržba aplikace: [Vojtěch Voldřich](https://www.linkedin.com/in/vojtěch-voldřich)
+- Návrh, vývoj a údržba aplikace: Vojtěch Voldřich (e-mail: <vojvol@post.cz>)
 - Návrh ikon: Sára Egersdorfová
 - Grafické zpracování ikon: Monika Jarošová
