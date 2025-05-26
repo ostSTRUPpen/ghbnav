@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { LayoutData } from './$types';
 	import '../app.postcss';
 	import CookieAccept from '$lib/elements/CookieAccept.svelte';
@@ -94,7 +94,7 @@
 </main>
 
 <footer>
-	{#if !(/\/map/.test($page.url.pathname) || /\/loading/.test($page.url.pathname) || /\/sec/.test($page.url.pathname))}
+	{#if !(/\/map/.test(page.url.pathname) || /\/loading/.test(page.url.pathname) || /\/sec/.test(page.url.pathname))}
 		<CookieAccept />
 	{/if}
 	{#if staticSettings.displayAboutMe}
