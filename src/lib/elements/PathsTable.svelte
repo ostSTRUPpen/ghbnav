@@ -2,9 +2,13 @@
 	import { base } from '$app/paths';
 	import { goto } from '$app/navigation';
 
-	export let paths: Array<any>,
-		tableName: string,
-		showCount: boolean = true;
+	interface Props {
+		paths: Array<any>;
+		tableName: string;
+		showCount?: boolean;
+	}
+
+	let { paths, tableName, showCount = true }: Props = $props();
 
 	function navFromTo(navFrom: string, navTo: string) {
 		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`,{ replaceState: true }));
@@ -35,7 +39,7 @@
 							{/if}
 							<td>
 								<button
-									on:click={() => {
+									onclick={() => {
 										navFromTo(path.start_node, path.end_node);
 									}}
 									class="btn btn-secondary hover:text-primary hover:bg-base-100"

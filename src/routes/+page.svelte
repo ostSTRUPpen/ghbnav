@@ -3,9 +3,8 @@
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import PathsTable from '$lib/elements/PathsTable.svelte';
 
-	export let data;
-	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
-	$: ({ locations, stored_paths, preset_paths, iconImageDisplayNames } = data);
+	let { data } = $props();
+	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = $derived(data);
 </script>
 
 <main class="max-lg:space-y-14 lg:grid md:max-2xl:grid-cols-2 2xl:grid-cols-3 2xl:gap-4">

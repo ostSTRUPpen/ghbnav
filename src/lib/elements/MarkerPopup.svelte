@@ -4,21 +4,36 @@
 	import { foundPath } from '$lib/data/store';
 	import type { LayerGroup, Map } from 'leaflet';
 
-	export let text: string;
-	export let id: string;
-	export let buttonType: string;
-	export let fromNodeId: string;
-	export let canNav: boolean;
-	export let markerIcon: string;
-	export let endingFloor: number;
-	export let map: Map;
-	export let floors: Record<string, LayerGroup>;
-	export let currentFloor: number;
+	interface Props {
+		text: string;
+		id: string;
+		buttonType: string;
+		fromNodeId: string;
+		canNav: boolean;
+		markerIcon: string;
+		endingFloor: number;
+		map: Map;
+		floors: Record<string, LayerGroup>;
+		currentFloor: number;
+	}
+
+	let {
+		text,
+		id,
+		buttonType,
+		fromNodeId,
+		canNav,
+		markerIcon,
+		endingFloor,
+		map,
+		floors,
+		currentFloor
+	}: Props = $props();
 
 	let floorToMoveTo: number;
 	let shouldChangeFloors: boolean = false;
-	let buttonText = '';
-	let bonusText: string = '';
+	let buttonText = $state('');
+	let bonusText: string = $state('');
 	const floorNames = ['1. PP', '1. NP', '2. NP', '3. NP', '4. NP'];
 
 	if (buttonType === 'no_from-to') {
@@ -106,6 +121,6 @@
 		<p class="text-lg text-center">{bonusText}</p>
 	{/if}
 	{#if canNav}
-		<button class="btn btn-secondary w-full max-w-xs" on:click={navTo}>{buttonText}</button>
+		<button class="btn btn-secondary w-full max-w-xs" onclick={navTo}>{buttonText}</button>
 	{/if}
 </div>

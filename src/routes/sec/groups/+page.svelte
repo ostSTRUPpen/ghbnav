@@ -7,13 +7,13 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 
-	export let data;
-	let { items, iconIdImageName } = data;
+	let { data } = $props();
+	let { items, iconIdImageName } = $state(data);
 
-	let successDialog: any;
+	let successDialog: any = $state();
 	let loadingDialog: any;
-	let errorDialog: any;
-	let errors: SerializedServerResponse[] = [];
+	let errorDialog: any = $state();
+	let errors: SerializedServerResponse[] = $state([]);
 
 	onMount(() => {
 		successDialog = document.getElementById('success-dialog');
@@ -58,7 +58,7 @@
 
 <dialog id="loading-dialog" class="modal">
 	<div class="modal-box flex justify-center">
-		<span class="loading loading-dots loading-lg text-info" />
+		<span class="loading loading-dots loading-lg text-info"></span>
 	</div>
 </dialog>
 
@@ -68,7 +68,7 @@
 		<p class="text-lg py-4">Skupiny úspěšně upraveny</p>
 		<p class="font-bold text-lg text-warning">Změny se projeví až po pěti minutách!</p>
 		<button
-			on:click={() => {
+			onclick={() => {
 				successDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
@@ -88,7 +88,7 @@
 			{/each}
 		</ul>
 		<button
-			on:click={() => {
+			onclick={() => {
 				errorDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
@@ -101,7 +101,7 @@
 	<div class="px-5">
 		<a class="link-secondary link text-xl" href="/sec">Zpět</a>
 	</div>
-	<div class="divider" />
+	<div class="divider"></div>
 	<div class="overflow-x-auto px-5">
 		<h2 class="text-xl">Skupiny značek</h2>
 		<table class="table table-sm md:table-md table-pin-rows">
@@ -114,8 +114,8 @@
 			</thead>
 			<tbody
 				use:dndzone={{ items, flipDurationMs }}
-				on:consider={handleSort}
-				on:finalize={handleSort}
+				onconsider={handleSort}
+				onfinalize={handleSort}
 				class="w-full text-md md:text-xl"
 			>
 				{#each items as item (item.id)}
@@ -153,9 +153,9 @@
 			<tfoot>
 				<tr>
 					<td colspan="2"
-						><button on:click={saveChanges} class="btn btn-success">Uložit změny</button>
+						><button onclick={saveChanges} class="btn btn-success">Uložit změny</button>
 					</td><td colspan="2"
-						><button on:click={cancelChanges} class="btn btn-error">Zrušit změny</button>
+						><button onclick={cancelChanges} class="btn btn-error">Zrušit změny</button>
 					</td></tr
 				>
 			</tfoot>

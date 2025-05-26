@@ -4,16 +4,29 @@
 	import { buildingLocationsList } from '$lib/data/staticData';
 	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
 
-	let preparedLocations: Array<any> = [];
+	let preparedLocations: Array<any> = $state([]);
 
-	export let locations: Array<any>,
-		navFrom: string = '',
-		navTo: string = '',
-		showClearNavButton: boolean = false,
-		iconImageDisplayNames: object,
-		printQR: boolean = false;
+	interface Props {
+		locations: Array<any>;
+		navFrom?: string;
+		navTo?: string;
+		showClearNavButton?: boolean;
+		iconImageDisplayNames: object;
+		printQR?: boolean;
+	}
 
-	let isDisabled: boolean = true;
+	let {
+		locations,
+		navFrom = $bindable(''),
+		navTo = $bindable(''),
+		showClearNavButton = false,
+		iconImageDisplayNames,
+		printQR = false
+	}: Props = $props();
+
+	//$effect(() => {console.log(preparedLocations)});
+
+	let isDisabled: boolean = $state	(true);
 
 	function navFromTo() {
 		if (printQR) {
@@ -44,19 +57,20 @@
 		});
 	}
 
-	$: {
+	$effect(() => {
 		let lastLocation: string = '';
+		let tempPreparedLocations = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {
 				lastLocation = location.icon;
-				preparedLocations.push({
+				tempPreparedLocations.push({
 					id: 0,
 					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
 					can_nav: true,
 					disabled: true
 				});
 			}
-			preparedLocations.push({
+			tempPreparedLocations.push({
 				id: location.id,
 				name: `${location.display_name} (Patro: ${location.floor}, ${
 					buildingLocationsList.filter(
@@ -67,15 +81,17 @@
 				disabled: false
 			});
 		}
-	}
+		preparedLocations = tempPreparedLocations;
+	});
 
-	$: {
+
+	$effect(() => {
 		if (navFrom !== '' && navFrom !== navTo) {
 			isDisabled = false;
 		} else {
 			isDisabled = true;
 		}
-	}
+	});
 </script>
 
 <div class="space-y-2">
@@ -103,10 +119,10 @@
 		{/each}
 	</select>
 	<br />
-	<button on:click={navFromTo} disabled={isDisabled} class="btn btn-secondary"
+	<button onclick={navFromTo} disabled={isDisabled} class="btn btn-secondary"
 		>{printQR ? 'Vytisknout QR kód' : 'Navigovat'}</button
 	>
 	{#if showClearNavButton}
-		<button on:click={clearNav} class="btn btn-secondary">Vymazat navigaci</button>
+		<button onclick={clearNav} class="btn btn-secondary">Vymazat navigaci</button>
 	{/if}
 </div>

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import type { LayoutData } from './$types';
 	import '../app.postcss';
 	import CookieAccept from '$lib/elements/CookieAccept.svelte';
@@ -9,10 +7,14 @@
 	import AboutMe from '$lib/elements/AboutMe.svelte';
 	import { staticSettings } from '$lib/data/staticData';
 
-	export let data: LayoutData;
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
 
-	let { loggedIn } = data;
-	$: ({ loggedIn } = data);
+	let { data, children }: Props = $props();
+
+	let { loggedIn } = $derived(data);
 </script>
 
 <header class="print:hidden sm:pb-5 md:pb-10">
@@ -88,7 +90,7 @@
     <noscript>
         <h2 class="text-error text-5xl px-5 py-3">Prosím povolte javascript pro správné fungování stránky!</h2>
     </noscript>
-	<slot />
+	{@render children?.()}
 </main>
 
 <footer>

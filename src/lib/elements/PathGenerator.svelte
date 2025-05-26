@@ -2,16 +2,22 @@
 	import { goto } from '$app/navigation';
 	import { base } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
-	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
+	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 
-	let preparedLocations: Array<any> = [];
-	let preparedGroups: Array<any> = [];
-	let navFrom: string;
-	let navTo: string;
+	let preparedLocations: Array<any> = $state([]);
+	let preparedGroups: Array<any> = $state([]);
+	let navFrom: string = $state("0");
+	let navTo: string = $state("0w");
 
-	export let locations: Array<any>, iconImageDisplayNames: object, settings: string;
+	interface Props {
+		locations: Array<any>;
+		iconImageDisplayNames: object;
+		settings: string;
+	}
 
-	let isDisabled: boolean = true;
+	let { locations, iconImageDisplayNames, settings }: Props = $props();
+
+	let isDisabled: boolean = $state(true);
 
 	function navFromTo() {
 		let pathsForGeneration: Array<Array<string>> = [];
@@ -56,19 +62,21 @@
 		goto(`${base}/sec/markers/print`, { replaceState: true });
 	}
 
-	$: {
+	$effect(() => {
 		let lastLocation: string = '';
+		let tempPreparedLocations = []
+		let tempPreparedGroups = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {
 				lastLocation = location.icon;
-				preparedLocations.push({
+				tempPreparedLocations.push({
 					id: 0,
 					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
 					can_nav: true,
 					disabled: true
 				});
 			}
-			preparedLocations.push({
+			tempPreparedLocations.push({
 				id: location.id,
 				name: `${location.display_name} (Patro: ${location.floor}, ${
 					buildingLocationsList.filter(
@@ -81,14 +89,16 @@
 			});
 		}
 		for (let group of Object.entries(iconImageDisplayNames)) {
-			preparedGroups.push({
+			tempPreparedGroups.push({
 				id: group[0],
 				name: group[1]
 			});
 		}
-	}
+		preparedLocations = tempPreparedLocations;
+		preparedGroups = tempPreparedGroups;
+	});
 
-	$: {
+	$effect(() => {
 		if (
 			navFrom === '0' ||
 			navTo === '0' ||
@@ -100,7 +110,7 @@
 		} else {
 			isDisabled = false;
 		}
-	}
+	});
 </script>
 
 <div>
@@ -133,7 +143,7 @@
 				{/each}
 			</select>
 			<br />
-			<button on:click={navFromTo} disabled={isDisabled} class="btn btn-secondary"
+			<button onclick={navFromTo} disabled={isDisabled} class="btn btn-secondary"
 				>Vytisknout QR kódy</button
 			>
 		</div>
@@ -166,7 +176,7 @@
 				{/each}
 			</select>
 			<br />
-			<button on:click={navFromTo} disabled={isDisabled} class="btn btn-secondary"
+			<button onclick={navFromTo} disabled={isDisabled} class="btn btn-secondary"
 				>Vytisknout QR kódy</button
 			>
 		</div>

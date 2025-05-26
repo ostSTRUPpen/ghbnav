@@ -5,36 +5,37 @@
 	import { base } from '$app/paths';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import { iconImages } from '$lib/data/markerIcons.js';
-	import { building } from '$app/environment';
 	import { buildingLocationsList } from '$lib/data/staticData.js';
 
-	export let data;
-	let { markers, iconList } = data;
-	$: ({ markers, iconList } = data);
+	let { data } = $props();
+	let { markers, iconList } = $derived(data);
 
 	let localPrintMarkersList: Array<Array<string>> = [];
-	let savingError: SerializedServerResponse = { message: '', code: '' };
-	let endingPoints: Array<enlargedMarkerObject> = [];
+	let savingError: SerializedServerResponse = $state({ message: '', code: '' });
+	let endingPoints: Array<enlargedMarkerObject> = $state([]);
+	$effect(() => {
+		let tempEndingPoints = [];
+		for (let marker of markers) {
+			tempEndingPoints.push({
+				id: marker.id,
+				display_name: marker.display_name,
+				floor: marker.floor,
+				building_location: marker.building_location,
+				icon: marker.icon,
+				can_nav: marker.can_nav,
+				new_display_name: marker.display_name,
+				new_icon: marker.icon,
+				new_can_nav: marker.can_nav,
+				new_building_location: marker.building_location,
+				genQR: false
+			});
+		}
+		endingPoints = tempEndingPoints;
+	});
 
-	for (let marker of markers) {
-		endingPoints.push({
-			id: marker.id,
-			display_name: marker.display_name,
-			floor: marker.floor,
-			building_location: marker.building_location,
-			icon: marker.icon,
-			can_nav: marker.can_nav,
-			new_display_name: marker.display_name,
-			new_icon: marker.icon,
-			new_can_nav: marker.can_nav,
-			new_building_location: marker.building_location,
-			genQR: false
-		});
-	}
-
-	let successDialog: any;
+	let successDialog: any = $state();
 	let loadingDialog: any;
-	let errorDialog: any;
+	let errorDialog: any = $state();
 	onMount(() => {
 		successDialog = document.getElementById('success-dialog');
 		loadingDialog = document.getElementById('loading-dialog');
@@ -77,7 +78,7 @@
 	}
 
 	function addQRToPrint(id: string, name: string, floor: string, changeQR: boolean) {
-		if (!changeQR) {
+		if (changeQR) {
 			localPrintMarkersList.push([id, name, floor]);
 		}
 	}
@@ -102,7 +103,7 @@
 
 <dialog id="loading-dialog" class="modal">
 	<div class="modal-box flex justify-center">
-		<span class="loading loading-dots loading-lg text-info" />
+		<span class="loading loading-dots loading-lg text-info"></span>
 	</div>
 </dialog>
 
@@ -112,7 +113,7 @@
 		<p class="text-lg py-4">Značky úspěšně upraveny.</p>
 		<p class="font-bold text-lg text-warning">Změny se projeví až po pěti minutách!</p>
 		<button
-			on:click={() => {
+			onclick={() => {
 				successDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
@@ -130,7 +131,7 @@
 			</li>
 		</ul>
 		<button
-			on:click={() => {
+			onclick={() => {
 				errorDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
@@ -140,7 +141,7 @@
 </dialog>
 
 <div class="px-5 space-y-5">
-	<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
+	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 	<div tabindex="0" class="collapse collapse-arrow border border-secondary bg-base-100">
 		<div class="collapse-title text-xl font-medium text-primary">Ikony</div>
 		<div class="collapse-content bg-white">
@@ -160,9 +161,9 @@
 		</div>
 	</div>
 	<a class="link-secondary link text-xl" href="/sec">Zpět</a> <br />
-	<button on:click={printQRs} class="btn btn-secondary">Tisk QR kódů</button>
-	<button on:click={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button>
-	<div class="divider" />
+	<button onclick={printQRs} class="btn btn-secondary">Tisk QR kódů</button>
+	<button onclick={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button>
+	<div class="divider"></div>
 </div>
 <table class="table table-pin-rows">
 	<thead>
@@ -230,7 +231,7 @@
 				<td>
 					<input
 						type="checkbox"
-						on:change={() =>
+						onchange={() =>
 							addQRToPrint(
 								endPoint.id,
 								endPoint.new_display_name,
@@ -247,9 +248,9 @@
 	<tfoot>
 		<tr>
 			<td colspan="2"
-				><button on:click={() => saveChanges(true)} class="btn btn-success">Uložit změny</button>
+				><button onclick={() => saveChanges(true)} class="btn btn-success">Uložit změny</button>
 			</td><td colspan="2"
-				><button on:click={cancelChanges} class="btn btn-error">Zrušit změny</button>
+				><button onclick={cancelChanges} class="btn btn-error">Zrušit změny</button>
 			</td></tr
 		>
 	</tfoot>

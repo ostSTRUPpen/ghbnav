@@ -10,8 +10,8 @@
 - Funkcionalita
     - Lze vybrat počátek a konec?
     - Funguje kliknutí na "Navigovat"?
-    - Funguje kliknutí na "navigovat" u přednastavených cest?
-    - Funguje kliknutí na "navigovat" u častých cest?
+    - Funguje kliknutí na "Navigovat" u přednastavených cest?
+    - Funguje kliknutí na "Navigovat" u častých cest?
     - Zablokuje se navigovat, když:
         - Nic nevyberu?
         - Vyberu stejné věci?
@@ -44,6 +44,11 @@
     - "Mapa"
     - "Správce"
     - NE cookies banner?
+- Navigace
+    - Dva body na stejném patře
+    - Cíl výš než start
+    - Start výš než cíl
+    - Body na stejném patře, ale musí přes jiné patro
 
 ### /loading
 - Vzhled

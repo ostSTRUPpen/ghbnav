@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let darkMode: boolean;
+	let darkMode: boolean = $state(false);
 	const one_year = 60 * 60 * 24 * 365;
 
 	onMount(() => {
@@ -38,7 +38,7 @@
 <label class="swap swap-rotate" aria-label="modeChangeLabel">
 	<p hidden id="modeChangeLabel">Změna barevného schéma mezi světlým a tmavým</p>
 	<!-- this hidden checkbox controls the state -->
-	<input type="checkbox" on:change={set_theme} bind:checked={darkMode} />
+	<input type="checkbox" onchange={set_theme} bind:checked={darkMode} />
 
 	<!-- sun icon -->
 	<svg class="swap-on fill-current w-10 h-10" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"

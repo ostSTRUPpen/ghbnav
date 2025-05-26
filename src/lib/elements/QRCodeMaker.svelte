@@ -3,13 +3,17 @@
 	import QR from '@svelte-put/qr/img/QR.svelte';
 	const dev = import.meta.env.DEV;
 
-	export let id: string;
-	export let name: string;
-	export let floor: string;
-	export let settings: string = 'marker';
+	interface Props {
+		id: string;
+		name: string;
+		floor: string;
+		settings?: string;
+	}
+
+	let { id, name, floor, settings = 'marker' }: Props = $props();
 
 	const url_string: string = 'https://mapa.ghb.cz';
-	let url: string = '';
+	let url: string = $state('');
 
 	if (dev) {
 		url = 'http://localhost:5173';
@@ -60,7 +64,7 @@
 						backgroundFill="white"
 						let:src
 					>
-						<img {src} alt="qr" width="300" />
+						<img {src} alt="qr" width="400" />
 					</QR>
 				</td>
 			</tr>
