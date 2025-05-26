@@ -12,15 +12,14 @@
 	import PathGenerator from '$lib/elements/PathGenerator.svelte';
 	import { buildingLocationsList, staticSettings } from '$lib/data/staticData.js';
 
-	export let data;
-	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = data;
-	$: ({ locations, stored_paths, preset_paths, iconImageDisplayNames } = data);
+	let { data } = $props();
+	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = $derived(data);
 
-	let successDialog: any;
+	let successDialog: any = $state();
 	let loadingDialog: any;
-	let errorDialog: any;
-	let errors: SerializedServerResponse[] = [];
-	let pathSelectorChosen: string = 'bod_bod';
+	let errorDialog: any = $state();
+	let errors: SerializedServerResponse[] = $state([]);
+	let pathSelectorChosen: string = $state('bod_bod');
 
 	onMount(() => {
 		successDialog = document.getElementById('success-dialog');
@@ -32,20 +31,21 @@
 		goto(`${base}/sec`, { replaceState: true });
 	}
 
-	let preparedLocations: Array<any> = [];
-	$: {
+	let preparedLocations: Array<any> = $state([]);
+	$effect(() => {
 		let lastLocation: string = '';
+		let tempPreparedLocations = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {
 				lastLocation = location.icon;
-				preparedLocations.push({
+				tempPreparedLocations.push({
 					id: 0,
 					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
 					can_nav: true,
 					disabled: true
 				});
 			}
-			preparedLocations.push({
+			tempPreparedLocations.push({
 				id: location.id,
 				name: `${location.display_name} (Patro: ${location.floor}, ${
 					buildingLocationsList.filter(
@@ -56,7 +56,8 @@
 				disabled: false
 			});
 		}
-	}
+		preparedLocations = tempPreparedLocations;
+	});
 	async function savePresetPathsChanges() {
 		loadingDialog['showModal']();
 		for (let preset_path of preset_paths) {
@@ -100,7 +101,7 @@
 
 <dialog id="loading-dialog" class="modal">
 	<div class="modal-box flex justify-center">
-		<span class="loading loading-dots loading-lg text-info" />
+		<span class="loading loading-dots loading-lg text-info"></span>
 	</div>
 </dialog>
 
@@ -110,7 +111,7 @@
 		<p class="text-lg py-4">Cesty úspěšně upraveny.</p>
 		<p class="font-bold text-lg text-warning">Změny se projeví až po pěti minutách!</p>
 		<button
-			on:click={() => {
+			onclick={() => {
 				successDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
@@ -130,7 +131,7 @@
 			{/each}
 		</ul>
 		<button
-			on:click={() => {
+			onclick={() => {
 				errorDialog.close();
 				goto(`${base}/sec`, { replaceState: true });
 			}}
@@ -143,7 +144,7 @@
 	<div class="px-5">
 		<a class="link-secondary link text-xl" href="/sec">Zpět</a> <br />
 	</div>
-	<div class="divider" />
+	<div class="divider"></div>
 	<div class="overflow-x-auto px-5">
 		<h2 class="text-xl">Přednastavené cesty</h2>
 		<table class="table table-sm md:table-md">
@@ -194,11 +195,11 @@
 			<tfoot>
 				<tr>
 					<td colspan="2"
-						><button on:click={() => savePresetPathsChanges()} class="btn btn-success"
+						><button onclick={() => savePresetPathsChanges()} class="btn btn-success"
 							>Uložit změny</button
 						>
 					</td><td colspan="2"
-						><button on:click={cancelChanges} class="btn btn-error">Zrušit změny</button>
+						><button onclick={cancelChanges} class="btn btn-error">Zrušit změny</button>
 					</td></tr
 				>
 			</tfoot>
@@ -266,13 +267,13 @@
 								type="checkbox"
 								class="checkbox checked:checkbox-error"
 								bind:checked={path.hidden}
-								on:click={() => updatePathVisibility(path.id, !path.hidden)}
+								onclick={() => updatePathVisibility(path.id, !path.hidden)}
 							/></td
 						>
 						<td
 							><button
 								class="btn btn-error"
-								on:click={() => {
+								onclick={() => {
 									deleteStoredPath(path.id);
 								}}>Vymazat</button
 							></td
@@ -280,13 +281,13 @@
 					</tr>
 				{/each}
 			</tbody>
-			{#if staticSettings.storeDynamicPaths}
-				<a href="/sec/paths/all" class="text-2xl link link-secondary">Zobrazit všechny cesty</a>
-			{:else}
-				<button on:click={handleAllPathsLink} class="text-2xl link link-secondary"
-					>Zobrazit všechny cesty</button
-				>
-			{/if}
 		</table>
+		{#if staticSettings.storeDynamicPaths}
+			<a href="/sec/paths/all" class="text-2xl link link-secondary">Zobrazit všechny cesty</a>
+		{:else}
+			<button onclick={handleAllPathsLink} class="text-2xl link link-secondary"
+				>Zobrazit všechny cesty</button
+			>
+		{/if}
 	</div>
 </div>

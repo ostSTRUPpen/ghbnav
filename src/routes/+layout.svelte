@@ -1,19 +1,20 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { invalidate } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { page } from '$app/state';
 	import type { LayoutData } from './$types';
-	import { base } from '$app/paths';
 	import '../app.postcss';
 	import CookieAccept from '$lib/elements/CookieAccept.svelte';
 	import ColorMode from '$lib/elements/ColorMode.svelte';
 	import AboutMe from '$lib/elements/AboutMe.svelte';
 	import { staticSettings } from '$lib/data/staticData';
 
-	export let data: LayoutData;
+	interface Props {
+		data: LayoutData;
+		children?: import('svelte').Snippet;
+	}
 
-	let { loggedIn } = data;
-	$: ({ loggedIn } = data);
+	let { data, children }: Props = $props();
+
+	let { loggedIn } = $derived(data);
 </script>
 
 <header class="print:hidden sm:pb-5 md:pb-10">
@@ -26,7 +27,7 @@
 		<div class="flex-1">
 			<a
 				class="btn text-primary btn-ghost no-animation hover:bg-base-100 normal-case text-4xl sm:text-5xl"
-				href="{base}/"
+				href="/"
 				target="_self"
 				rel="prev"
 			>
@@ -38,7 +39,7 @@
 				<li>
 					<a
 						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
-						href="{base}/map"
+						href="/map"
 						target="_self"
 						rel="next"
 					>
@@ -49,7 +50,7 @@
 					<li>
 						<a
 							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
-							href="{base}/sec"
+							href="/sec"
 							target="_self"
 							rel="nofollow"
 						>
@@ -69,7 +70,7 @@
 					<li>
 						<a
 							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-md sm:text-xl max-sm:hidden"
-							href="{base}/auth"
+							href="/auth"
 							target="_self"
 							rel="nofollow"
 						>
@@ -89,11 +90,11 @@
     <noscript>
         <h2 class="text-error text-5xl px-5 py-3">Prosím povolte javascript pro správné fungování stránky!</h2>
     </noscript>
-	<slot />
+	{@render children?.()}
 </main>
 
 <footer>
-	{#if !(/\/map/.test($page.url.pathname) || /\/loading/.test($page.url.pathname) || /\/sec/.test($page.url.pathname))}
+	{#if !(/\/map/.test(page.url.pathname) || /\/loading/.test(page.url.pathname) || /\/sec/.test(page.url.pathname))}
 		<CookieAccept />
 	{/if}
 	{#if staticSettings.displayAboutMe}

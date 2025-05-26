@@ -6,26 +6,25 @@
 	import { invalidateAll } from '$app/navigation';
 	import { staticSettings } from '$lib/data/staticData.js';
 
-	export let data;
-	let { stored_paths } = data;
-	$: ({ stored_paths } = data);
+	let { data } = $props();
+	let { stored_paths } = $derived(data);
 
-	let uniquePathsTaken: number = 0;
-	let allPathsTaken: number = 0;
+	let uniquePathsTaken: number = $state(0);
+	let allPathsTaken: number = $state(0);
 
 	async function deleteStoredPath(id: string) {
 		await deletePath(id);
 		invalidateAll();
 	}
 
-	$: {
+	$effect(() => {
 		uniquePathsTaken = 0;
 		allPathsTaken = 0;
 		stored_paths.forEach((path) => {
 			uniquePathsTaken++;
 			allPathsTaken += path.count;
 		});
-	}
+	});
 </script>
 
 <div class="space-y-5">
@@ -56,7 +55,7 @@
 			</tbody>
 		</table>
 	</div>
-	<div class="divider" />
+	<div class="divider"></div>
 	<div class="overflow-x-auto px-5">
 		<h2 class="text-3xl">Všechny uložené cesty</h2>
 		<table class="table table-sm md:table-md">
@@ -81,13 +80,13 @@
 								type="checkbox"
 								class="checkbox checked:checkbox-error"
 								bind:checked={path.hidden}
-								on:click={() => updatePathVisibility(path.id, !path.hidden)}
+								onclick={() => updatePathVisibility(path.id, !path.hidden)}
 							/></td
 						>
 						<td
 							><button
 								class="btn btn-error"
-								on:click={() => {
+								onclick={() => {
 									deleteStoredPath(path.id);
 								}}>Vymazat</button
 							></td

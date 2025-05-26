@@ -1,5 +1,5 @@
 <script lang="ts">
-	export let form;
+	let { form } = $props();
 </script>
 
 <div class="flex justify-center">

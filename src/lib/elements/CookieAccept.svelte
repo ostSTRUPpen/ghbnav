@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let acceptedCookies: boolean = true;
+	let acceptedCookies: boolean = $state(true);
 
 	onMount(() => {
 		if (typeof window !== 'undefined') {
@@ -28,7 +28,7 @@
 			<p class="text-ellipsis text-sm md:text-lg lg:text-xl">
 				Tato stránka využívá soubory cookies <br class="sm:hidden" /> pro zajištění správné funkcionality.
 			</p>
-			<button class="btn btn-success" on:click={saveCookieAccept}>Rozumím</button>
+			<button class="btn btn-success" onclick={saveCookieAccept}>Rozumím</button>
 		</div>
 	</div>
 {/if}
