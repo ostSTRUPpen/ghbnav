@@ -3,7 +3,6 @@
 	import { invalidate } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import type { LayoutData } from './$types';
-	import { base } from '$app/paths';
 	import '../app.postcss';
 	import CookieAccept from '$lib/elements/CookieAccept.svelte';
 	import ColorMode from '$lib/elements/ColorMode.svelte';
@@ -26,7 +25,7 @@
 		<div class="flex-1">
 			<a
 				class="btn text-primary btn-ghost no-animation hover:bg-base-100 normal-case text-4xl sm:text-5xl"
-				href="{base}/"
+				href="/"
 				target="_self"
 				rel="prev"
 			>
@@ -38,7 +37,7 @@
 				<li>
 					<a
 						class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
-						href="{base}/map"
+						href="/map"
 						target="_self"
 						rel="next"
 					>
@@ -49,7 +48,7 @@
 					<li>
 						<a
 							class="btn-ghost hover:text-primary px-3 hover:bg-base-100 text-xl"
-							href="{base}/sec"
+							href="/sec"
 							target="_self"
 							rel="nofollow"
 						>
@@ -69,7 +68,7 @@
 					<li>
 						<a
 							class="btn-ghost hover:text-primary hover:no-animation hover:bg-base-100 text-md sm:text-xl max-sm:hidden"
-							href="{base}/auth"
+							href="/auth"
 							target="_self"
 							rel="nofollow"
 						>
