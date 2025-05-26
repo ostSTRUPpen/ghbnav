@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
+	import { onMount, mount } from 'svelte';
 	import MarkerPopup from '$lib/elements/MarkerPopup.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		floor_0,
 		floor_1,
@@ -19,48 +19,40 @@
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import Loading from '$lib/elements/Loading.svelte';
 	import type { LayerGroup, Map } from 'leaflet';
-	export let data;
+	let { data } = $props();
 
-	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = data;
-	$: ({ markers, nav_markers, iconImageDisplayNames, iconIdImage } = data);
+	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = $derived(data);
 
 	let floors: Record<string, LayerGroup>;
-	let from: string = '',
-		to: string = '',
+	let from: string = $state(page.params.from),
+		to: string = $state(page.params.to),
 		fromMarkerFloor: number = 1,
-		loading = true,
-		finalMarkerFloor: number = -5;
+		loading = $state(true),
+		finalMarkerFloor: number = $state(-5);
 
-	from = $page.params.from;
-	to = $page.params.to;
-
-	let currentFoundPath = [''];
+	let currentFoundPath = $state(['']);
 	foundPath.subscribe((value) => {
 		currentFoundPath = value;
 	});
 
-	let state = 'no_from-to';
-	if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
-		state = 'ready';
-		finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
-	} else if (from !== undefined && from.length > 5) {
-		state = 'no_to';
-		finalMarkerFloor = -5;
-	}
-	$: {
-		if (from !== undefined && to !== undefined) {
-			state = 'ready';
+	let navState = $state('no_from-to');
+
+	$effect(() => {console.log("From: " + from); console.log("To: " + to);})
+
+	$effect(() => {
+		if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
+			navState = 'ready';
 			finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
-		} else if (from !== undefined) {
-			state = 'no_to';
+		} else if (from !== undefined  && from.length > 5) {
+			navState = 'no_to';
 			finalMarkerFloor = -5;
 		}
-	}
+	});
 
 	let error = false;
 	let errMsg: string = '';
 
-	let map: any;
+	let map: any = $state();
 
 	function createMarkers(
 		L: any,
@@ -85,21 +77,21 @@
 						L.marker([marker.y, marker.x], { icon: iconList[marker.icon] })
 							.bindPopup(() => {
 								let container = L.DomUtil.create('div');
-								let c = new MarkerPopup({
-									target: container,
-									props: {
-										text: `${marker.display_name}`,
-										id: marker.id,
-										buttonType: tempButtonType,
-										fromNodeId,
-										canNav: marker.can_nav,
-										markerIcon: marker.icon,
-										endingFloor: finalMarkerFloor,
-										map: map,
-										floors: floors,
-										currentFloor: floor
-									}
-								});
+								let c = mount(MarkerPopup, {
+                                									target: container,
+                                									props: {
+                                										text: `${marker.display_name}`,
+                                										id: marker.id,
+                                										buttonType: tempButtonType,
+                                										fromNodeId,
+                                										canNav: marker.can_nav,
+                                										markerIcon: marker.icon,
+                                										endingFloor: finalMarkerFloor,
+                                										map: map,
+                                										floors: floors,
+                                										currentFloor: floor
+                                									}
+                                								});
 								return container;
 							})
 							.openPopup()
@@ -110,21 +102,21 @@
 						L.marker([marker.y, marker.x])
 							.bindPopup(() => {
 								let container = L.DomUtil.create('div');
-								let c = new MarkerPopup({
-									target: container,
-									props: {
-										text: marker.display_name,
-										id: marker.id,
-										buttonType: tempButtonType,
-										fromNodeId,
-										canNav: marker.can_nav,
-										markerIcon: marker.icon,
-										endingFloor: finalMarkerFloor,
-										map: map,
-										floors: floors,
-										currentFloor: floor
-									}
-								});
+								let c = mount(MarkerPopup, {
+                                									target: container,
+                                									props: {
+                                										text: marker.display_name,
+                                										id: marker.id,
+                                										buttonType: tempButtonType,
+                                										fromNodeId,
+                                										canNav: marker.can_nav,
+                                										markerIcon: marker.icon,
+                                										endingFloor: finalMarkerFloor,
+                                										map: map,
+                                										floors: floors,
+                                										currentFloor: floor
+                                									}
+                                								});
 								return container;
 							})
 							.openPopup()
@@ -249,7 +241,7 @@
 				canDrawPath = true;
 			}
 
-			markerList = createMarkers(L, markers, 0, markerIcons, state, from);
+			markerList = createMarkers(L, markers, 0, markerIcons, navState, from);
 
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 0));
@@ -267,7 +259,7 @@
 				})
 			]);
 
-			markerList = createMarkers(L, markers, 1, markerIcons, state, from);
+			markerList = createMarkers(L, markers, 1, markerIcons, navState, from);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 1));
 			let firstFloor = L.layerGroup([
@@ -281,7 +273,7 @@
 				})
 			]);
 
-			markerList = createMarkers(L, markers, 2, markerIcons, state, from);
+			markerList = createMarkers(L, markers, 2, markerIcons, navState, from);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 2));
 			let secondFloor = L.layerGroup([
@@ -295,7 +287,7 @@
 				})
 			]);
 
-			markerList = createMarkers(L, markers, 3, markerIcons, state, from);
+			markerList = createMarkers(L, markers, 3, markerIcons, navState, from);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 3));
 			let thirdFloor = L.layerGroup([
@@ -309,7 +301,7 @@
 				})
 			]);
 
-			markerList = createMarkers(L, markers, 4, markerIcons, state, from);
+			markerList = createMarkers(L, markers, 4, markerIcons, navState, from);
 			if (canDrawPath === true)
 				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 4));
 			let fourthFloor = L.layerGroup([
@@ -347,7 +339,7 @@
 
 			loading = false;
 			loading = loading;
-			if (state === 'ready') {
+			if (navState === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
 					goto(`${base}/loading`).then(() => goto(`${base}/map/${from}`, { replaceState: true }));
@@ -380,7 +372,7 @@
 	}
 </script>
 
-<svelte:window on:resize={resizeMap} />
+<svelte:window onresize={resizeMap} />
 
 <main>
 	<div>
@@ -399,7 +391,7 @@
 		{#if error}
 			<p class="error_msg">{errMsg}</p>
 		{:else}
-			<div id="map" class="max-sm:h-96 sm:h-[30rem]" bind:this={map} />
+			<div id="map" class="max-sm:h-96 sm:h-[30rem]" bind:this={map}></div>
 		{/if}
 	</div>
 </main>
