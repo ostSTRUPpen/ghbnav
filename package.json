@@ -44,6 +44,7 @@
 		"leaflet": "^1.9.4",
 		"leaflet-textpath": "^1.2.3",
 		"postgres": "^3.4.4",
-		"svelte-dnd-action": "^0.9.49"
+		"svelte-dnd-action": "^0.9.49",
+		"svelte-select": "^5.8.3"
 	}
 }
