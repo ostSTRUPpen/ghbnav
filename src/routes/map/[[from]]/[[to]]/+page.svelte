@@ -391,7 +391,7 @@
 		{#if error}
 			<p class="error_msg">{errMsg}</p>
 		{:else}
-			<div id="map" class="max-sm:h-96 sm:h-[30rem]" bind:this={map}></div>
+			<div id="map" class="max-sm:h-96 sm:h-[30rem] z-0" bind:this={map}></div>
 		{/if}
 	</div>
 </main>
