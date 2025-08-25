@@ -13,7 +13,7 @@
 	let { id, name, floor, settings = 'marker' }: Props = $props();
 
 	const url_string: string = 'https://mapa.ghb.cz';
-	let url: string = $state('');
+	let url: string = $state(url_string);
 
 	if (dev) {
 		url = 'http://localhost:5173';
