@@ -53,23 +53,23 @@
 <div>
 	{#each printData as markerInfo}
 		<div class="max-h-1 qrPrintDiv">
-		<QrCodeMaker
-			id={markerInfo[0]}
-			name={markerInfo[1]}
-			floor={markerInfo[2]}
-			settings={printSettings}
-		/>
+			<QrCodeMaker
+				id={markerInfo[0]}
+				name={markerInfo[1]}
+				floor={markerInfo[2]}
+				settings={printSettings}
+			/>
 		</div>
 	{/each}
 </div>
 
 <style>
 	@media print {
-  .qrPrintDiv {
-    break-inside: avoid-page;
-  }
-  @page {
-  size: landscape;
-}
-}
+		.qrPrintDiv {
+			break-inside: avoid-page;
+		}
+		@page {
+			size: landscape;
+		}
+	}
 </style>

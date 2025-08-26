@@ -87,11 +87,27 @@
 	<label for="from" class="label">
 		<span class="label-text">Odkud: </span>
 	</label>
-	<Select items={preparedLocations} placeholder="Prosím vyberte začátek cesty" id="from" name="from" bind:value={navFrom} class="select select-bordered w-full max-w-md" clearable={false}/>
+	<Select
+		items={preparedLocations}
+		placeholder="Prosím vyberte začátek cesty"
+		id="from"
+		name="from"
+		bind:value={navFrom}
+		class="select select-bordered w-full max-w-md"
+		clearable={false}
+	/>
 	<label for="to" class="label">
 		<span class="label-text">Kam: </span>
 	</label>
-	<Select items={preparedLocations} placeholder="Prosím vyberte konec cesty" id="to" name="to" bind:value={navTo} class="select select-bordered w-ful max-w-md" clearable={false}/>
+	<Select
+		items={preparedLocations}
+		placeholder="Prosím vyberte konec cesty"
+		id="to"
+		name="to"
+		bind:value={navTo}
+		class="select select-bordered w-ful max-w-md"
+		clearable={false}
+	/>
 	<br />
 	<button onclick={navFromTo} disabled={isDisabled} class="btn btn-secondary"
 		>{printQR ? 'Vytisknout QR kód' : 'Navigovat'}</button

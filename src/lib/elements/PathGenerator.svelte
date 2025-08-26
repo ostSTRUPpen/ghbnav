@@ -6,8 +6,8 @@
 
 	let preparedLocations: Array<any> = $state([]);
 	let preparedGroups: Array<any> = $state([]);
-	let navFrom: string = $state("0");
-	let navTo: string = $state("0w");
+	let navFrom: string = $state('0');
+	let navTo: string = $state('0w');
 
 	interface Props {
 		locations: Array<any>;
@@ -64,7 +64,7 @@
 
 	$effect(() => {
 		let lastLocation: string = '';
-		let tempPreparedLocations = []
+		let tempPreparedLocations = [];
 		let tempPreparedGroups = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {

@@ -11,7 +11,9 @@
 	let { paths, tableName, showCount = true }: Props = $props();
 
 	function navFromTo(navFrom: string, navTo: string) {
-		goto(`${base}/loading`).then(() => goto(`${base}/map/${navFrom}/${navTo}`,{ replaceState: true }));
+		goto(`${base}/loading`).then(() =>
+			goto(`${base}/map/${navFrom}/${navTo}`, { replaceState: true })
+		);
 	}
 </script>
 

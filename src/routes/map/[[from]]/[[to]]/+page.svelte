@@ -37,13 +37,16 @@
 
 	let navState = $state('no_from-to');
 
-	$effect(() => {console.log("From: " + from); console.log("To: " + to);})
+	$effect(() => {
+		console.log('From: ' + from);
+		console.log('To: ' + to);
+	});
 
 	$effect(() => {
 		if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
 			navState = 'ready';
 			finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
-		} else if (from !== undefined  && from.length > 5) {
+		} else if (from !== undefined && from.length > 5) {
 			navState = 'no_to';
 			finalMarkerFloor = -5;
 		}
@@ -78,20 +81,20 @@
 							.bindPopup(() => {
 								let container = L.DomUtil.create('div');
 								let c = mount(MarkerPopup, {
-                                									target: container,
-                                									props: {
-                                										text: `${marker.display_name}`,
-                                										id: marker.id,
-                                										buttonType: tempButtonType,
-                                										fromNodeId,
-                                										canNav: marker.can_nav,
-                                										markerIcon: marker.icon,
-                                										endingFloor: finalMarkerFloor,
-                                										map: map,
-                                										floors: floors,
-                                										currentFloor: floor
-                                									}
-                                								});
+									target: container,
+									props: {
+										text: `${marker.display_name}`,
+										id: marker.id,
+										buttonType: tempButtonType,
+										fromNodeId,
+										canNav: marker.can_nav,
+										markerIcon: marker.icon,
+										endingFloor: finalMarkerFloor,
+										map: map,
+										floors: floors,
+										currentFloor: floor
+									}
+								});
 								return container;
 							})
 							.openPopup()
@@ -103,20 +106,20 @@
 							.bindPopup(() => {
 								let container = L.DomUtil.create('div');
 								let c = mount(MarkerPopup, {
-                                									target: container,
-                                									props: {
-                                										text: marker.display_name,
-                                										id: marker.id,
-                                										buttonType: tempButtonType,
-                                										fromNodeId,
-                                										canNav: marker.can_nav,
-                                										markerIcon: marker.icon,
-                                										endingFloor: finalMarkerFloor,
-                                										map: map,
-                                										floors: floors,
-                                										currentFloor: floor
-                                									}
-                                								});
+									target: container,
+									props: {
+										text: marker.display_name,
+										id: marker.id,
+										buttonType: tempButtonType,
+										fromNodeId,
+										canNav: marker.can_nav,
+										markerIcon: marker.icon,
+										endingFloor: finalMarkerFloor,
+										map: map,
+										floors: floors,
+										currentFloor: floor
+									}
+								});
 								return container;
 							})
 							.openPopup()
