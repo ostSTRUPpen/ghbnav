@@ -1,6 +1,7 @@
 <script lang="ts">
-	//https://svelte-put.vnphanquang.com/docs/qr
 	import QR from '@svelte-put/qr/img/QR.svelte';
+	import {PUBLIC_QR_ICON_URL} from '$env/static/public';
+	
 	const dev = import.meta.env.DEV;
 
 	interface Props {
@@ -34,7 +35,7 @@
 				<td class="flex justify-center qrcode_td">
 					<QR
 						data={`${url_string}/map/${id}`}
-						logo={`${url}/qr_icon.svg`}
+						logo={PUBLIC_QR_ICON_URL}
 						shape="square"
 						backgroundFill="white"
 						let:src
@@ -59,7 +60,7 @@
 				<td class="flex justify-center qrcode_td">
 					<QR
 						data={`${url_string}/map/${id}`}
-						logo={`${url}/qr_icon.svg`}
+						logo={PUBLIC_QR_ICON_URL}
 						shape="square"
 						backgroundFill="white"
 						let:src
