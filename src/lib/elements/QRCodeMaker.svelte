@@ -1,8 +1,6 @@
 <script lang="ts">
 	import QR from '@svelte-put/qr/img/QR.svelte';
-	import {PUBLIC_QR_ICON_URL} from '$env/static/public';
-	
-	const dev = import.meta.env.DEV;
+	import { PUBLIC_QR_ICON_URL, PUBLIC_QR_CODE_URL } from '$env/static/public';
 
 	interface Props {
 		id: string;
@@ -12,15 +10,6 @@
 	}
 
 	let { id, name, floor, settings = 'marker' }: Props = $props();
-
-	const url_string: string = 'https://mapa.ghb.cz';
-	let url: string = $state(url_string);
-
-	if (dev) {
-		url = 'http://localhost:5173';
-	} else {
-		url = url_string;
-	}
 </script>
 
 {#if settings == 'marker'}
@@ -34,7 +23,7 @@
 			<tr>
 				<td class="flex justify-center qrcode_td">
 					<QR
-						data={`${url_string}/map/${id}`}
+						data={`${PUBLIC_QR_CODE_URL}/map/${id}`}
 						logo={PUBLIC_QR_ICON_URL}
 						shape="square"
 						backgroundFill="white"
@@ -44,8 +33,8 @@
 					</QR>
 				</td>
 			</tr>
-			<tr><td class="link_text text-sm">{`${url_string}/map/${id}`}</td></tr>
-			<tr><td class="link_text text-lg">{url_string}</td></tr>
+			<tr><td class="link_text text-sm">{`${PUBLIC_QR_CODE_URL}/map/${id}`}</td></tr>
+			<tr><td class="link_text text-lg">{PUBLIC_QR_CODE_URL}</td></tr>
 		</tbody>
 	</table>
 {:else if settings == 'path'}
@@ -59,7 +48,7 @@
 			<tr>
 				<td class="flex justify-center qrcode_td">
 					<QR
-						data={`${url_string}/map/${id}`}
+						data={`${PUBLIC_QR_CODE_URL}/map/${id}`}
 						logo={PUBLIC_QR_ICON_URL}
 						shape="square"
 						backgroundFill="white"
@@ -69,7 +58,7 @@
 					</QR>
 				</td>
 			</tr>
-			<tr><td class="link_text text-lg">{url_string}</td></tr>
+			<tr><td class="link_text text-lg">{PUBLIC_QR_CODE_URL}</td></tr>
 		</tbody>
 	</table>
 {:else}
