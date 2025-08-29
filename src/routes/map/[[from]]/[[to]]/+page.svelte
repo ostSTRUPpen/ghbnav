@@ -15,7 +15,7 @@
 	import { dijkstra } from '$lib/functions/findPath.js';
 	import { foundPath } from '$lib/data/store.js';
 	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import Loading from '$lib/elements/Loading.svelte';
 	import type { LayerGroup, Map } from 'leaflet';
@@ -345,7 +345,7 @@
 			if (navState === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
-					goto(`${base}/loading`).then(() => goto(`${base}/map/${from}`, { replaceState: true }));
+					goto(resolve("/loading", {})).then(() => goto(resolve("/map/[from]", {from: from}), { replaceState: true }));
 				} else if (
 					currentFoundPath[0] !== from ||
 					currentFoundPath[currentFoundPath.length - 1] !== to
@@ -360,8 +360,8 @@
 					if (response.status === 'OK') {
 						foundPath.update((n) => (n = response.path));
 						const data = await savePath(from, to, response.path);
-						goto(`${base}/loading`).then(() => {
-							goto(`${base}/map/${from}/${to}`, { replaceState: true });
+						goto(resolve("/loading", {})).then(() => {
+							goto(resolve("/map/[from]/[to]",{from: from, to: to}), { replaceState: true });
 						});
 					}
 				}

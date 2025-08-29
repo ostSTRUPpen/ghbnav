@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { foundPath } from '$lib/data/store';
 	import type { LayerGroup, Map } from 'leaflet';
 
@@ -98,18 +98,24 @@
 		} else {
 			if (buttonType === 'no_from-to') {
 				foundPath.update((n) => (n = ['']));
-				goto(`${base}/loading`).then(() => goto(`${base}/map/${id}`, { replaceState: true }));
+				goto(resolve('/loading', {})).then(() =>
+					goto(resolve('/map/[id]', { id: id }), { replaceState: true })
+				);
 			} else if (buttonType === 'no_to') {
-				goto(`${base}/loading`).then(() =>
-					goto(`${base}/map/${fromNodeId}/${id}`, { replaceState: true })
+				goto(resolve('/loading', {})).then(() =>
+					goto(resolve('/map/[fromNodeId]/[toNodeId]', { fromNodeId: fromNodeId, toNodeId: id }), {
+						replaceState: true
+					})
 				);
 			} else if (buttonType === 'ready') {
-				goto(`${base}/loading`).then(() => {
-					goto(`${base}/map/${fromNodeId}/${id}`, { replaceState: true });
+				goto(resolve('/loading', {})).then(() => {
+					goto(resolve('/map/[fromNodeId]/[toNodeId]', { fromNodeId: fromNodeId, toNodeId: id }), {
+						replaceState: true
+					});
 				});
 			} else if (canNav === false) {
 			} else {
-				goto(`${base}/loading`);
+				goto(resolve('/loading', {}));
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
 	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import Select from 'svelte-select';
@@ -42,17 +42,19 @@
 					])
 			);
 			printSettingsString.update((n) => (n = 'path'));
-			goto(`${base}/sec/markers/print`, { replaceState: true });
+			goto(resolve('/sec/markers/print', {}), { replaceState: true });
 		} else {
-			goto(`${base}/loading`).then(() =>
-				goto(`${base}/map/${navFrom.value}/${navTo.value}`, { replaceState: true })
+			goto(resolve('/loading', {})).then(() =>
+				goto(resolve('/map/[navFrom]/[navTo]', { navFrom: navFrom.value, navTo: navTo.value }), {
+					replaceState: true
+				})
 			);
 		}
 	}
 	function clearNav() {
 		foundPath.update((n) => (n = ['']));
-		goto(`${base}/loading`).then(() => {
-			goto(`${base}/map`, { replaceState: true });
+		goto(resolve('/loading', {})).then(() => {
+			goto(resolve('/map', {}), { replaceState: true });
 		});
 	}
 

@@ -2,7 +2,7 @@
 	import { changeMarker } from '../../../lib/functions/markerManagementFunctions.js';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import { iconImages } from '$lib/data/markerIcons.js';
 	import { buildingLocationsList } from '$lib/data/staticData.js';
@@ -115,7 +115,7 @@
 		<button
 			onclick={() => {
 				successDialog.close();
-				goto(`${base}/sec`, { replaceState: true });
+				goto(resolve('/sec', {}), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
@@ -133,7 +133,7 @@
 		<button
 			onclick={() => {
 				errorDialog.close();
-				goto(`${base}/sec`, { replaceState: true });
+				goto(resolve('/sec', {}), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>

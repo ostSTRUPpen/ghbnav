@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 
@@ -59,7 +59,7 @@
 		}
 		printMarkersList.update((n) => (n = pathsForGeneration));
 		printSettingsString.update((n) => (n = 'path'));
-		goto(`${base}/sec/markers/print`, { replaceState: true });
+		goto(resolve('/sec/markers/print', {}), { replaceState: true });
 	}
 
 	$effect(() => {

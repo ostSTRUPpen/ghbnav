@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import Loading from '$lib/elements/Loading.svelte';
 	import { onDestroy, onMount } from 'svelte';
 
@@ -9,7 +9,7 @@
 		returnToHomePage = true;
 		setTimeout(() => {
 			if (returnToHomePage) {
-				goto(`${base}/`, { replaceState: true });
+				goto(resolve('/', {}), { replaceState: true });
 			}
 		}, 10000);
 	});

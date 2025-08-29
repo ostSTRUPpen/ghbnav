@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import {
 		deletePath,
 		updatePathVisibility
@@ -28,7 +28,7 @@
 	});
 
 	function cancelChanges() {
-		goto(`${base}/sec`, { replaceState: true });
+		goto(resolve('/sec', {}), { replaceState: true });
 	}
 
 	let preparedLocations: Array<any> = $state([]);
@@ -113,7 +113,7 @@
 		<button
 			onclick={() => {
 				successDialog.close();
-				goto(`${base}/sec`, { replaceState: true });
+				goto(resolve('/sec', {}), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
@@ -133,7 +133,7 @@
 		<button
 			onclick={() => {
 				errorDialog.close();
-				goto(`${base}/sec`, { replaceState: true });
+				goto(resolve('/sec', {}), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
 
 	interface Props {
@@ -11,8 +11,10 @@
 	let { paths, tableName, showCount = true }: Props = $props();
 
 	function navFromTo(navFrom: string, navTo: string) {
-		goto(`${base}/loading`).then(() =>
-			goto(`${base}/map/${navFrom}/${navTo}`, { replaceState: true })
+		goto(resolve('/loading', {})).then(() =>
+			goto(resolve('/map/[navFrom]/[navTo]', { navFrom: navFrom, navTo: navTo }), {
+				replaceState: true
+			})
 		);
 	}
 </script>
