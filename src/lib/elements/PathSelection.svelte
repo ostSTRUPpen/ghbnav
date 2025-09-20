@@ -61,6 +61,9 @@
 	$effect(() => {
 		let tempPreparedLocations = [];
 		for (let location of locations) {
+			if(location.can_nav === false) {
+				continue;
+			}
 			tempPreparedLocations.push({
 				value: location.id,
 				label: `${location.display_name} (Patro: ${location.floor}, ${
