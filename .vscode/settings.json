@@ -116,6 +116,8 @@
 		"latlng",
 		"maxage",
 		"Navigovatelný",
+		"onconsider",
+		"onfinalize",
 		"qrcode",
 		"Rojkovi",
 		"skeletonlabs",

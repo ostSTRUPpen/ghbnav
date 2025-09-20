@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
 	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import Select from 'svelte-select';
@@ -42,23 +42,28 @@
 					])
 			);
 			printSettingsString.update((n) => (n = 'path'));
-			goto(`${base}/sec/markers/print`, { replaceState: true });
+			goto(resolve('/sec/markers/print', {}), { replaceState: true });
 		} else {
-			goto(`${base}/loading`).then(() =>
-				goto(`${base}/map/${navFrom.value}/${navTo.value}`, { replaceState: true })
+			goto(resolve('/loading', {})).then(() =>
+				goto(resolve('/map/[navFrom]/[navTo]', { navFrom: navFrom.value, navTo: navTo.value }), {
+					replaceState: true
+				})
 			);
 		}
 	}
 	function clearNav() {
 		foundPath.update((n) => (n = ['']));
-		goto(`${base}/loading`).then(() => {
-			goto(`${base}/map`, { replaceState: true });
+		goto(resolve('/loading', {})).then(() => {
+			goto(resolve('/map', {}), { replaceState: true });
 		});
 	}
 
 	$effect(() => {
 		let tempPreparedLocations = [];
 		for (let location of locations) {
+			if(location.can_nav === false) {
+				continue;
+			}
 			tempPreparedLocations.push({
 				value: location.id,
 				label: `${location.display_name} (Patro: ${location.floor}, ${
@@ -87,11 +92,27 @@
 	<label for="from" class="label">
 		<span class="label-text">Odkud: </span>
 	</label>
-	<Select items={preparedLocations} placeholder="Prosím vyberte začátek cesty" id="from" name="from" bind:value={navFrom} class="select select-bordered w-full max-w-md" clearable={false}/>
+	<Select
+		items={preparedLocations}
+		placeholder="Prosím vyberte začátek cesty"
+		id="from"
+		name="from"
+		bind:value={navFrom}
+		class="select select-bordered w-full max-w-md"
+		clearable={false}
+	/>
 	<label for="to" class="label">
 		<span class="label-text">Kam: </span>
 	</label>
-	<Select items={preparedLocations} placeholder="Prosím vyberte konec cesty" id="to" name="to" bind:value={navTo} class="select select-bordered w-ful max-w-md" clearable={false}/>
+	<Select
+		items={preparedLocations}
+		placeholder="Prosím vyberte konec cesty"
+		id="to"
+		name="to"
+		bind:value={navTo}
+		class="select select-bordered w-ful max-w-md"
+		clearable={false}
+	/>
 	<br />
 	<button onclick={navFromTo} disabled={isDisabled} class="btn btn-secondary"
 		>{printQR ? 'Vytisknout QR kód' : 'Navigovat'}</button

@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 
 	let preparedLocations: Array<any> = $state([]);
 	let preparedGroups: Array<any> = $state([]);
-	let navFrom: string = $state("0");
-	let navTo: string = $state("0w");
+	let navFrom: string = $state('0');
+	let navTo: string = $state('0');
 
 	interface Props {
 		locations: Array<any>;
@@ -59,12 +59,12 @@
 		}
 		printMarkersList.update((n) => (n = pathsForGeneration));
 		printSettingsString.update((n) => (n = 'path'));
-		goto(`${base}/sec/markers/print`, { replaceState: true });
+		goto(resolve('/sec/markers/print', {}), { replaceState: true });
 	}
 
 	$effect(() => {
 		let lastLocation: string = '';
-		let tempPreparedLocations = []
+		let tempPreparedLocations = [];
 		let tempPreparedGroups = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {

@@ -15,7 +15,7 @@
 	import { dijkstra } from '$lib/functions/findPath.js';
 	import { foundPath } from '$lib/data/store.js';
 	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import Loading from '$lib/elements/Loading.svelte';
 	import type { LayerGroup, Map } from 'leaflet';
@@ -37,13 +37,16 @@
 
 	let navState = $state('no_from-to');
 
-	$effect(() => {console.log("From: " + from); console.log("To: " + to);})
+	$effect(() => {
+		console.log('From: ' + from);
+		console.log('To: ' + to);
+	});
 
 	$effect(() => {
 		if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
 			navState = 'ready';
 			finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
-		} else if (from !== undefined  && from.length > 5) {
+		} else if (from !== undefined && from.length > 5) {
 			navState = 'no_to';
 			finalMarkerFloor = -5;
 		}
@@ -78,20 +81,20 @@
 							.bindPopup(() => {
 								let container = L.DomUtil.create('div');
 								let c = mount(MarkerPopup, {
-                                									target: container,
-                                									props: {
-                                										text: `${marker.display_name}`,
-                                										id: marker.id,
-                                										buttonType: tempButtonType,
-                                										fromNodeId,
-                                										canNav: marker.can_nav,
-                                										markerIcon: marker.icon,
-                                										endingFloor: finalMarkerFloor,
-                                										map: map,
-                                										floors: floors,
-                                										currentFloor: floor
-                                									}
-                                								});
+									target: container,
+									props: {
+										text: `${marker.display_name}`,
+										id: marker.id,
+										buttonType: tempButtonType,
+										fromNodeId,
+										canNav: marker.can_nav,
+										markerIcon: marker.icon,
+										endingFloor: finalMarkerFloor,
+										map: map,
+										floors: floors,
+										currentFloor: floor
+									}
+								});
 								return container;
 							})
 							.openPopup()
@@ -103,20 +106,20 @@
 							.bindPopup(() => {
 								let container = L.DomUtil.create('div');
 								let c = mount(MarkerPopup, {
-                                									target: container,
-                                									props: {
-                                										text: marker.display_name,
-                                										id: marker.id,
-                                										buttonType: tempButtonType,
-                                										fromNodeId,
-                                										canNav: marker.can_nav,
-                                										markerIcon: marker.icon,
-                                										endingFloor: finalMarkerFloor,
-                                										map: map,
-                                										floors: floors,
-                                										currentFloor: floor
-                                									}
-                                								});
+									target: container,
+									props: {
+										text: marker.display_name,
+										id: marker.id,
+										buttonType: tempButtonType,
+										fromNodeId,
+										canNav: marker.can_nav,
+										markerIcon: marker.icon,
+										endingFloor: finalMarkerFloor,
+										map: map,
+										floors: floors,
+										currentFloor: floor
+									}
+								});
 								return container;
 							})
 							.openPopup()
@@ -342,7 +345,7 @@
 			if (navState === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
-					goto(`${base}/loading`).then(() => goto(`${base}/map/${from}`, { replaceState: true }));
+					goto(resolve("/loading", {})).then(() => goto(resolve("/map/[from]", {from: from}), { replaceState: true }));
 				} else if (
 					currentFoundPath[0] !== from ||
 					currentFoundPath[currentFoundPath.length - 1] !== to
@@ -357,8 +360,8 @@
 					if (response.status === 'OK') {
 						foundPath.update((n) => (n = response.path));
 						const data = await savePath(from, to, response.path);
-						goto(`${base}/loading`).then(() => {
-							goto(`${base}/map/${from}/${to}`, { replaceState: true });
+						goto(resolve("/loading", {})).then(() => {
+							goto(resolve("/map/[from]/[to]",{from: from, to: to}), { replaceState: true });
 						});
 					}
 				}

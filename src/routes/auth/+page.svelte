@@ -3,11 +3,11 @@
 </script>
 
 <div class="flex justify-center">
-    {#if form?.error}
-        <p class="text-error text-3xl">{form.error}</p>
-        <br/>
-        <br/>
-    {/if}
+	{#if form?.error}
+		<p class="text-error text-3xl">{form.error}</p>
+		<br />
+		<br />
+	{/if}
 </div>
 
 <div class="flex justify-center">
@@ -20,9 +20,9 @@
 			type="email"
 			name="email"
 			placeholder="jmeno@ghb.cz"
-            value={form?.values.email ?? ''}
+			value={form?.values.email ?? ''}
 			required
-            maxlength="22"
+			maxlength="22"
 			class="input input-bordered"
 		/>
 		<br />
@@ -34,7 +34,7 @@
 			name="password"
 			required
 			placeholder="heslo123"
-            maxlength="50"
+			maxlength="50"
 			class="input input-bordered"
 		/>
 		<br />

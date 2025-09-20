@@ -5,7 +5,7 @@
 	import { updateGroup } from '$lib/functions/groupsManagementFunctions.js';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { base } from '$app/paths';
+	import { resolve } from '$app/paths';
 
 	let { data } = $props();
 	let { items, iconIdImageName } = $state(data);
@@ -52,7 +52,7 @@
 	}
 
 	function cancelChanges() {
-		goto(`${base}/sec`, { replaceState: true });
+		goto(resolve('/sec', {}), { replaceState: true });
 	}
 </script>
 
@@ -70,7 +70,7 @@
 		<button
 			onclick={() => {
 				successDialog.close();
-				goto(`${base}/sec`, { replaceState: true });
+				goto(resolve('/sec', {}), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
@@ -90,7 +90,7 @@
 		<button
 			onclick={() => {
 				errorDialog.close();
-				goto(`${base}/sec`, { replaceState: true });
+				goto(resolve('/sec', {}), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>

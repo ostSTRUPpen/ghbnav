@@ -5,7 +5,7 @@ import type { Sql } from 'postgres';
 
 export async function loginUser(sql: Sql, email: string, password: string, cookies: Cookies): Promise<string> {
 	const hash = (await sql`SELECT password FROM users WHERE email = ${Buffer.from(email).toString('base64')};`)[0]?.password;
-	if(!hash) {
+	if (!hash) {
 		return "400";
 	}
 	const match = await bcrypt.compare(password, hash);
