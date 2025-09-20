@@ -1,5 +1,6 @@
 <script lang="ts">
 	import QR from '@svelte-put/qr/img/QR.svelte';
+	// @ts-ignore
 	import { PUBLIC_QR_ICON_URL, PUBLIC_QR_CODE_URL } from '$env/static/public';
 
 	interface Props {
