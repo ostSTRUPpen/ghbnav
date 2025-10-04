@@ -1,4 +1,4 @@
-import { staticSettings } from "$lib/data/staticData";
+import { staticSettings } from '$lib/data/staticData';
 
 export async function savePath(
 	startNode: string,

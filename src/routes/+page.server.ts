@@ -9,7 +9,8 @@ export async function load({ setHeaders, locals }) {
 
 	let markers;
 	try {
-		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+		markers =
+			await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
 	FROM markers
 	LEFT JOIN icons ON markers.icon = icons.id
 	WHERE can_nav = true 
@@ -22,7 +23,8 @@ export async function load({ setHeaders, locals }) {
 	const stored_paths_with_names = [];
 	if (staticSettings.storeDynamicPaths) {
 		try {
-			stored_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
+			stored_paths =
+				await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
 		} catch (error) {
 			console.error(error);
 		}
@@ -41,7 +43,8 @@ export async function load({ setHeaders, locals }) {
 
 	let preset_paths;
 	try {
-		preset_paths = await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths WHERE hidden = false ORDER BY position ASC LIMIT 5;`;
+		preset_paths =
+			await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths WHERE hidden = false ORDER BY position ASC LIMIT 5;`;
 	} catch (error) {
 		console.error(error);
 	}

@@ -4,7 +4,8 @@ export async function load({ locals }) {
 	const { sql } = locals;
 	let markers;
 	try {
-		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+		markers =
+			await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
 	FROM markers
 	LEFT JOIN icons ON markers.icon = icons.id
 	ORDER BY position ASC, floor ASC, display_name ASC;`;
@@ -18,13 +19,15 @@ export async function load({ locals }) {
 		let stored_visible_paths;
 		let stored_hidden_paths;
 		try {
-			stored_visible_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
+			stored_visible_paths =
+				await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
 		} catch (error) {
 			console.error(error);
 		}
 
 		try {
-			stored_hidden_paths = await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = true ORDER BY count DESC LIMIT 50;`;
+			stored_hidden_paths =
+				await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = true ORDER BY count DESC LIMIT 50;`;
 		} catch (error) {
 			console.error(error);
 		}
@@ -56,7 +59,8 @@ export async function load({ locals }) {
 	//Přednastavené cesty
 	let preset_paths;
 	try {
-		preset_paths = await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths ORDER BY position ASC LIMIT 5;`;
+		preset_paths =
+			await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths ORDER BY position ASC LIMIT 5;`;
 	} catch (error) {
 		console.error(error);
 	}

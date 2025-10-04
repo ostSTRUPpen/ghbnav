@@ -52,7 +52,6 @@ export const dijkstra = (
 	// track paths
 	const parents: { [key: string]: string | null } = { endNode: null };
 	for (const child in graph[startNode as keyof typeof graph]) {
-
 		parents[child] = startNode;
 	}
 

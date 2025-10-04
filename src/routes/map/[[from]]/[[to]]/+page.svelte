@@ -345,7 +345,9 @@
 			if (navState === 'ready') {
 				if (from === to && from !== undefined) {
 					alert('Začátek a konec cesty nemůže být stejný');
-					goto(resolve("/loading", {})).then(() => goto(resolve("/map/[from]", {from: from}), { replaceState: true }));
+					goto(resolve('/loading', {})).then(() =>
+						goto(resolve('/map/[from]', { from: from }), { replaceState: true })
+					);
 				} else if (
 					currentFoundPath[0] !== from ||
 					currentFoundPath[currentFoundPath.length - 1] !== to
@@ -360,8 +362,8 @@
 					if (response.status === 'OK') {
 						foundPath.update((n) => (n = response.path));
 						const data = await savePath(from, to, response.path);
-						goto(resolve("/loading", {})).then(() => {
-							goto(resolve("/map/[from]/[to]",{from: from, to: to}), { replaceState: true });
+						goto(resolve('/loading', {})).then(() => {
+							goto(resolve('/map/[from]/[to]', { from: from, to: to }), { replaceState: true });
 						});
 					}
 				}

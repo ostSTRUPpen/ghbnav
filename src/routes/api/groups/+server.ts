@@ -3,7 +3,6 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 	try {
 		await sql`UPDATE icons SET display_name = ${display_name}, image = ${image}, position = ${position} WHERE id = ${id}`;
 
-
 		return new Response(
 			JSON.stringify({
 				message: `Skupina upravena!`,

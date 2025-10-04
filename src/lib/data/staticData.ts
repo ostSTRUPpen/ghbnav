@@ -6,6 +6,6 @@ export const buildingLocationsList = [
 ];
 
 export const staticSettings = {
-	"storeDynamicPaths": false,
-	"displayAboutMe": true,
-}
+	storeDynamicPaths: false,
+	displayAboutMe: true
+};

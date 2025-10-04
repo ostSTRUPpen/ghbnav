@@ -2,7 +2,6 @@ import type { Actions } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { loginUser, logoutUser } from '$lib/functions/userLoginsManagement.server';
 
-
 export const actions: Actions = {
 	login: async ({ request, locals: { sql, cookies } }) => {
 		const formData = await request.formData();
@@ -48,7 +47,7 @@ export const actions: Actions = {
 	},
 
 	logout: async ({ locals: { sql, cookies } }) => {
-		await logoutUser(sql, cookies)
+		await logoutUser(sql, cookies);
 		throw redirect(302, '/');
 	}
 };

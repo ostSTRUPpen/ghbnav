@@ -2,7 +2,8 @@ export async function load({ locals }) {
 	const { sql } = locals;
 	let markers;
 	try {
-		markers = await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+		markers =
+			await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
 	FROM markers
 	LEFT JOIN icons ON markers.icon = icons.id
 	ORDER BY position ASC, floor ASC, display_name ASC;`;

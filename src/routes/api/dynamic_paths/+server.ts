@@ -1,4 +1,4 @@
-import { staticSettings } from "$lib/data/staticData";
+import { staticSettings } from '$lib/data/staticData';
 
 export async function POST({ request, locals: { sql } }): Promise<Response> {
 	if (!staticSettings.storeDynamicPaths) {
@@ -17,7 +17,8 @@ export async function POST({ request, locals: { sql } }): Promise<Response> {
 		let UpdateCountRowID = '';
 		let UpdateCountCountValue = 0;
 		if (startNode && endNode && path.length > 1) {
-			const stored_paths = await sql`SELECT id, starting_and_ending_point, count FROM stored_paths;`;
+			const stored_paths =
+				await sql`SELECT id, starting_and_ending_point, count FROM stored_paths;`;
 			if (stored_paths !== null) {
 				for (const stored_path of stored_paths) {
 					if (stored_path.starting_and_ending_point === `${startNode}-${endNode}`) {
@@ -29,7 +30,7 @@ export async function POST({ request, locals: { sql } }): Promise<Response> {
 				}
 			}
 			if (canSave && !canUpdateCount) {
-				await sql`INSERT INTO stored_paths (start_node, end_node, starting_and_ending_point, hidden, count) VALUES (${startNode}, ${endNode}, ${`${startNode}-${endNode}`}, false, 1); `
+				await sql`INSERT INTO stored_paths (start_node, end_node, starting_and_ending_point, hidden, count) VALUES (${startNode}, ${endNode}, ${`${startNode}-${endNode}`}, false, 1); `;
 			} else if (!canSave && canUpdateCount) {
 				UpdateCountCountValue++;
 				await sql`UPDATE stored_paths SET count = ${UpdateCountCountValue} WHERE id = ${UpdateCountRowID};`;

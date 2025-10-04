@@ -6,7 +6,7 @@ declare global {
 		interface Locals {
 			validateLogin(): Promise<boolean>;
 			sql: Sql;
-			cookies: Cookies
+			cookies: Cookies;
 		}
 		interface GraphTypes {
 			graphObject: { [key: string | number]: { [key: string | number]: number | string } };
@@ -19,7 +19,7 @@ declare global {
 		// interface Error {}
 		// interface Platform {}
 	}
-	declare type codesArray = { id: number; code: string, creation_date: string }[];
+	declare type codesArray = { id: number; code: string; creation_date: string }[];
 	declare type Item = import('svelte-dnd-action').Item;
 	declare type DndEvent<ItemType = Item> = import('svelte-dnd-action').DndEvent<ItemType>;
 	declare namespace svelteHTML {
@@ -38,13 +38,13 @@ declare global {
 		id: string;
 		display_name: string;
 		floor: number;
-		building_location: string
+		building_location: string;
 		icon: string;
 		can_nav: boolean;
 		new_display_name: string;
 		new_icon: string;
 		new_can_nav: boolean;
-		new_building_location: string
+		new_building_location: string;
 		genQR: boolean;
 	};
 }

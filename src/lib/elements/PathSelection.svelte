@@ -61,7 +61,7 @@
 	$effect(() => {
 		let tempPreparedLocations = [];
 		for (let location of locations) {
-			if(location.can_nav === false) {
+			if (location.can_nav === false) {
 				continue;
 			}
 			tempPreparedLocations.push({

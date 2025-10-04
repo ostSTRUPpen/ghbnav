@@ -11,7 +11,7 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 			{ status: 200 }
 		);
 	} catch (error: any) {
-		console.error(error)
+		console.error(error);
 		const errMessage = error.message
 			? error.message
 			: 'Při úpravě cesty došlo k chybě! Zkuste to prosím později.';

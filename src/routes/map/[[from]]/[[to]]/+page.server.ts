@@ -4,10 +4,10 @@ export async function load({ setHeaders, locals }) {
 	});
 	const { sql } = locals;
 
-
 	let markers;
 	try {
-		markers = await sql`SELECT markers.id, markers.display_name, x, y, floor, can_nav, icon, building_location, icons.position 
+		markers =
+			await sql`SELECT markers.id, markers.display_name, x, y, floor, can_nav, icon, building_location, icons.position 
 	FROM markers
 	LEFT JOIN icons ON markers.icon = icons.id
 	ORDER BY position ASC, floor ASC, display_name ASC;`;
@@ -17,7 +17,8 @@ export async function load({ setHeaders, locals }) {
 
 	let nav_markers;
 	try {
-		nav_markers = await sql`SELECT nav_markers.id, x, y, floor, connected, special_type FROM nav_markers ORDER BY floor ASC, id ASC;`;
+		nav_markers =
+			await sql`SELECT nav_markers.id, x, y, floor, connected, special_type FROM nav_markers ORDER BY floor ASC, id ASC;`;
 	} catch (error) {
 		console.error(error);
 	}
