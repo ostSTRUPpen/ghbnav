@@ -15,7 +15,7 @@
 		"@floating-ui/dom": "^1.6.7",
 		"@svelte-put/qr": "^1.2.1",
 		"@sveltejs/adapter-vercel": "^5.4.1",
-		"@sveltejs/kit": "^2.37.0",
+		"@sveltejs/kit": "^2.49.5",
 		"@types/bcrypt": "^5.0.2",
 		"@typescript-eslint/eslint-plugin": "^7.16.0",
 		"@typescript-eslint/parser": "^7.16.0",
