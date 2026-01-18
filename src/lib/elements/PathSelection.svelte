@@ -87,7 +87,7 @@
 	});
 </script>
 
-<div class="space-y-2 max-sm:min-w-80 sm:min-w-96">
+<div class="space-y-2 max-sm:min-w-80 sm:min-w-96 styled_select">
 	<h2 class="text-xl">Navigace</h2>
 	<label for="from" class="label">
 		<span class="label-text">Odkud: </span>
@@ -121,3 +121,14 @@
 		<button onclick={clearNav} class="btn btn-secondary">Vymazat navigaci</button>
 	{/if}
 </div>
+
+<style>
+	.styled_select {
+		--item-color: black;
+		--selected-item-color: black;
+		--item-hover-color: black;
+		--item-placeholder-color: black;
+		--input-color: black;
+		--placeholder-color: black;
+	}
+</style>
