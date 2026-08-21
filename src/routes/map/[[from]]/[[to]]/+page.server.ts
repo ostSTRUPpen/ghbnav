@@ -1,24 +1,31 @@
+import type {
+	IconDisplayNames,
+	LocationMarker,
+	MarkerIconDefinition,
+	NavigationMarker
+} from '$lib/types/navigation';
+
 export async function load({ setHeaders, locals }) {
 	setHeaders({
 		'Cache-Control': `max-age=${60}, s-maxage=${60}`
 	});
 	const { sql } = locals;
 
-	let markers;
+	let markers: LocationMarker[] = [];
 	try {
 		markers =
-			await sql`SELECT markers.id, markers.display_name, x, y, floor, can_nav, icon, building_location, icons.position 
+			(await sql`SELECT markers.id, markers.display_name, x, y, floor, can_nav, icon, building_location, icons.position
 	FROM markers
 	LEFT JOIN icons ON markers.icon = icons.id
-	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	ORDER BY position ASC, floor ASC, display_name ASC;`) as unknown as LocationMarker[];
 	} catch (error) {
 		console.error(error);
 	}
 
-	let nav_markers;
+	let nav_markers: NavigationMarker[] = [];
 	try {
 		nav_markers =
-			await sql`SELECT nav_markers.id, x, y, floor, connected, special_type FROM nav_markers ORDER BY floor ASC, id ASC;`;
+			(await sql`SELECT nav_markers.id, x, y, floor, connected, special_type FROM nav_markers ORDER BY floor ASC, id ASC;`) as unknown as NavigationMarker[];
 	} catch (error) {
 		console.error(error);
 	}
@@ -30,11 +37,11 @@ export async function load({ setHeaders, locals }) {
 		console.error(error);
 	}
 
-	const iconImageDisplayNames = new Object();
+	const iconImageDisplayNames: IconDisplayNames = {};
 	for (const icon of icons ?? []) {
-		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;
+		iconImageDisplayNames[String(icon.id)] = String(icon.display_name);
 	}
-	const iconIdImage = [];
+	const iconIdImage: MarkerIconDefinition[] = [];
 	for (const icon of icons ?? []) {
 		iconIdImage.push({
 			id: icon.id,
@@ -43,9 +50,9 @@ export async function load({ setHeaders, locals }) {
 	}
 
 	return {
-		markers: markers ?? [],
-		nav_markers: nav_markers ?? [],
-		iconImageDisplayNames: iconImageDisplayNames ?? [],
-		iconIdImage: iconIdImage ?? []
+		markers,
+		nav_markers,
+		iconImageDisplayNames,
+		iconIdImage
 	};
 }

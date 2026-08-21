@@ -1,14 +1,15 @@
 import { staticSettings } from '$lib/data/staticData.js';
+import type { IconDisplayNames, Location } from '$lib/types/navigation';
 
 export async function load({ locals }) {
 	const { sql } = locals;
-	let markers;
+	let markers: Location[] = [];
 	try {
 		markers =
-			await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
+			(await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position
 	FROM markers
 	LEFT JOIN icons ON markers.icon = icons.id
-	ORDER BY position ASC, floor ASC, display_name ASC;`;
+	ORDER BY position ASC, floor ASC, display_name ASC;`) as unknown as Location[];
 	} catch (error) {
 		console.error(error);
 	}
@@ -86,15 +87,15 @@ export async function load({ locals }) {
 		console.error(error);
 	}
 
-	const iconImageDisplayNames = new Object();
+	const iconImageDisplayNames: IconDisplayNames = {};
 	for (const icon of icons ?? []) {
-		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;
+		iconImageDisplayNames[String(icon.id)] = String(icon.display_name);
 	}
 
 	return {
-		locations: markers ?? [],
+		locations: markers,
 		stored_paths: stored_paths_with_names ?? [],
 		preset_paths: preset_paths_with_names ?? [],
-		iconImageDisplayNames: iconImageDisplayNames ?? []
+		iconImageDisplayNames
 	};
 }

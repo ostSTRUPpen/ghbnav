@@ -9,7 +9,7 @@
 		returnToHomePage = true;
 		setTimeout(() => {
 			if (returnToHomePage) {
-				goto(resolve('/', {}), { replaceState: true });
+				goto(resolve('/'), { replaceState: true });
 			}
 		}, 10000);
 	});

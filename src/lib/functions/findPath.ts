@@ -1,99 +1,104 @@
-const findLowestWeightNode = (weights: object, processed: Array<string>) => {
-	const knownNodes = Object.keys(weights);
+import type { NavigationMarker, PathResult } from '$lib/types/navigation';
 
-	const lowestWeightNode = knownNodes.reduce((lowest: null | never | string, node: string) => {
-		if (lowest === null && !processed.includes(node)) {
-			lowest! = node;
-		}
-		if (
-			weights[node as keyof typeof weights] < weights[lowest as keyof typeof weights] &&
-			!processed.includes(node)
-		) {
-			lowest = node;
-		}
-		return lowest;
-	}, null);
+type NavigationGraph = Record<string, Record<string, number>>;
 
-	return lowestWeightNode;
-};
+function buildGraph(data: NavigationMarker[], startNode: string, endNode: string): NavigationGraph {
+	const graph: NavigationGraph = {};
 
-function procesData(data: any, startNode: string, endNode: string) {
-	const graph: App.GraphTypes['graphObject'] = {};
 	for (const navMarker of data) {
-		// Pokud navMarker.connected obsahuje ID startNode, tak:
+		const navMarkerId = String(navMarker.id);
+		graph[navMarkerId] = navMarker.connected;
+
 		if (Object.prototype.hasOwnProperty.call(navMarker.connected, startNode)) {
-			const additionToStartNode: Record<string, number> = {};
-			// Přidá ke startNode cestu do bodů, které jsou k němu připojeny
-			additionToStartNode[navMarker.id] = navMarker.connected[startNode];
-			graph[String(startNode)] = additionToStartNode;
-			// Pokud navMarker.connected obsahuje ID endNOde, tak:
-		} else if (Object.prototype.hasOwnProperty.call(navMarker.connected, endNode)) {
-			const additionToEndNode: Record<string, number> = {};
-			// Přidá k endNOde cestu do bodů, které jsou k němu připojeny
-			additionToEndNode[navMarker.id] = navMarker.connected[endNode];
-			graph[String(endNode)] = additionToEndNode;
+			(graph[startNode] ??= {})[navMarkerId] = navMarker.connected[startNode];
 		}
-		graph[String(navMarker.id)] = navMarker.connected;
+		if (Object.prototype.hasOwnProperty.call(navMarker.connected, endNode)) {
+			(graph[endNode] ??= {})[navMarkerId] = navMarker.connected[endNode];
+		}
 	}
+
 	return graph;
 }
 
-export const dijkstra = (
-	rawGraph: App.GraphTypes['rawGraphObject'],
+function findLowestWeightNode(
+	weights: Record<string, number>,
+	processed: Set<string>
+): string | null {
+	let lowestNode: string | null = null;
+	let lowestWeight = Number.POSITIVE_INFINITY;
+
+	for (const [node, weight] of Object.entries(weights)) {
+		if (!processed.has(node) && weight < lowestWeight) {
+			lowestNode = node;
+			lowestWeight = weight;
+		}
+	}
+
+	return lowestNode;
+}
+
+export function dijkstra(
+	rawGraph: NavigationMarker[],
 	startNode: string,
 	endNode: string,
 	startNodeFloor: number
-) => {
-	const graph = procesData(rawGraph, startNode, endNode);
-
-	// track lowest cost to reach each node
-	const weights = Object.assign({ endNode: Infinity }, graph[startNode]);
-
-	// track paths
-	const parents: { [key: string]: string | null } = { endNode: null };
-	for (const child in graph[startNode as keyof typeof graph]) {
-		parents[child] = startNode;
+): PathResult {
+	if (!startNode || !endNode || startNode === endNode) {
+		return noPath(startNodeFloor);
 	}
 
-	// track nodes that have already been processed
-	const processed: Array<string> = [];
-	//Next, we’ll set the initial value of the node being processed //using the lowestCostNode function. Then, we’ll begin a while loop, //which will continuously look for the cheapest node.
-	let node = findLowestWeightNode(weights, processed);
+	const graph = buildGraph(rawGraph, startNode, endNode);
+	if (!graph[startNode] || !graph[endNode]) {
+		return noPath(startNodeFloor);
+	}
+
+	const weights: Record<string, number> = { [startNode]: 0 };
+	const parents: Record<string, string | null> = { [startNode]: null };
+	const processed = new Set<string>();
+	let node: string | null = startNode;
 
 	while (node) {
-		//Get the weight of the current node
 		const weight = weights[node];
-		//Get all the neighbors of current node
-		const children: object = graph[node as keyof typeof graph];
-		//Loop through each of the children, and calculate the weight to reach that child node. We'll update the weight of that node in the weights object if it is lowest or the ONLY weight available
-		for (const n in children) {
-			if (n === startNode) {
-				continue;
-			}
-			const newWeight = weight + children[n as keyof typeof children];
-			if (!weights[n] || weights[n] > newWeight) {
-				weights[n] = newWeight;
-				//update the parent of the node
-				parents[n] = node;
+		for (const [child, edgeWeight] of Object.entries(graph[node] ?? {})) {
+			const newWeight = weight + edgeWeight;
+			if (newWeight < (weights[child] ?? Number.POSITIVE_INFINITY)) {
+				weights[child] = newWeight;
+				parents[child] = node;
 			}
 		}
-		//push processed data into its data structure
-		processed.push(node);
-		// repeat until we processed all of our nodes.
+
+		processed.add(node);
 		node = findLowestWeightNode(weights, processed);
 	}
-	const optimalPath = [endNode];
-	let parent = parents[endNode as keyof typeof parents];
-	while (parent) {
-		optimalPath.unshift(parent);
-		parent = parents[parent]; // add parent to start of path array
+
+	if (!Number.isFinite(weights[endNode])) {
+		return noPath(startNodeFloor);
 	}
 
-	const results = {
+	const path = [endNode];
+	let parent = parents[endNode];
+	while (parent) {
+		path.unshift(parent);
+		parent = parents[parent];
+	}
+
+	if (path[0] !== startNode) {
+		return noPath(startNodeFloor);
+	}
+
+	return {
 		status: 'OK',
 		distance: weights[endNode],
-		path: optimalPath,
+		path,
 		startFloor: startNodeFloor
 	};
-	return results;
-};
+}
+
+function noPath(startFloor: number): PathResult {
+	return {
+		status: 'NO_PATH',
+		distance: Number.POSITIVE_INFINITY,
+		path: [],
+		startFloor
+	};
+}
