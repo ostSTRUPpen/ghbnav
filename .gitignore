@@ -12,3 +12,4 @@ secret.txt
 TODO.txt
 postgres_server.bat
 /.vercel/
+.dev

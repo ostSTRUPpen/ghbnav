@@ -1,10 +1,10 @@
-# To separate npm/node runtimes from the host computer
+# To separate npm/node runtimes from the development computer
 services:
   ghbnav:
     image: node:20-bookworm-slim
     working_dir: /usr/src/app
     volumes:
-      - ./:/usr/src/app
+      - ./../:/usr/src/app
     stdin_open: true
     tty: true
     command: bash
