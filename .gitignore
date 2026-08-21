@@ -12,4 +12,7 @@ secret.txt
 TODO.txt
 postgres_server.bat
 /.vercel/
+/db/fixtures/
 .dev
+docker
+db

@@ -1,5 +1,6 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect, type Handle } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 import postgres from 'postgres';
 import {
 	PSQL_USERNAME,
@@ -34,13 +35,25 @@ const sessionCheck: Handle = async ({ event, resolve }) => {
 };
 
 export const connectToPostgresSQL: Handle = async ({ event, resolve }) => {
-	const sql = postgres(
-		`postgresql://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}${PSQL_PORT}/${PSQL_DATABASE}?sslmode=require`,
-		{
-			idle_timeout: Number(POSTGRES_JS_SETTINGS_IDLE_TIMEOUT),
-			max_lifetime: Number(POSTGRES_JS_SETTINGS_MAX_LIFETIME)
-		}
-	);
+	const configuredSslMode = env.PSQL_SSL_MODE;
+	const ssl =
+		configuredSslMode === 'disable'
+			? false
+			: configuredSslMode === 'allow' ||
+				  configuredSslMode === 'prefer' ||
+				  configuredSslMode === 'verify-full'
+				? configuredSslMode
+				: 'require';
+	const sql = postgres({
+		host: PSQL_HOST,
+		port: Number(PSQL_PORT.replace(/^:/, '')),
+		database: PSQL_DATABASE,
+		username: PSQL_USERNAME,
+		password: PSQL_PASSWORD,
+		ssl,
+		idle_timeout: Number(POSTGRES_JS_SETTINGS_IDLE_TIMEOUT),
+		max_lifetime: Number(POSTGRES_JS_SETTINGS_MAX_LIFETIME)
+	});
 	event.locals.sql = sql;
 	return resolve(event);
 };
