@@ -1,4 +1,5 @@
 import { queryRowsOrEmpty } from '$lib/server/queryRows';
+import { setPublicNavigationCacheHeaders } from '$lib/server/publicNavigationCache';
 import type {
 	IconDisplayNames,
 	LocationMarker,
@@ -11,10 +12,8 @@ interface IconRow extends MarkerIconDefinition {
 	display_name: string;
 }
 
-export const load: PageServerLoad = async ({ setHeaders, locals: { sql } }) => {
-	setHeaders({
-		'Cache-Control': `max-age=${60}, s-maxage=${60}`
-	});
+export const load: PageServerLoad = async ({ request, setHeaders, locals: { sql } }) => {
+	setPublicNavigationCacheHeaders({ request, setHeaders });
 
 	const [markers, navigationMarkers, icons] = await Promise.all([
 		queryRowsOrEmpty<LocationMarker>(

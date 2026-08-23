@@ -1,4 +1,5 @@
 import { staticSettings } from '$lib/data/staticData';
+import { invalidatePublicNavigationCache } from '$lib/server/publicNavigationCache';
 
 export async function POST({ request, locals: { sql } }): Promise<Response> {
 	if (!staticSettings.storeDynamicPaths) {
@@ -50,10 +51,11 @@ export async function POST({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 201 }
 		);
-	} catch (error: any) {
-		const errMessage = error.message
-			? error.message
-			: 'Při úpravě uložených cest došlo k chybě! Zkuste to prosím později.';
+	} catch (error) {
+		const errMessage =
+			error instanceof Error && error.message
+				? error.message
+				: 'Při úpravě uložených cest došlo k chybě! Zkuste to prosím později.';
 		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
@@ -64,6 +66,7 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 	const { id, hidden } = await request.json();
 	try {
 		await sql`UPDATE stored_paths SET hidden = ${hidden} WHERE id = ${id}`;
+		await invalidatePublicNavigationCache();
 
 		return new Response(
 			JSON.stringify({
@@ -72,10 +75,11 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 201 }
 		);
-	} catch (error: any) {
-		const errMessage = error.message
-			? error.message
-			: 'Při zápočtu cesty došlo k chybě! Zkuste to prosím později.';
+	} catch (error) {
+		const errMessage =
+			error instanceof Error && error.message
+				? error.message
+				: 'Při zápočtu cesty došlo k chybě! Zkuste to prosím později.';
 		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});
@@ -87,6 +91,7 @@ export async function DELETE({ request, locals: { sql } }): Promise<Response> {
 
 	try {
 		await sql`DELETE FROM stored_paths WHERE id = ${id};`;
+		await invalidatePublicNavigationCache();
 
 		return new Response(
 			JSON.stringify({
@@ -95,10 +100,11 @@ export async function DELETE({ request, locals: { sql } }): Promise<Response> {
 			}),
 			{ status: 200 }
 		);
-	} catch (error: any) {
-		const errMessage = error.message
-			? error.message
-			: 'Při mazání cesty došlo k chybě! Zkuste to prosím později';
+	} catch (error) {
+		const errMessage =
+			error instanceof Error && error.message
+				? error.message
+				: 'Při mazání cesty došlo k chybě! Zkuste to prosím později';
 		return new Response(JSON.stringify({ message: errMessage, code: '400' }), {
 			status: 400
 		});

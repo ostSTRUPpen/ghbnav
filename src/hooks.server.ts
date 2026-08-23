@@ -12,6 +12,23 @@ function requiresAuthentication(event: RequestEvent): boolean {
 	return routeId === '/api/dynamic_paths' && event.request.method !== 'POST';
 }
 
+function containsPrivateData(event: RequestEvent): boolean {
+	const routeId = event.route.id;
+	if (!routeId) return false;
+	return routeId === '/auth' || routeId.startsWith('/sec') || routeId.startsWith('/api/');
+}
+
+const privateResponseCache: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	if (containsPrivateData(event)) {
+		response.headers.set('Cache-Control', 'private, no-store');
+		response.headers.delete('CDN-Cache-Control');
+		response.headers.delete('Vercel-CDN-Cache-Control');
+		response.headers.delete('Vercel-Cache-Tag');
+	}
+	return response;
+};
+
 const databaseConnection: Handle = async ({ event, resolve }) => {
 	event.locals.sql = database;
 	return resolve(event);
@@ -56,4 +73,4 @@ const colorCheck: Handle = async ({ event, resolve }) => {
 	});
 };
 
-export const handle = sequence(colorCheck, databaseConnection, sessionCheck);
+export const handle = sequence(colorCheck, privateResponseCache, databaseConnection, sessionCheck);

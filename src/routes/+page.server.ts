@@ -1,4 +1,5 @@
 import { staticSettings } from '$lib/data/staticData.js';
+import { setPublicNavigationCacheHeaders } from '$lib/server/publicNavigationCache';
 import { queryRowsOrEmpty } from '$lib/server/queryRows';
 import type { IconDisplayNames, Location, PublicPath } from '$lib/types/navigation';
 import type { PageServerLoad } from './$types';
@@ -8,10 +9,8 @@ interface IconRow {
 	display_name: string;
 }
 
-export const load: PageServerLoad = async ({ setHeaders, locals: { sql } }) => {
-	setHeaders({
-		'Cache-Control': `max-age=${60}, s-maxage=${60}`
-	});
+export const load: PageServerLoad = async ({ request, setHeaders, locals: { sql } }) => {
+	setPublicNavigationCacheHeaders({ request, setHeaders });
 
 	const storedPathsPromise = staticSettings.storeDynamicPaths
 		? queryRowsOrEmpty<PublicPath>(
