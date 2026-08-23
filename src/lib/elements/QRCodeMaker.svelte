@@ -1,6 +1,7 @@
 <script lang="ts">
-	import QR from '@svelte-put/qr/img/QR.svelte';
-	import { PUBLIC_QR_ICON_URL, PUBLIC_QR_CODE_URL } from '$env/static/public';
+	import { createQrSvgDataUrl } from '@svelte-put/qr';
+	import { PUBLIC_QR_CODE_URL } from '$env/static/public';
+	import qrIconDataUrl from '$lib/images/qr_icon.png?inline';
 
 	interface Props {
 		id: string;
@@ -10,10 +11,20 @@
 	}
 
 	let { id, name, floor, settings = 'marker' }: Props = $props();
+	let qrUrl = $derived(`${PUBLIC_QR_CODE_URL}/map/${id}`);
+	let qrSource = $derived(
+		createQrSvgDataUrl({
+			data: qrUrl,
+			logo: qrIconDataUrl,
+			shape: 'square',
+			moduleFill: 'black',
+			anchorInnerFill: 'black',
+			anchorOuterFill: 'black',
+			width: 400,
+			height: 400
+		})
+	);
 </script>
-
-<!-- It is not great, but the QR code does not want to load the icon without this...-->
-<img src={PUBLIC_QR_ICON_URL} alt="QR icon" width="0px" hidden aria-hidden="true" />
 
 {#if settings == 'marker'}
 	<div class="print_wrapper">
@@ -26,18 +37,17 @@
 			<tbody>
 				<tr>
 					<td class="flex justify-center qrcode_td">
-						<QR
-							data={`${PUBLIC_QR_CODE_URL}/map/${id}`}
-							logo={PUBLIC_QR_ICON_URL}
-							shape="square"
-							backgroundFill="white"
-							let:src
-						>
-							<img {src} alt="qr" width="400" />
-						</QR>
+						<img
+							src={qrSource}
+							alt={`QR kód pro ${name}`}
+							width="400"
+							height="400"
+							decoding="sync"
+							style="display: block; background: white;"
+						/>
 					</td>
 				</tr>
-				<tr><td class="link_text text-sm">{`${PUBLIC_QR_CODE_URL}/map/${id}`}</td></tr>
+				<tr><td class="link_text text-sm">{qrUrl}</td></tr>
 				<tr><td class="link_text text-lg">{PUBLIC_QR_CODE_URL}</td></tr>
 			</tbody>
 		</table>
@@ -53,15 +63,14 @@
 			<tbody>
 				<tr>
 					<td class="flex justify-center qrcode_td">
-						<QR
-							data={`${PUBLIC_QR_CODE_URL}/map/${id}`}
-							logo={PUBLIC_QR_ICON_URL}
-							shape="square"
-							backgroundFill="white"
-							let:src
-						>
-							<img {src} alt="qr" width="400" />
-						</QR>
+						<img
+							src={qrSource}
+							alt={`QR kód pro ${name}`}
+							width="400"
+							height="400"
+							decoding="sync"
+							style="display: block; background: white;"
+						/>
 					</td>
 				</tr>
 				<tr><td class="link_text text-lg">{PUBLIC_QR_CODE_URL}</td></tr>
