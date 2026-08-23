@@ -3,15 +3,17 @@
 	import { resolve } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
+	import type { NavigationGroupOption, PreparedLocation } from '$lib/types/admin';
+	import type { IconDisplayNames, Location } from '$lib/types/navigation';
 
-	let preparedLocations: Array<any> = $state([]);
-	let preparedGroups: Array<any> = $state([]);
+	let preparedLocations: PreparedLocation[] = $state([]);
+	let preparedGroups: NavigationGroupOption[] = $state([]);
 	let navFrom: string = $state('0');
 	let navTo: string = $state('0');
 
 	interface Props {
-		locations: Array<any>;
-		iconImageDisplayNames: object;
+		locations: Location[];
+		iconImageDisplayNames: IconDisplayNames;
 		settings: string;
 	}
 
@@ -57,21 +59,21 @@
 				}
 			});
 		}
-		printMarkersList.update((n) => (n = pathsForGeneration));
-		printSettingsString.update((n) => (n = 'path'));
-		goto(resolve('/sec/markers/print', {}), { replaceState: true });
+		printMarkersList.set(pathsForGeneration);
+		printSettingsString.set('path');
+		void goto(resolve('/sec/markers/print'), { replaceState: true });
 	}
 
 	$effect(() => {
 		let lastLocation: string = '';
-		let tempPreparedLocations = [];
-		let tempPreparedGroups = [];
+		const tempPreparedLocations: PreparedLocation[] = [];
+		const tempPreparedGroups: NavigationGroupOption[] = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {
 				lastLocation = location.icon;
 				tempPreparedLocations.push({
 					id: 0,
-					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
+					name: `--${iconImageDisplayNames[lastLocation]}--`,
 					can_nav: true,
 					disabled: true
 				});
@@ -79,9 +81,9 @@
 			tempPreparedLocations.push({
 				id: location.id,
 				name: `${location.display_name} (Patro: ${location.floor}, ${
-					buildingLocationsList.filter(
+					buildingLocationsList.find(
 						(buildingLocation) => buildingLocation.name === location.building_location
-					)[0].displayName
+					)?.displayName ?? 'Neznámé umístění'
 				})`,
 				can_nav: location.can_nav,
 				nav_group: location.icon,

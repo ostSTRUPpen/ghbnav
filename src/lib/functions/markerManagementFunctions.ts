@@ -1,4 +1,7 @@
-export async function changeMarker(changedEndingPoints: object): Promise<SerializedServerResponse> {
+import { readServerResponse } from '$lib/functions/serverResponse';
+import type { MarkerChange, ServerResponse } from '$lib/types/admin';
+
+export async function changeMarker(changedEndingPoints: MarkerChange[]): Promise<ServerResponse> {
 	const response = await fetch('../../api/change_markers', {
 		method: 'PATCH',
 		body: JSON.stringify({ changedEndingPoints }),
@@ -6,6 +9,5 @@ export async function changeMarker(changedEndingPoints: object): Promise<Seriali
 			'Content-Type': 'application/json'
 		}
 	});
-	const data: SerializedServerResponse = await response.json();
-	return data ?? { message: 'Failed to JSON', code: '500' };
+	return readServerResponse(response);
 }

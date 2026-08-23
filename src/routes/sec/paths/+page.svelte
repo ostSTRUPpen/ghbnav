@@ -6,41 +6,38 @@
 		updatePathVisibility
 	} from '$lib/functions/dynamicPathManagementFunctions.js';
 	import { updatePath } from '$lib/functions/presetPathManagementFunctions.js';
-	import { onMount } from 'svelte';
 	import { invalidateAll } from '$app/navigation';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import PathGenerator from '$lib/elements/PathGenerator.svelte';
 	import { buildingLocationsList, staticSettings } from '$lib/data/staticData.js';
+	import type { PreparedLocation, ServerResponse } from '$lib/types/admin';
+
+	type PathSelector = 'bod_bod' | 'bod_skupina' | 'skupina_bod';
+	const pathSelectorTypes: PathSelector[] = ['bod_bod', 'bod_skupina', 'skupina_bod'];
 
 	let { data } = $props();
 	let { locations, stored_paths, preset_paths, iconImageDisplayNames } = $derived(data);
 
-	let successDialog: any = $state();
-	let loadingDialog: any;
-	let errorDialog: any = $state();
-	let errors: SerializedServerResponse[] = $state([]);
-	let pathSelectorChosen: string = $state('bod_bod');
-
-	onMount(() => {
-		successDialog = document.getElementById('success-dialog');
-		loadingDialog = document.getElementById('loading-dialog');
-		errorDialog = document.getElementById('error-dialog');
-	});
+	let successDialog: HTMLDialogElement;
+	let loadingDialog: HTMLDialogElement;
+	let errorDialog: HTMLDialogElement;
+	let errors: ServerResponse[] = $state([]);
+	let pathSelectorChosen: PathSelector = $state('bod_bod');
 
 	function cancelChanges() {
-		goto(resolve('/sec', {}), { replaceState: true });
+		goto(resolve('/sec'), { replaceState: true });
 	}
 
-	let preparedLocations: Array<any> = $state([]);
+	let preparedLocations: PreparedLocation[] = $state([]);
 	$effect(() => {
 		let lastLocation: string = '';
-		let tempPreparedLocations = [];
+		const tempPreparedLocations: PreparedLocation[] = [];
 		for (let location of locations) {
 			if (location.icon !== lastLocation) {
 				lastLocation = location.icon;
 				tempPreparedLocations.push({
 					id: 0,
-					name: `--${iconImageDisplayNames[lastLocation as keyof typeof iconImageDisplayNames]}--`,
+					name: `--${iconImageDisplayNames[lastLocation]}--`,
 					can_nav: true,
 					disabled: true
 				});
@@ -48,9 +45,9 @@
 			tempPreparedLocations.push({
 				id: location.id,
 				name: `${location.display_name} (Patro: ${location.floor}, ${
-					buildingLocationsList.filter(
+					buildingLocationsList.find(
 						(buildingLocation) => buildingLocation.name === location.building_location
-					)[0].displayName
+					)?.displayName ?? 'Neznámé umístění'
 				})`,
 				can_nav: location.can_nav,
 				disabled: false
@@ -59,9 +56,9 @@
 		preparedLocations = tempPreparedLocations;
 	});
 	async function savePresetPathsChanges() {
-		loadingDialog['showModal']();
+		loadingDialog.showModal();
 		for (let preset_path of preset_paths) {
-			const response: SerializedServerResponse = await updatePath(
+			const response = await updatePath(
 				preset_path.id,
 				preset_path.start_node,
 				preset_path.end_node,
@@ -75,9 +72,9 @@
 		errors = errors;
 		loadingDialog.close();
 		if (errors.length > 0) {
-			errorDialog['showModal']();
+			errorDialog.showModal();
 		} else {
-			successDialog['showModal']();
+			successDialog.showModal();
 		}
 	}
 
@@ -99,13 +96,13 @@
 	}
 </script>
 
-<dialog id="loading-dialog" class="modal">
+<dialog bind:this={loadingDialog} id="loading-dialog" class="modal">
 	<div class="modal-box flex justify-center">
 		<span class="loading loading-dots loading-lg text-info"></span>
 	</div>
 </dialog>
 
-<dialog id="success-dialog" class="modal">
+<dialog bind:this={successDialog} id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Cesty úspěšně upraveny.</p>
@@ -113,14 +110,14 @@
 		<button
 			onclick={() => {
 				successDialog.close();
-				goto(resolve('/sec', {}), { replaceState: true });
+				goto(resolve('/sec'), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
 	</div>
 </dialog>
 
-<dialog id="error-dialog" class="modal">
+<dialog bind:this={errorDialog} id="error-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
 		<ul>
@@ -133,7 +130,7 @@
 		<button
 			onclick={() => {
 				errorDialog.close();
-				goto(resolve('/sec', {}), { replaceState: true });
+				goto(resolve('/sec'), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
@@ -208,7 +205,7 @@
 	<div class="divider">Generování vlastních cest</div>
 	<div class="px-5">
 		<h2 class="text-3xl py-5">Generování vlastních cest</h2>
-		{#each ['bod_bod', 'bod_skupina', 'skupina_bod'] as pathSelectorType}
+		{#each pathSelectorTypes as pathSelectorType}
 			<label>
 				<input
 					type="radio"

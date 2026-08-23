@@ -4,17 +4,16 @@
 	import QrCodeMaker from '$lib/elements/QRCodeMaker.svelte';
 	import { onMount } from 'svelte';
 
-	let printData: Array<Array<string>> | Array<string> = $state([]);
-	let printSettings: string = $state('');
-	printMarkersList.subscribe((value: string[] | string[][]) => (printData = value));
-	printSettingsString.subscribe((value: string) => (printSettings = value));
+	let printData: string[][] = $state([]);
+	let printSettings = $state('');
+	printMarkersList.subscribe((value) => (printData = value));
+	printSettingsString.subscribe((value) => (printSettings = value));
 
-	let errorDialog: any = $state();
+	let errorDialog: HTMLDialogElement;
 
 	onMount(() => {
-		errorDialog = document.getElementById('error-dialog');
 		if (printData.length <= 0) {
-			errorDialog['showModal']();
+			errorDialog.showModal();
 		}
 	});
 
@@ -22,12 +21,12 @@
 		const theme = document.querySelector('html')?.getAttribute('printData-theme');
 		document.querySelector('html')?.setAttribute('printData-theme', 'ghb_light');
 		window.print();
-		if (typeof theme == 'string')
+		if (typeof theme === 'string')
 			document.querySelector('html')?.setAttribute('printData-theme', theme);
 	}
 </script>
 
-<dialog id="error-dialog" class="modal">
+<dialog bind:this={errorDialog} id="error-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
 		<ul>

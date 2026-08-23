@@ -1,7 +1,19 @@
 import { staticSettings } from '$lib/data/staticData';
 import { invalidatePublicNavigationCache } from '$lib/server/publicNavigationCache';
+import {
+	invalidRequestResponse,
+	isDatabaseIdentifier,
+	readJsonObject
+} from '$lib/server/requestValidation';
+import type { RequestHandler } from './$types';
 
-export async function POST({ request, locals: { sql } }): Promise<Response> {
+interface StoredPathCountRow {
+	id: string;
+	starting_and_ending_point: string;
+	count: number;
+}
+
+export const POST: RequestHandler = async ({ request, locals: { sql } }) => {
 	if (!staticSettings.storeDynamicPaths) {
 		return new Response(
 			JSON.stringify({
@@ -11,15 +23,27 @@ export async function POST({ request, locals: { sql } }): Promise<Response> {
 			{ status: 201 }
 		);
 	}
-	const { startNode, endNode, path } = await request.json();
+	const body = await readJsonObject(request);
+	if (
+		!body ||
+		typeof body.startNode !== 'string' ||
+		typeof body.endNode !== 'string' ||
+		!Array.isArray(body.path) ||
+		!body.path.every((node): node is string => typeof node === 'string')
+	) {
+		return invalidRequestResponse();
+	}
+	const { startNode, endNode, path } = body;
 	try {
 		let canSave = true;
 		let canUpdateCount = false;
 		let UpdateCountRowID = '';
 		let UpdateCountCountValue = 0;
 		if (startNode && endNode && path.length > 1) {
-			const stored_paths =
-				await sql`SELECT id, starting_and_ending_point, count FROM stored_paths;`;
+			const stored_paths = await sql<StoredPathCountRow[]>`
+				SELECT id, starting_and_ending_point, count::double precision AS count
+				FROM stored_paths
+			`;
 			if (stored_paths !== null) {
 				for (const stored_path of stored_paths) {
 					if (stored_path.starting_and_ending_point === `${startNode}-${endNode}`) {
@@ -60,10 +84,14 @@ export async function POST({ request, locals: { sql } }): Promise<Response> {
 			status: 400
 		});
 	}
-}
+};
 
-export async function PATCH({ request, locals: { sql } }): Promise<Response> {
-	const { id, hidden } = await request.json();
+export const PATCH: RequestHandler = async ({ request, locals: { sql } }) => {
+	const body = await readJsonObject(request);
+	if (!body || !isDatabaseIdentifier(body.id) || typeof body.hidden !== 'boolean') {
+		return invalidRequestResponse();
+	}
+	const { id, hidden } = body;
 	try {
 		await sql`UPDATE stored_paths SET hidden = ${hidden} WHERE id = ${id}`;
 		await invalidatePublicNavigationCache();
@@ -84,10 +112,14 @@ export async function PATCH({ request, locals: { sql } }): Promise<Response> {
 			status: 400
 		});
 	}
-}
+};
 
-export async function DELETE({ request, locals: { sql } }): Promise<Response> {
-	const { id } = await request.json();
+export const DELETE: RequestHandler = async ({ request, locals: { sql } }) => {
+	const body = await readJsonObject(request);
+	if (!body || !isDatabaseIdentifier(body.id)) {
+		return invalidRequestResponse();
+	}
+	const { id } = body;
 
 	try {
 		await sql`DELETE FROM stored_paths WHERE id = ${id};`;
@@ -109,4 +141,4 @@ export async function DELETE({ request, locals: { sql } }): Promise<Response> {
 			status: 400
 		});
 	}
-}
+};

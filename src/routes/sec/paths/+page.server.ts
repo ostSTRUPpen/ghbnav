@@ -1,101 +1,96 @@
 import { staticSettings } from '$lib/data/staticData.js';
+import { queryRowsOrEmpty } from '$lib/server/queryRows';
+import type { PresetPath, StoredPath } from '$lib/types/admin';
 import type { IconDisplayNames, Location } from '$lib/types/navigation';
+import type { PageServerLoad } from './$types';
 
-export async function load({ locals }) {
-	const { sql } = locals;
-	let markers: Location[] = [];
-	try {
-		markers =
-			(await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position
-	FROM markers
-	LEFT JOIN icons ON markers.icon = icons.id
-	ORDER BY position ASC, floor ASC, display_name ASC;`) as unknown as Location[];
-	} catch (error) {
-		console.error(error);
-	}
+interface IconRow {
+	id: string;
+	display_name: string;
+}
 
-	//Ukládané cesty
-	const stored_paths_with_names = [];
-	if (staticSettings.storeDynamicPaths) {
-		let stored_visible_paths;
-		let stored_hidden_paths;
-		try {
-			stored_visible_paths =
-				await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
-		} catch (error) {
-			console.error(error);
-		}
+function addPathNames<T extends PresetPath | StoredPath>(
+	paths: T[],
+	markerNames: Map<string, string>
+): T[] {
+	return paths.map((path) => ({
+		...path,
+		start_name: markerNames.get(path.start_node),
+		end_name: markerNames.get(path.end_node)
+	}));
+}
 
-		try {
-			stored_hidden_paths =
-				await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = true ORDER BY count DESC LIMIT 50;`;
-		} catch (error) {
-			console.error(error);
-		}
+export const load: PageServerLoad = async ({ locals: { sql } }) => {
+	const visibleStoredPathsPromise = staticSettings.storeDynamicPaths
+		? queryRowsOrEmpty<StoredPath>(
+				'viditelné uložené cesty',
+				sql<StoredPath[]>`
+					SELECT id, start_node, end_node, count::double precision AS count, hidden
+					FROM stored_paths
+					WHERE hidden = false
+					ORDER BY count DESC
+					LIMIT 5
+				`
+			)
+		: Promise.resolve([]);
+	const hiddenStoredPathsPromise = staticSettings.storeDynamicPaths
+		? queryRowsOrEmpty<StoredPath>(
+				'skryté uložené cesty',
+				sql<StoredPath[]>`
+					SELECT id, start_node, end_node, count::double precision AS count, hidden
+					FROM stored_paths
+					WHERE hidden = true
+					ORDER BY count DESC
+					LIMIT 50
+				`
+			)
+		: Promise.resolve([]);
 
-		for (const path of stored_visible_paths ?? []) {
-			stored_paths_with_names.push({
-				id: path.id,
-				start_node: path.start_node,
-				end_node: path.end_node,
-				count: path.count,
-				hidden: path.hidden,
-				start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-				end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-			});
-		}
-		for (const path of stored_hidden_paths ?? []) {
-			stored_paths_with_names.push({
-				id: path.id,
-				start_node: path.start_node,
-				end_node: path.end_node,
-				count: path.count,
-				hidden: path.hidden,
-				start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-				end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-			});
-		}
-	}
+	const [markers, visibleStoredPaths, hiddenStoredPaths, presetPaths, icons] = await Promise.all([
+		queryRowsOrEmpty<Location>(
+			'body pro správu cest',
+			sql<Location[]>`
+				SELECT
+					marker.id,
+					marker.display_name,
+					marker.floor,
+					marker.can_nav,
+					marker.icon,
+					marker.building_location,
+					icon.position
+				FROM markers AS marker
+				LEFT JOIN icons AS icon ON marker.icon = icon.id
+				ORDER BY icon.position, marker.floor, marker.display_name
+			`
+		),
+		visibleStoredPathsPromise,
+		hiddenStoredPathsPromise,
+		queryRowsOrEmpty<PresetPath>(
+			'přednastavené cesty pro správu',
+			sql<PresetPath[]>`
+				SELECT id, start_node, end_node, position, hidden
+				FROM preset_paths
+				ORDER BY position
+				LIMIT 5
+			`
+		),
+		queryRowsOrEmpty<IconRow>(
+			'ikony pro správu cest',
+			sql<IconRow[]>`SELECT id, display_name FROM icons ORDER BY position`
+		)
+	]);
 
-	//Přednastavené cesty
-	let preset_paths;
-	try {
-		preset_paths =
-			await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths ORDER BY position ASC LIMIT 5;`;
-	} catch (error) {
-		console.error(error);
-	}
-
-	const preset_paths_with_names = [];
-	for (const path of preset_paths ?? []) {
-		preset_paths_with_names.push({
-			id: path.id,
-			start_node: path.start_node,
-			end_node: path.end_node,
-			position: path.position,
-			hidden: path.hidden,
-			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-		});
-	}
-
-	//Ikony
-	let icons;
-	try {
-		icons = await sql`SELECT id, display_name FROM icons ORDER BY position ASC;`;
-	} catch (error) {
-		console.error(error);
-	}
-
-	const iconImageDisplayNames: IconDisplayNames = {};
-	for (const icon of icons ?? []) {
-		iconImageDisplayNames[String(icon.id)] = String(icon.display_name);
-	}
+	const markerNames = new Map(markers.map((marker) => [marker.id, marker.display_name]));
+	const storedPaths = addPathNames([...visibleStoredPaths, ...hiddenStoredPaths], markerNames);
+	const presetPathsWithNames = addPathNames(presetPaths, markerNames);
+	const iconImageDisplayNames: IconDisplayNames = Object.fromEntries(
+		icons.map((icon) => [icon.id, icon.display_name])
+	);
 
 	return {
 		locations: markers,
-		stored_paths: stored_paths_with_names ?? [],
-		preset_paths: preset_paths_with_names ?? [],
+		stored_paths: storedPaths,
+		preset_paths: presetPathsWithNames,
 		iconImageDisplayNames
 	};
-}
+};
