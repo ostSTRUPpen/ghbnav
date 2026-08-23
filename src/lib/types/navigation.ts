@@ -43,7 +43,7 @@ export interface PublicPath {
 	end_node: string;
 	start_name?: string;
 	end_name?: string;
-	count?: number;
+	count?: number | string;
 	hidden: boolean;
 }
 

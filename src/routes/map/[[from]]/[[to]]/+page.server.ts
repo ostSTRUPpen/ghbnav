@@ -1,58 +1,68 @@
+import { queryRowsOrEmpty } from '$lib/server/queryRows';
 import type {
 	IconDisplayNames,
 	LocationMarker,
 	MarkerIconDefinition,
 	NavigationMarker
 } from '$lib/types/navigation';
+import type { PageServerLoad } from './$types';
 
-export async function load({ setHeaders, locals }) {
+interface IconRow extends MarkerIconDefinition {
+	display_name: string;
+}
+
+export const load: PageServerLoad = async ({ setHeaders, locals: { sql } }) => {
 	setHeaders({
 		'Cache-Control': `max-age=${60}, s-maxage=${60}`
 	});
-	const { sql } = locals;
 
-	let markers: LocationMarker[] = [];
-	try {
-		markers =
-			(await sql`SELECT markers.id, markers.display_name, x, y, floor, can_nav, icon, building_location, icons.position
-	FROM markers
-	LEFT JOIN icons ON markers.icon = icons.id
-	ORDER BY position ASC, floor ASC, display_name ASC;`) as unknown as LocationMarker[];
-	} catch (error) {
-		console.error(error);
-	}
+	const [markers, navigationMarkers, icons] = await Promise.all([
+		queryRowsOrEmpty<LocationMarker>(
+			'body mapy',
+			sql<LocationMarker[]>`
+				SELECT
+					marker.id,
+					marker.display_name,
+					marker.x::double precision AS x,
+					marker.y::double precision AS y,
+					marker.floor,
+					marker.can_nav,
+					marker.icon,
+					marker.building_location
+				FROM markers AS marker
+				LEFT JOIN icons AS icon ON icon.id = marker.icon
+				ORDER BY icon.position, marker.floor, marker.display_name
+			`
+		),
+		queryRowsOrEmpty<NavigationMarker>(
+			'navigační graf',
+			sql<NavigationMarker[]>`
+				SELECT
+					id,
+					x::double precision AS x,
+					y::double precision AS y,
+					floor,
+					connected,
+					special_type
+				FROM nav_markers
+				ORDER BY floor, id
+			`
+		),
+		queryRowsOrEmpty<IconRow>(
+			'ikony mapy',
+			sql<IconRow[]>`SELECT id, display_name, image FROM icons ORDER BY position`
+		)
+	]);
 
-	let nav_markers: NavigationMarker[] = [];
-	try {
-		nav_markers =
-			(await sql`SELECT nav_markers.id, x, y, floor, connected, special_type FROM nav_markers ORDER BY floor ASC, id ASC;`) as unknown as NavigationMarker[];
-	} catch (error) {
-		console.error(error);
-	}
-
-	let icons;
-	try {
-		icons = await sql`SELECT id, display_name, image FROM icons ORDER BY position ASC;`;
-	} catch (error) {
-		console.error(error);
-	}
-
-	const iconImageDisplayNames: IconDisplayNames = {};
-	for (const icon of icons ?? []) {
-		iconImageDisplayNames[String(icon.id)] = String(icon.display_name);
-	}
-	const iconIdImage: MarkerIconDefinition[] = [];
-	for (const icon of icons ?? []) {
-		iconIdImage.push({
-			id: icon.id,
-			image: icon.image
-		});
-	}
+	const iconImageDisplayNames: IconDisplayNames = Object.fromEntries(
+		icons.map((icon) => [icon.id, icon.display_name])
+	);
+	const iconIdImage: MarkerIconDefinition[] = icons.map(({ id, image }) => ({ id, image }));
 
 	return {
 		markers,
-		nav_markers,
+		nav_markers: navigationMarkers,
 		iconImageDisplayNames,
 		iconIdImage
 	};
-}
+};
