@@ -19,7 +19,6 @@ declare global {
 		// interface Error {}
 		// interface Platform {}
 	}
-	declare type codesArray = { id: number; code: string; creation_date: string }[];
 	declare type Item = import('svelte-dnd-action').Item;
 	declare type DndEvent<ItemType = Item> = import('svelte-dnd-action').DndEvent<ItemType>;
 	declare namespace svelteHTML {
