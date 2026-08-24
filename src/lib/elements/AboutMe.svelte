@@ -5,8 +5,7 @@
 			href="mailto:vojvol@post.cz"
 			rel="author"
 			class="link-hover link-primary">vojvol@post.cz</a
-		>) v roce 2023.
-		<span aria-hidden="true"> · </span>
-		<a href="/changelog" class="link-hover link-primary">Verze 5.0.0</a>
+		>).
+		<a href="/changelog" class="link-hover link-primary">Verze&nbsp;5.0.0</a>
 	</p>
 </div>
