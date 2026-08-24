@@ -1,7 +1,3 @@
-<script>
-	import { floor_0 } from "$lib/data/markerIcons";
-
-</script>
 <svelte:head>
 	<title>Historie verzí | GHB nav</title>
 	<meta
@@ -14,18 +10,13 @@
 	<header class="border-b-2 border-primary pb-6">
 		<p class="mb-1 text-sm font-semibold uppercase tracking-wider text-primary">Vývoj projektu</p>
 		<h1 class="mb-3 text-4xl font-bold">Historie verzí</h1>
-		<p class="max-w-3xl text-base-content/70">
-			Starší verze nebyly značeny úplně pravidelně. Data a hranice prvních vydání jsou proto
-			orientační a zachycují hlavní milníky projektu.
-		</p>
 	</header>
 
-	<ol class="mt-10 border-l-2 border-primary/40">
+	<ol class="mt-10 border-l-2 border-secondary">
 		<li class="relative pb-12 pl-8">
-			<span
-				class="absolute -left-2 top-2 h-4 w-4 rounded-full bg-primary ring-4 ring-base-100"
-				aria-hidden="true"
-			></span>
+			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
+				>▲</span
+			>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">5.0.0</h2>
@@ -41,10 +32,9 @@
 		</li>
 
 		<li class="relative pb-12 pl-8">
-			<span
-				class="absolute -left-2 top-2 h-4 w-4 rounded-full bg-primary ring-4 ring-base-100"
-				aria-hidden="true"
-			></span>
+			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
+				>▲</span
+			>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">4.0.2</h2>
@@ -62,10 +52,9 @@
 		</li>
 
 		<li class="relative pb-12 pl-8">
-			<span
-				class="absolute -left-2 top-2 h-4 w-4 rounded-full bg-primary ring-4 ring-base-100"
-				aria-hidden="true"
-			></span>
+			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
+				>▲</span
+			>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">3.0.0</h2>
@@ -82,10 +71,9 @@
 		</li>
 
 		<li class="relative pb-12 pl-8">
-			<span
-				class="absolute -left-2 top-2 h-4 w-4 rounded-full bg-primary ring-4 ring-base-100"
-				aria-hidden="true"
-			></span>
+			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
+				>▲</span
+			>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">2.0.0</h2>
@@ -103,15 +91,14 @@
 		</li>
 
 		<li class="relative pl-8">
-			<span
-				class="absolute -left-2 top-2 h-4 w-4 rounded-full bg-primary ring-4 ring-base-100"
-				aria-hidden="true"
-			></span>
+			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
+				>▲</span
+			>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">1.0.0</h2>
 					<time datetime="2023" class="text-sm font-medium text-base-content/70 sm:ml-auto">
-						2023–2024
+						<p></p>rosinec 2023
 					</time>
 				</header>
 				<ul class="list-disc space-y-2 pl-5 marker:text-primary">
