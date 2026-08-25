@@ -52,17 +52,6 @@
   - Start výš než cíl
   - Body na stejném patře, ale musí přes jiné patro
 
-### /loading
-
-- Vzhled
-  - Výběr barviček?
-  - "GHBnav"
-  - "Mapa"
-  - "Správce"
-  - NE cookies banner?
-- Funkcionalita
-  - Vrácení na main page po 10 sekundách?
-
 ### /auth
 
 - Vzhled
