@@ -26,7 +26,11 @@
 					</time>
 				</header>
 				<ul class="list-disc space-y-2 pl-5 marker:text-primary">
-					<!-- TODO: Dopsat pro 5.0.0 -->
+					<li>Rychlejší načítání veřejných stránek, mapy a navigačních dat.</li>
+					<li>Změna začátku nebo cíle cesty bez opětovného načtení celé mapy.</li>
+					<li>Spolehlivější generování a tisk QR kódů pro jednotlivá místa i celé trasy.</li>
+					<li>Přehlednější výběr bodů, lepší tmavý režim a nová historie verzí.</li>
+					<li>Modernizace vnitřní části aplikace pro spolehlivější další provoz.</li>
 				</ul>
 			</article>
 		</li>
