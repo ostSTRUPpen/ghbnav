@@ -79,7 +79,7 @@
 					</li>
 				{/if}
 				<li>
-					<ColorMode />
+					<ColorMode initialTheme={data.theme} />
 				</li>
 			</ul>
 		</div>

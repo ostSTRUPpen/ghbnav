@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let darkMode: boolean = $state(false);
+	interface Props {
+		initialTheme?: 'ghb_light' | 'ghb_dark';
+	}
+
+	let { initialTheme = 'ghb_light' }: Props = $props();
+	// svelte-ignore state_referenced_locally
+	let darkMode: boolean = $state(initialTheme === 'ghb_dark');
 	const one_year = 60 * 60 * 24 * 365;
 
 	onMount(() => {

@@ -39,8 +39,26 @@ test('homepage renders navigation data and opens a selected route', async ({ pag
 	await expect(page.locator('#map')).toBeVisible();
 });
 
-test('navigation selects use readable theme colors in dark mode', async ({ page }) => {
-	await page.addInitScript(() => window.localStorage.setItem('theme', 'ghb_dark'));
+test('dark-mode switch is rendered correctly before JavaScript starts', async ({
+	browser,
+	baseURL
+}) => {
+	const context = await browser.newContext({ javaScriptEnabled: false });
+	await context.addCookies([{ name: 'theme', value: 'ghb_dark', url: baseURL! }]);
+	const page = await context.newPage();
+
+	await page.goto('/');
+	await expect(page.locator('html')).toHaveAttribute('data-theme', 'ghb_dark');
+	const themeSwitch = page.locator('label[aria-label="modeChangeLabel"]');
+	await expect(themeSwitch.locator('input')).toBeChecked();
+	await expect(themeSwitch.locator('.swap-on')).toHaveCSS('opacity', '1');
+	await expect(themeSwitch.locator('.swap-off')).toHaveCSS('opacity', '0');
+
+	await context.close();
+});
+
+test('navigation selects use readable theme colors in dark mode', async ({ page, baseURL }) => {
+	await page.context().addCookies([{ name: 'theme', value: 'ghb_dark', url: baseURL! }]);
 	await page.goto('/');
 	await waitForHydration(page);
 	await expect(page.locator('html')).toHaveAttribute('data-theme', 'ghb_dark');
