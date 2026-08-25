@@ -1,40 +1,38 @@
 <script lang="ts">
-	import { dndzone } from 'svelte-dnd-action';
+	import { dndzone, type DndEvent } from 'svelte-dnd-action';
 	import { flip } from 'svelte/animate';
 	import { iconImages } from '$lib/data/markerIcons';
 	import { updateGroup } from '$lib/functions/groupsManagementFunctions.js';
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
+	import type { IconGroup, ServerResponse } from '$lib/types/admin';
 
 	let { data } = $props();
-	let { items, iconIdImageName } = $state(data);
-
-	let successDialog: any = $state();
-	let loadingDialog: any;
-	let errorDialog: any = $state();
-	let errors: SerializedServerResponse[] = $state([]);
-
-	onMount(() => {
-		successDialog = document.getElementById('success-dialog');
-		loadingDialog = document.getElementById('loading-dialog');
-		errorDialog = document.getElementById('error-dialog');
+	let items: IconGroup[] = $state([]);
+	let iconIdImageName = $derived(data.iconIdImageName);
+	$effect(() => {
+		items = data.items;
 	});
+
+	let successDialog: HTMLDialogElement;
+	let loadingDialog: HTMLDialogElement;
+	let errorDialog: HTMLDialogElement;
+	let errors: ServerResponse[] = $state([]);
 
 	const flipDurationMs = 200;
 
-	function recountItemPosition(items: Array<any>) {
+	function recountItemPosition(items: IconGroup[]) {
 		for (let i = 0; i < items.length; i++) {
 			items[i].position = i + 1;
 		}
 	}
-	function handleSort(e: any) {
+	function handleSort(e: CustomEvent<DndEvent<IconGroup>>) {
 		items = e.detail.items;
 		recountItemPosition(items);
 	}
 
 	async function saveChanges() {
-		loadingDialog['showModal']();
+		loadingDialog.showModal();
 		recountItemPosition(items);
 		for (const item of items) {
 			const response = await updateGroup(item.id, item.display_name, item.image, item.position);
@@ -45,24 +43,24 @@
 		errors = errors;
 		loadingDialog.close();
 		if (errors.length > 0) {
-			errorDialog['showModal']();
+			errorDialog.showModal();
 		} else {
-			successDialog['showModal']();
+			successDialog.showModal();
 		}
 	}
 
 	function cancelChanges() {
-		goto(resolve('/sec', {}), { replaceState: true });
+		goto(resolve('/sec'), { replaceState: true });
 	}
 </script>
 
-<dialog id="loading-dialog" class="modal">
+<dialog bind:this={loadingDialog} id="loading-dialog" class="modal">
 	<div class="modal-box flex justify-center">
 		<span class="loading loading-dots loading-lg text-info"></span>
 	</div>
 </dialog>
 
-<dialog id="success-dialog" class="modal">
+<dialog bind:this={successDialog} id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Skupiny úspěšně upraveny</p>
@@ -70,14 +68,14 @@
 		<button
 			onclick={() => {
 				successDialog.close();
-				goto(resolve('/sec', {}), { replaceState: true });
+				goto(resolve('/sec'), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
 	</div>
 </dialog>
 
-<dialog id="error-dialog" class="modal">
+<dialog bind:this={errorDialog} id="error-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
 		<ul>
@@ -90,7 +88,7 @@
 		<button
 			onclick={() => {
 				errorDialog.close();
-				goto(resolve('/sec', {}), { replaceState: true });
+				goto(resolve('/sec'), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>

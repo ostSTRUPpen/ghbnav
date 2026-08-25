@@ -3,65 +3,72 @@ import type { Cookies } from '@sveltejs/kit';
 import bcrypt from 'bcrypt';
 import type { Sql } from 'postgres';
 
+export const SESSION_COOKIE_NAME = 'zi67OR1pZpQi3GVNMk96WO';
+const SESSION_LIFETIME_SECONDS = 60 * 60 * 24;
+const SESSION_LIFETIME_MS = SESSION_LIFETIME_SECONDS * 1000;
+
+interface PasswordRow {
+	password: string;
+}
+
+interface SessionValidationRow {
+	valid: boolean;
+}
+
 export async function loginUser(
 	sql: Sql,
 	email: string,
 	password: string,
 	cookies: Cookies
 ): Promise<string> {
-	const hash = (
-		await sql`SELECT password FROM users WHERE email = ${Buffer.from(email).toString('base64')};`
-	)[0]?.password;
-	if (!hash) {
+	const [user] = await sql<PasswordRow[]>`
+		SELECT password
+		FROM users
+		WHERE email = ${Buffer.from(email).toString('base64')}
+	`;
+	if (!user || !(await bcrypt.compare(password, user.password))) {
 		return '400';
 	}
-	const match = await bcrypt.compare(password, hash);
-	if (!match) {
-		return '400';
-	} else {
-		const code = bcrypt.genSaltSync(10);
-		cookies.set('zi67OR1pZpQi3GVNMk96WO', code, {
-			path: '/',
-			sameSite: 'strict',
-			secure: !dev,
-			maxAge: 60 * 60 * 24,
-			httpOnly: true
-		});
-		await sql`INSERT INTO login_codes (code, creation_date) VALUES (${code}, ${Date.now()});`;
-		return '';
-	}
+
+	await cleanupExpiredLoginCodes(sql);
+	const code = bcrypt.genSaltSync(10);
+	await sql`
+		INSERT INTO login_codes (code, creation_date)
+		VALUES (${code}, ${Date.now()})
+	`;
+	cookies.set(SESSION_COOKIE_NAME, code, {
+		path: '/',
+		sameSite: 'strict',
+		secure: !dev,
+		maxAge: SESSION_LIFETIME_SECONDS,
+		httpOnly: true
+	});
+	return '';
 }
 
-export async function logoutUser(sql: Sql, cookies: Cookies) {
-	const cookieCode = cookies.get('zi67OR1pZpQi3GVNMk96WO');
-	if (cookieCode) {
-		await sql`DELETE FROM login_codes WHERE code = ${cookieCode};`;
+export async function logoutUser(sql: Sql, cookies: Cookies): Promise<void> {
+	const sessionCode = cookies.get(SESSION_COOKIE_NAME);
+	if (sessionCode) {
+		await sql`DELETE FROM login_codes WHERE code = ${sessionCode}`;
 	}
-	cookies.delete('zi67OR1pZpQi3GVNMk96WO', { path: '/' });
-	return;
+	cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
 }
 
-export async function cleanupDBCodes(sql: Sql) {
-	const codes = await sql`SELECT * FROM login_codes;`;
-	const now = Date.now();
-	const codesToDelete = [];
-	for (const code of codes) {
-		if (code.creation_date - now < -86400000) {
-			codesToDelete.push(code.id);
-		}
-	}
-	if (codesToDelete) {
-		for (const code of codesToDelete) {
-			await sql`DELETE FROM login_codes WHERE id = ${code};`;
-		}
-	}
+export async function cleanupExpiredLoginCodes(sql: Sql): Promise<void> {
+	await sql`
+		DELETE FROM login_codes
+		WHERE creation_date::bigint < ${Date.now() - SESSION_LIFETIME_MS}
+	`;
 }
 
-export function validateCodes(codes: codesArray, cookie = '') {
-	for (const code of codes) {
-		if (code.code === cookie) {
-			return true;
-		}
-	}
-	return false;
+export async function validateSession(sql: Sql, sessionCode: string): Promise<boolean> {
+	const [session] = await sql<SessionValidationRow[]>`
+		SELECT EXISTS (
+			SELECT 1
+			FROM login_codes
+			WHERE code = ${sessionCode}
+				AND creation_date::bigint >= ${Date.now() - SESSION_LIFETIME_MS}
+		) AS valid
+	`;
+	return session?.valid === true;
 }

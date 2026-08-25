@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { goto } from '$app/navigation';
+	import type { PublicPath } from '$lib/types/navigation';
 
 	interface Props {
-		paths: Array<any>;
+		paths: PublicPath[];
 		tableName: string;
 		showCount?: boolean;
 	}
@@ -11,11 +12,9 @@
 	let { paths, tableName, showCount = true }: Props = $props();
 
 	function navFromTo(navFrom: string, navTo: string) {
-		goto(resolve('/loading', {})).then(() =>
-			goto(resolve('/map/[navFrom]/[navTo]', { navFrom: navFrom, navTo: navTo }), {
-				replaceState: true
-			})
-		);
+		void goto(resolve('/map/[[from]]/[[to]]', { from: navFrom, to: navTo }), {
+			replaceState: true
+		});
 	}
 </script>
 

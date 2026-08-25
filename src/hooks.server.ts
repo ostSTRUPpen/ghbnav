@@ -1,47 +1,61 @@
 import { sequence } from '@sveltejs/kit/hooks';
-import { redirect, type Handle } from '@sveltejs/kit';
-import postgres from 'postgres';
-import {
-	PSQL_USERNAME,
-	PSQL_PASSWORD,
-	PSQL_HOST,
-	PSQL_PORT,
-	PSQL_DATABASE,
-	POSTGRES_JS_SETTINGS_IDLE_TIMEOUT,
-	POSTGRES_JS_SETTINGS_MAX_LIFETIME
-} from '$env/static/private';
+import { redirect, type Handle, type RequestEvent } from '@sveltejs/kit';
+import { getDatabase } from '$lib/server/database';
+import { SESSION_COOKIE_NAME, validateSession } from '$lib/functions/userLoginsManagement.server';
 
-import { cleanupDBCodes, validateCodes } from '$lib/functions/userLoginsManagement.server';
+const protectedApiRoutes = new Set(['/api/change_markers', '/api/groups', '/api/preset_paths']);
 
-const sessionCheck: Handle = async ({ event, resolve }) => {
-	const { sql } = event.locals;
+function requiresAuthentication(event: RequestEvent): boolean {
+	const routeId = event.route.id;
+	if (routeId?.startsWith('/sec')) return true;
+	if (routeId && protectedApiRoutes.has(routeId)) return true;
+	return routeId === '/api/dynamic_paths' && event.request.method !== 'POST';
+}
 
-	event.locals.cookies = event.cookies;
-	event.locals.validateLogin = async () => {
-		const codes = (await sql`SELECT * FROM login_codes;`) as codesArray;
-		const cookies = event.locals.cookies.get('zi67OR1pZpQi3GVNMk96WO');
-		return validateCodes(codes, cookies);
-	};
-	if (event.url.pathname.startsWith('/sec')) {
-		cleanupDBCodes(sql);
-		const loggedIn = await event.locals.validateLogin();
-		if (!loggedIn) {
-			// the user is not logged in
-			throw redirect(303, '/');
-		}
+function containsPrivateData(event: RequestEvent): boolean {
+	const routeId = event.route.id;
+	if (!routeId) return false;
+	return routeId === '/auth' || routeId.startsWith('/sec') || routeId.startsWith('/api/');
+}
+
+const privateResponseCache: Handle = async ({ event, resolve }) => {
+	const response = await resolve(event);
+	if (containsPrivateData(event)) {
+		response.headers.set('Cache-Control', 'private, no-store');
+		response.headers.delete('CDN-Cache-Control');
+		response.headers.delete('Vercel-CDN-Cache-Control');
+		response.headers.delete('Vercel-Cache-Tag');
 	}
+	return response;
+};
+
+const databaseConnection: Handle = async ({ event, resolve }) => {
+	event.locals.sql = getDatabase();
 	return resolve(event);
 };
 
-export const connectToPostgresSQL: Handle = async ({ event, resolve }) => {
-	const sql = postgres(
-		`postgresql://${PSQL_USERNAME}:${PSQL_PASSWORD}@${PSQL_HOST}${PSQL_PORT}/${PSQL_DATABASE}?sslmode=require`,
-		{
-			idle_timeout: Number(POSTGRES_JS_SETTINGS_IDLE_TIMEOUT),
-			max_lifetime: Number(POSTGRES_JS_SETTINGS_MAX_LIFETIME)
+const sessionCheck: Handle = async ({ event, resolve }) => {
+	event.locals.cookies = event.cookies;
+	const sessionCode = event.cookies.get(SESSION_COOKIE_NAME);
+	let validation: Promise<boolean> | undefined;
+
+	event.locals.validateLogin = () => {
+		if (!sessionCode) return Promise.resolve(false);
+		validation ??= validateSession(event.locals.sql, sessionCode);
+		return validation;
+	};
+
+	if (requiresAuthentication(event) && !(await event.locals.validateLogin())) {
+		event.cookies.delete(SESSION_COOKIE_NAME, { path: '/' });
+		if (event.url.pathname.startsWith('/api/')) {
+			return new Response(JSON.stringify({ message: 'Unauthorized', code: '401' }), {
+				status: 401,
+				headers: { 'Content-Type': 'application/json' }
+			});
 		}
-	);
-	event.locals.sql = sql;
+		throw redirect(303, '/');
+	}
+
 	return resolve(event);
 };
 
@@ -50,13 +64,13 @@ const colorCheck: Handle = async ({ event, resolve }) => {
 	const themes = ['ghb_light', 'ghb_dark'];
 
 	if (!theme || !themes.includes(theme)) {
-		return await resolve(event);
+		return resolve(event);
 	}
-	return await resolve(event, {
+	return resolve(event, {
 		transformPageChunk: ({ html }) => {
 			return html.replace('data-theme=""', `data-theme="${theme}"`);
 		}
 	});
 };
 
-export const handle = sequence(colorCheck, connectToPostgresSQL, sessionCheck);
+export const handle = sequence(colorCheck, privateResponseCache, databaseConnection, sessionCheck);

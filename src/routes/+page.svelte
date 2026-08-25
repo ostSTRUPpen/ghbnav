@@ -13,12 +13,12 @@
 	</div>
 	{#if preset_paths.length > 0}
 		<div class="flex justify-center">
-			<PathsTable paths={preset_paths} tableName={'Přednastavené cesty'} showCount={false} />
+			<PathsTable paths={preset_paths} tableName="Přednastavené cesty" showCount={false} />
 		</div>
 	{/if}
 	{#if stored_paths.length > 0 && staticSettings.storeDynamicPaths}
 		<div class="flex justify-center">
-			<PathsTable paths={stored_paths} tableName={'Časté cesty'} />
+			<PathsTable paths={stored_paths} tableName="Časté cesty" />
 		</div>
 	{/if}
 </main>

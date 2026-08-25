@@ -2,89 +2,114 @@
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
 	import { buildingLocationsList } from '$lib/data/staticData';
-	import { foundPath, printMarkersList, printSettingsString } from '$lib/data/store.js';
+	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
+	import type { IconDisplayNames, Location, LocationSelectOption } from '$lib/types/navigation';
 	import Select from 'svelte-select';
 
-	let preparedLocations: Array<any> = $state([]);
-
 	interface Props {
-		locations: Array<any>;
-		navFrom?: any;
-		navTo?: any;
+		locations: Location[];
+		navFrom?: string;
+		navTo?: string;
 		showClearNavButton?: boolean;
-		iconImageDisplayNames: object;
+		iconImageDisplayNames: IconDisplayNames;
 		printQR?: boolean;
+		onNavigate?: (from: string, to: string) => void;
+		onClear?: () => void;
 	}
 
 	let {
 		locations,
-		navFrom = $bindable(null),
-		navTo = $bindable(null),
+		navFrom,
+		navTo,
 		showClearNavButton = false,
 		iconImageDisplayNames,
-		printQR = false
+		printQR = false,
+		onNavigate,
+		onClear
 	}: Props = $props();
 
-	let isDisabled: boolean = $state(true);
+	let selectedFrom = $state<LocationSelectOption | null>(null);
+	let selectedTo = $state<LocationSelectOption | null>(null);
 
-	function navFromTo() {
-		if (printQR) {
-			printMarkersList.update(
-				(n) =>
-					(n = [
-						[
-							`${navFrom.value}/${navTo.value}`,
-							`${locations.find((obj) => obj.id === navFrom.value)?.display_name} → ${
-								locations.find((obj) => obj.id === navTo.value)?.display_name
-							}`,
-							''
-						]
-					])
-			);
-			printSettingsString.update((n) => (n = 'path'));
-			goto(resolve('/sec/markers/print', {}), { replaceState: true });
-		} else {
-			goto(resolve('/loading', {})).then(() =>
-				goto(resolve('/map/[navFrom]/[navTo]', { navFrom: navFrom.value, navTo: navTo.value }), {
-					replaceState: true
-				})
-			);
-		}
-	}
-	function clearNav() {
-		foundPath.update((n) => (n = ['']));
-		goto(resolve('/loading', {})).then(() => {
-			goto(resolve('/map', {}), { replaceState: true });
-		});
-	}
-
-	$effect(() => {
-		let tempPreparedLocations = [];
-		for (let location of locations) {
-			if (location.can_nav === false) {
-				continue;
-			}
-			tempPreparedLocations.push({
-				value: location.id,
-				label: `${location.display_name} (Patro: ${location.floor}, ${
-					buildingLocationsList.filter(
+	let preparedLocations = $derived.by((): LocationSelectOption[] => {
+		return locations
+			.filter((location) => location.can_nav)
+			.map((location) => {
+				const buildingName =
+					buildingLocationsList.find(
 						(buildingLocation) => buildingLocation.name === location.building_location
-					)[0].displayName
-				})`,
-				group: `${iconImageDisplayNames[location.icon as keyof typeof iconImageDisplayNames]}`,
-				selectable: location.can_nav
+					)?.displayName ?? 'Neznámé umístění';
+
+				return {
+					value: location.id,
+					label: `${location.display_name} (Patro: ${location.floor}, ${buildingName})`,
+					group: iconImageDisplayNames[location.icon] ?? 'Ostatní',
+					selectable: true
+				};
 			});
-		}
-		preparedLocations = tempPreparedLocations;
+	});
+
+	let isDisabled = $derived(
+		!selectedFrom || !selectedTo || selectedFrom.value === selectedTo.value
+	);
+	const groupLocations = (location: Record<string, unknown>): string | undefined =>
+		typeof location.group === 'string' ? location.group : undefined;
+
+	$effect(() => {
+		selectedFrom = navFrom
+			? (preparedLocations.find((location) => location.value === navFrom) ?? null)
+			: null;
 	});
 
 	$effect(() => {
-		if (navFrom && navFrom.value !== '' && navFrom.value !== navTo?.value) {
-			isDisabled = false;
-		} else {
-			isDisabled = true;
-		}
+		selectedTo = navTo
+			? (preparedLocations.find((location) => location.value === navTo) ?? null)
+			: null;
 	});
+
+	function navigate(): void {
+		if (!selectedFrom || !selectedTo || selectedFrom.value === selectedTo.value) return;
+
+		if (printQR) {
+			const startName = locations.find(
+				(location) => location.id === selectedFrom?.value
+			)?.display_name;
+			const endName = locations.find((location) => location.id === selectedTo?.value)?.display_name;
+
+			printMarkersList.set([
+				[
+					`${selectedFrom.value}/${selectedTo.value}`,
+					`${startName ?? selectedFrom.label} → ${endName ?? selectedTo.label}`,
+					''
+				]
+			]);
+			printSettingsString.set('path');
+			void goto(resolve('/sec/markers/print'), { replaceState: true });
+			return;
+		}
+
+		if (onNavigate) {
+			onNavigate(selectedFrom.value, selectedTo.value);
+			return;
+		}
+
+		void goto(
+			resolve('/map/[[from]]/[[to]]', {
+				from: selectedFrom.value,
+				to: selectedTo.value
+			}),
+			{ replaceState: true }
+		);
+	}
+
+	function clearNavigation(): void {
+		if (onClear) {
+			onClear();
+			return;
+		}
+
+		void goto(resolve('/map'), { replaceState: true });
+	}
 </script>
 
 <div class="space-y-2 max-sm:min-w-80 sm:min-w-96 styled_select">
@@ -97,8 +122,9 @@
 		placeholder="Prosím vyberte začátek cesty"
 		id="from"
 		name="from"
-		bind:value={navFrom}
-		class="select select-bordered w-full max-w-md"
+		bind:value={selectedFrom}
+		groupBy={groupLocations}
+		class="w-full max-w-md"
 		clearable={false}
 	/>
 	<label for="to" class="label">
@@ -109,26 +135,41 @@
 		placeholder="Prosím vyberte konec cesty"
 		id="to"
 		name="to"
-		bind:value={navTo}
-		class="select select-bordered w-ful max-w-md"
+		bind:value={selectedTo}
+		groupBy={groupLocations}
+		class="w-full max-w-md"
 		clearable={false}
 	/>
-	<br />
-	<button onclick={navFromTo} disabled={isDisabled} class="btn btn-secondary"
-		>{printQR ? 'Vytisknout QR kód' : 'Navigovat'}</button
-	>
-	{#if showClearNavButton}
-		<button onclick={clearNav} class="btn btn-secondary">Vymazat navigaci</button>
-	{/if}
+	<div class="navigation-actions flex flex-wrap items-center gap-2 pt-2">
+		<button onclick={navigate} disabled={isDisabled} class="btn btn-secondary">
+			{printQR ? 'Vytisknout QR kód' : 'Navigovat'}
+		</button>
+		{#if showClearNavButton}
+			<button onclick={clearNavigation} class="btn btn-secondary">Vymazat navigaci</button>
+		{/if}
+	</div>
 </div>
 
 <style>
 	.styled_select {
-		--item-color: black;
-		--selected-item-color: black;
-		--item-hover-color: black;
-		--item-placeholder-color: black;
-		--input-color: black;
-		--placeholder-color: black;
+		--item-color: var(--color-base-content);
+		--selected-item-color: var(--color-base-content);
+		--item-hover-color: var(--color-base-content);
+		--item-hover-bg: var(--color-base-200);
+		--item-active-background: var(--color-base-300);
+		--item-is-active-bg: var(--color-secondary);
+		--item-is-active-color: var(--color-secondary-content);
+		--item-placeholder-color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		--item-is-not-selectable-color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		--group-title-color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+		--input-color: var(--color-base-content);
+		--placeholder-color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		--icons-color: var(--color-base-content);
+		--background: var(--color-base-100);
+		--list-background: var(--color-base-100);
+		--border: 1px solid color-mix(in oklab, var(--color-base-content) 20%, transparent);
+		--border-hover: 1px solid var(--color-base-content);
+		--border-focused: 1px solid var(--color-base-content);
+		--list-z-index: 50;
 	}
 </style>

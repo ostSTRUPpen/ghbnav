@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 
-	let darkMode: boolean = $state(false);
+	interface Props {
+		initialTheme?: 'ghb_light' | 'ghb_dark';
+	}
+
+	let { initialTheme = 'ghb_light' }: Props = $props();
+	// svelte-ignore state_referenced_locally
+	let darkMode: boolean = $state(initialTheme === 'ghb_dark');
 	const one_year = 60 * 60 * 24 * 365;
 
 	onMount(() => {
@@ -10,8 +16,7 @@
 			const theme = window.localStorage.getItem('theme');
 			if (theme) {
 				document.documentElement.setAttribute('data-theme', theme);
-				//condition ? true_expression : false_expression
-				theme === 'ghb_dark' ? (darkMode = true) : (darkMode = false);
+				darkMode = theme === 'ghb_dark';
 			}
 		}
 	});
@@ -30,8 +35,7 @@
 		window.localStorage.setItem('theme', theme);
 		document.cookie = `theme=${theme}; max-age=${one_year}; path=/; SameSite=Strict;`;
 		document.documentElement.setAttribute('data-theme', theme);
-		//condition ? true_expression : false_expression
-		theme === 'ghb_dark' ? (darkMode = true) : (darkMode = false);
+		darkMode = theme === 'ghb_dark';
 	}
 </script>
 

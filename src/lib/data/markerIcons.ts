@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-
 // floor plans
 import floor_0 from '$lib/images/floors/webp/floor_0.webp';
 import floor_1 from '$lib/images/floors/webp/floor_1.webp';
@@ -21,6 +19,8 @@ import zachody from '$lib/images/icons/markers/webp/zachody.webp';
 import satny from '$lib/images/icons/markers/webp/satny.webp';
 import schody from '$lib/images/icons/markers/webp/schody.webp';
 import vv_a_hv from '$lib/images/icons/markers/webp/vv_a_hv.webp';
+import type { Icon } from 'leaflet';
+import type { MarkerIconDefinition } from '$lib/types/navigation';
 
 export const iconImages: Record<string, string> = {
 	administrace: administrace,
@@ -40,21 +40,25 @@ export const iconImages: Record<string, string> = {
 
 export { floor_0, floor_1, floor_2, floor_3, floor_4 };
 
-//@ts-expect-error
-export function getMarkerIcons(L, icons) {
-	const NavIcon = L.Icon.extend({
-		options: {
-			iconSize: [30, 30], // size of the icon
-			iconAnchor: [15, 15], // point of the icon which will correspond to marker's location
-			popupAnchor: [0, 0] // point from which the popup should open relative to the iconAnchor
-		}
-	});
+interface LeafletIconApi {
+	Icon: typeof Icon;
+}
 
-	const markerIcons = new Object();
+export function getMarkerIcons(
+	L: LeafletIconApi,
+	icons: MarkerIconDefinition[]
+): Record<string, Icon> {
+	const markerIcons: Record<string, Icon> = {};
 	for (const icon of icons) {
-		markerIcons[icon.id as keyof typeof markerIcons] = new NavIcon({
-			iconUrl: iconImages[icon.image as keyof typeof iconImages]
-		});
+		const iconUrl = iconImages[icon.image];
+		if (iconUrl) {
+			markerIcons[icon.id] = new L.Icon({
+				iconUrl,
+				iconSize: [30, 30],
+				iconAnchor: [15, 15],
+				popupAnchor: [0, 0]
+			});
+		}
 	}
 	return markerIcons;
 }

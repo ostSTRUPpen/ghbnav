@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
-	import { onMount, mount } from 'svelte';
-	import MarkerPopup from '$lib/elements/MarkerPopup.svelte';
+	import 'leaflet/dist/leaflet.css';
+	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { page } from '$app/state';
 	import {
 		floor_0,
@@ -11,369 +11,383 @@
 		floor_4,
 		getMarkerIcons
 	} from '$lib/data/markerIcons.js';
-	import { goto } from '$app/navigation';
-	import { dijkstra } from '$lib/functions/findPath.js';
-	import { foundPath } from '$lib/data/store.js';
-	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
-	import { resolve } from '$app/paths';
+	import MarkerPopup from '$lib/elements/MarkerPopup.svelte';
 	import PathSelection from '$lib/elements/PathSelection.svelte';
 	import Loading from '$lib/elements/Loading.svelte';
-	import type { LayerGroup, Map } from 'leaflet';
-	let { data } = $props();
+	import { savePath } from '$lib/functions/dynamicPathManagementFunctions.js';
+	import { dijkstra } from '$lib/functions/findPath.js';
+	import type {
+		LocationMarker,
+		MapPageData,
+		NavigationMarker,
+		NavigationState
+	} from '$lib/types/navigation';
+	import type {
+		LatLngExpression,
+		LatLngBoundsExpression,
+		LayerGroup,
+		Map as LeafletMap,
+		Marker as LeafletMarker
+	} from 'leaflet';
+	import { mount, onDestroy, onMount, unmount } from 'svelte';
 
+	interface Props {
+		data: MapPageData;
+	}
+
+	interface FloorDefinition {
+		name: string;
+		imageUrl: string;
+		bounds: LatLngBoundsExpression;
+	}
+
+	type PathSegment = LatLngExpression[];
+	type MountedPopup = ReturnType<typeof mount>;
+
+	let { data }: Props = $props();
 	let { markers, nav_markers, iconImageDisplayNames, iconIdImage } = $derived(data);
 
-	let floors: Record<string, LayerGroup>;
-	let from: string = $state(page.params.from),
-		to: string = $state(page.params.to),
-		fromMarkerFloor: number = 1,
-		loading = $state(true),
-		finalMarkerFloor: number = $state(-5);
+	let mapElement: HTMLDivElement;
+	let leafletMap: LeafletMap | undefined;
+	let leafletApi: typeof import('leaflet') | undefined;
+	let floorLayers: LayerGroup[] = [];
+	let pathLayers: LayerGroup[] = [];
+	let loading = $state(true);
+	let mapReady = $state(false);
+	let errorMessage = $state('');
+	let lastRecordedPath = '';
 
-	let currentFoundPath = $state(['']);
-	foundPath.subscribe((value) => {
-		currentFoundPath = value;
-	});
+	const mountedPopups = new Set<MountedPopup>();
+	let markerById = $derived.by(
+		() => new Map<string, LocationMarker>(markers.map((marker) => [marker.id, marker]))
+	);
+	let navigationMarkerById = $derived.by(
+		() =>
+			new Map<string, NavigationMarker>(nav_markers.map((marker) => [String(marker.id), marker]))
+	);
 
-	let navState = $state('no_from-to');
-
-	$effect(() => {
-		console.log('From: ' + from);
-		console.log('To: ' + to);
-	});
-
-	$effect(() => {
-		if (from !== undefined && to !== undefined && from.length > 5 && to.length > 5) {
-			navState = 'ready';
-			finalMarkerFloor = markers.find((obj) => obj.id === to)?.floor;
-		} else if (from !== undefined && from.length > 5) {
-			navState = 'no_to';
-			finalMarkerFloor = -5;
-		}
-	});
-
-	let error = false;
-	let errMsg: string = '';
-
-	let map: any = $state();
-
-	function createMarkers(
-		L: any,
-		markers: any,
-		floor: number,
-		iconList: any,
-		mainButtonType: string,
-		fromNodeId: string
-	) {
-		let tempButtonType = mainButtonType;
-		let markerList = [];
-		for (let marker of markers) {
-			tempButtonType = mainButtonType;
-			if (marker.floor === floor) {
-				// If this if statement fails, the whole page fails to load - so I double check it
-				if (marker.can_nav === false) {
-					tempButtonType = 'do_not_nav';
-				}
-				if (marker.icon !== '' && marker.icon in iconList) {
-					markerList.push(
-						// All cords are YX... its not my fault
-						L.marker([marker.y, marker.x], { icon: iconList[marker.icon] })
-							.bindPopup(() => {
-								let container = L.DomUtil.create('div');
-								let c = mount(MarkerPopup, {
-									target: container,
-									props: {
-										text: `${marker.display_name}`,
-										id: marker.id,
-										buttonType: tempButtonType,
-										fromNodeId,
-										canNav: marker.can_nav,
-										markerIcon: marker.icon,
-										endingFloor: finalMarkerFloor,
-										map: map,
-										floors: floors,
-										currentFloor: floor
-									}
-								});
-								return container;
-							})
-							.openPopup()
-					);
-				} else {
-					markerList.push(
-						// All cords are YX... its not my fault
-						L.marker([marker.y, marker.x])
-							.bindPopup(() => {
-								let container = L.DomUtil.create('div');
-								let c = mount(MarkerPopup, {
-									target: container,
-									props: {
-										text: marker.display_name,
-										id: marker.id,
-										buttonType: tempButtonType,
-										fromNodeId,
-										canNav: marker.can_nav,
-										markerIcon: marker.icon,
-										endingFloor: finalMarkerFloor,
-										map: map,
-										floors: floors,
-										currentFloor: floor
-									}
-								});
-								return container;
-							})
-							.openPopup()
-					);
-				}
-			}
-		}
-		return markerList;
-	}
-
-	/*function createNavMarkers(markers: any, navMarkers: any, floor: number) {
-		markers = markers.reverse();
-		navMarkers = navMarkers.reverse();
-		let lineList = [];
-		for (let navMarker of navMarkers) {
-			if (navMarker.floor === floor) {
-				for (let marker of markers) {
-					if (marker.floor === floor) {
-						if (navMarker.connected.hasOwnProperty(marker.id)) {
-							lineList.push([
-								[navMarker.y, navMarker.x],
-								[marker.y, marker.x]
-							]);
-						}
-					}
-				}
-				for (let secNavMarker of navMarkers) {
-					if (secNavMarker.floor === floor) {
-						if (navMarker.connected.hasOwnProperty(secNavMarker.id)) {
-							lineList.push([
-								[navMarker.y, navMarker.x],
-								[secNavMarker.y, secNavMarker.x]
-							]);
-						}
-					}
-				}
-			}
-		}
-		return lineList;
-	}*/
-
-	function drawPath(path: any, markers: any, navMarkers: any, floor: number) {
-		let lineList: Array<Array<Array<string>>> = [];
-		let floorLineList: Array<Array<string>> = [];
-		let passedStairSplit: boolean = false;
-		for (let pathPoint of path) {
-			for (let marker of markers) {
-				if (marker.id === pathPoint) {
-					if (marker.floor === floor) floorLineList.push([marker.y, marker.x]);
-				}
-			}
-
-			for (let navMarker of navMarkers) {
-				if (String(navMarker.id) === pathPoint) {
-					if (navMarker.floor === floor) {
-						floorLineList.push([navMarker.y, navMarker.x]);
-						if (
-							(navMarker.special_type === 'stair_up' && passedStairSplit === true) ||
-							(navMarker.special_type === 'stair_down' && passedStairSplit === true)
-						) {
-							lineList.push(floorLineList);
-							floorLineList = [];
-						}
-						if (navMarker.special_type === 'stair_split') {
-							passedStairSplit = true;
-						} else {
-							passedStairSplit = false;
-						}
-					}
-				}
-			}
-		}
-		lineList.push(floorLineList);
-
-		return {
-			pathList: lineList
-		};
-	}
-
-	//Path display settings
-	const pathColor = 'rgb(47, 60, 76)';
-	const pathText = '        ►        ';
-	const pathTextColor = 'rgb(253, 133, 73)';
-	const pathTextSize = '25px';
-	const pathTextOffset = 8;
-
-	onMount(async () => {
-		if (browser) {
-			const L = await import('leaflet');
-			//@ts-expect-error
-			const textPath = await import('leaflet-textpath');
-			const markerIcons = getMarkerIcons(L, iconIdImage);
-			//@ts-expect-error
-			fromMarkerFloor = markers.find((obj: { id: string }) => obj.id === from)?.floor ?? 1;
-
-			const zeroFloorImg = L.imageOverlay(floor_0, [
+	const floorDefinitions: FloorDefinition[] = [
+		{
+			name: '1. PP',
+			imageUrl: floor_0,
+			bounds: [
 				[0, 0],
 				[2651, 10000]
-			]);
-			const firstFloorImg = L.imageOverlay(floor_1, [
+			]
+		},
+		{
+			name: '1. NP',
+			imageUrl: floor_1,
+			bounds: [
 				[0, 0],
 				[3870, 10083]
-			]);
-			const secondFloorImg = L.imageOverlay(floor_2, [
+			]
+		},
+		{
+			name: '2. NP',
+			imageUrl: floor_2,
+			bounds: [
 				[0, 0],
 				[3815, 8995]
-			]);
-			const thirdFloorImg = L.imageOverlay(floor_3, [
+			]
+		},
+		{
+			name: '3. NP',
+			imageUrl: floor_3,
+			bounds: [
 				[0, 0],
 				[2605, 8868]
-			]);
-			const fourthFloorImg = L.imageOverlay(floor_4, [
+			]
+		},
+		{
+			name: '4. NP',
+			imageUrl: floor_4,
+			bounds: [
 				[0, 0],
 				[1915, 8868]
-			]);
-
-			let markerList: any = [];
-			let pathList: any = [];
-			let canDrawPath: boolean = false;
-
-			if (currentFoundPath[0] === from && currentFoundPath[currentFoundPath.length - 1] === to) {
-				canDrawPath = true;
-			}
-
-			markerList = createMarkers(L, markers, 0, markerIcons, navState, from);
-
-			if (canDrawPath === true)
-				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 0));
-			let zeroFloor = L.layerGroup([
-				// Map
-				zeroFloorImg,
-				// Markers
-				...markerList,
-				// Path
-				//@ts-expect-error
-				L.polyline(pathList, { color: pathColor }).setText(pathText, {
-					repeat: true,
-					offset: pathTextOffset,
-					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
-				})
-			]);
-
-			markerList = createMarkers(L, markers, 1, markerIcons, navState, from);
-			if (canDrawPath === true)
-				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 1));
-			let firstFloor = L.layerGroup([
-				firstFloorImg,
-				...markerList,
-				//@ts-expect-error
-				L.polyline(pathList, { color: pathColor }).setText(pathText, {
-					repeat: true,
-					offset: pathTextOffset,
-					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
-				})
-			]);
-
-			markerList = createMarkers(L, markers, 2, markerIcons, navState, from);
-			if (canDrawPath === true)
-				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 2));
-			let secondFloor = L.layerGroup([
-				secondFloorImg,
-				...markerList,
-				//@ts-expect-error
-				L.polyline(pathList, { color: pathColor }).setText(pathText, {
-					repeat: true,
-					offset: pathTextOffset,
-					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
-				})
-			]);
-
-			markerList = createMarkers(L, markers, 3, markerIcons, navState, from);
-			if (canDrawPath === true)
-				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 3));
-			let thirdFloor = L.layerGroup([
-				thirdFloorImg,
-				...markerList,
-				//@ts-expect-error
-				L.polyline(pathList, { color: pathColor }).setText(pathText, {
-					repeat: true,
-					offset: pathTextOffset,
-					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
-				})
-			]);
-
-			markerList = createMarkers(L, markers, 4, markerIcons, navState, from);
-			if (canDrawPath === true)
-				({ pathList } = drawPath(currentFoundPath, markers, nav_markers, 4));
-			let fourthFloor = L.layerGroup([
-				fourthFloorImg,
-				...markerList,
-				//@ts-expect-error
-				L.polyline(pathList, { color: pathColor }).setText(pathText, {
-					repeat: true,
-					offset: pathTextOffset,
-					attributes: { fill: pathTextColor, 'font-size': pathTextSize }
-				})
-			]);
-			markerList = [];
-			pathList = [];
-			floors = {
-				'1. PP': zeroFloor,
-				'1. NP': firstFloor,
-				'2. NP': secondFloor,
-				'3. NP': thirdFloor,
-				'4. NP': fourthFloor
-			};
-			map = L.map('map', {
-				crs: L.CRS.Simple, // CRS.Simple, which represents a square grid:
-				minZoom: -4,
-				maxZoom: 0,
-				layers: [Object.values(floors)[fromMarkerFloor]],
-				maxBounds: L.latLngBounds(L.latLng(-1000, 11000), L.latLng(5000, -1000)),
-				maxBoundsViscosity: 1.0
-			});
-			map.fitBounds([
-				[0, 0],
-				[3000, 10000]
-			]);
-			L.control.layers(floors).addTo(map);
-
-			loading = false;
-			loading = loading;
-			if (navState === 'ready') {
-				if (from === to && from !== undefined) {
-					alert('Začátek a konec cesty nemůže být stejný');
-					goto(resolve('/loading', {})).then(() =>
-						goto(resolve('/map/[from]', { from: from }), { replaceState: true })
-					);
-				} else if (
-					currentFoundPath[0] !== from ||
-					currentFoundPath[currentFoundPath.length - 1] !== to
-				) {
-					foundPath.update((n) => (n = ['']));
-					const response = dijkstra(
-						nav_markers,
-						from,
-						to,
-						markers.find((obj) => obj.id === from)?.floor
-					);
-					if (response.status === 'OK') {
-						foundPath.update((n) => (n = response.path));
-						const data = await savePath(from, to, response.path);
-						goto(resolve('/loading', {})).then(() => {
-							goto(resolve('/map/[from]/[to]', { from: from, to: to }), { replaceState: true });
-						});
-					}
-				}
-			}
+			]
 		}
+	];
+
+	const pathStyle = {
+		color: 'rgb(47, 60, 76)',
+		text: '        ►        ',
+		textColor: 'rgb(253, 133, 73)',
+		textSize: '25px',
+		textOffset: 8
+	};
+
+	let from = $derived(page.params.from);
+	let to = $derived(page.params.to);
+	let navigationState = $derived(getNavigationState(from, to));
+	let endingFloor = $derived(
+		navigationState === 'ready' && to ? markerById.get(to)?.floor : undefined
+	);
+
+	$effect(() => {
+		const routeFrom = from;
+		const routeTo = to;
+		if (mapReady) updateNavigation(routeFrom, routeTo);
 	});
-	function resizeMap() {
-		if (map) {
-			map.invalidateSize();
+
+	onMount(async () => {
+		const L = await import('leaflet');
+		await import('leaflet-textpath');
+		leafletApi = L;
+
+		const markerIcons = getMarkerIcons(L, iconIdImage);
+		floorLayers = floorDefinitions.map((floor, floorIndex) => {
+			const imageLayer = L.imageOverlay(floor.imageUrl, floor.bounds);
+			const markerLayer = L.layerGroup(createFloorMarkers(L, floorIndex, markerIcons));
+			const pathLayer = L.layerGroup();
+			pathLayers[floorIndex] = pathLayer;
+			return L.layerGroup([imageLayer, markerLayer, pathLayer]);
+		});
+
+		const initialFloor = getValidMarker(from)?.floor ?? 1;
+		leafletMap = L.map(mapElement, {
+			crs: L.CRS.Simple,
+			minZoom: -4,
+			maxZoom: 0,
+			layers: [floorLayers[initialFloor] ?? floorLayers[1]],
+			maxBounds: L.latLngBounds(L.latLng(-1000, 11000), L.latLng(5000, -1000)),
+			maxBoundsViscosity: 1
+		});
+
+		leafletMap.fitBounds([
+			[0, 0],
+			[3000, 10000]
+		]);
+
+		const namedFloors = Object.fromEntries(
+			floorDefinitions.map((floor, index) => [floor.name, floorLayers[index]])
+		);
+		L.control.layers(namedFloors).addTo(leafletMap);
+
+		loading = false;
+		mapReady = true;
+		leafletMap.invalidateSize();
+	});
+
+	onDestroy(() => {
+		leafletMap?.remove();
+		leafletMap = undefined;
+		for (const popup of mountedPopups) void unmount(popup);
+		mountedPopups.clear();
+	});
+
+	function getValidMarker(id: string | undefined): LocationMarker | undefined {
+		if (!id) return undefined;
+		const marker = markerById.get(id);
+		return marker?.can_nav ? marker : undefined;
+	}
+
+	function getNavigationState(
+		startId: string | undefined,
+		endId: string | undefined
+	): NavigationState {
+		if (!getValidMarker(startId)) return 'empty';
+		if (!getValidMarker(endId)) return 'start-selected';
+		return 'ready';
+	}
+
+	function createFloorMarkers(
+		L: typeof import('leaflet'),
+		floor: number,
+		icons: Record<string, import('leaflet').Icon>
+	): LeafletMarker[] {
+		return markers
+			.filter((marker) => marker.floor === floor)
+			.map((marker) => {
+				const leafletMarker = L.marker([marker.y, marker.x], {
+					...(icons[marker.icon] ? { icon: icons[marker.icon] } : {})
+				});
+				let popupComponent: MountedPopup | undefined;
+
+				leafletMarker.bindPopup(() => {
+					if (popupComponent) {
+						mountedPopups.delete(popupComponent);
+						void unmount(popupComponent);
+					}
+
+					const container = L.DomUtil.create('div');
+					popupComponent = mount(MarkerPopup, {
+						target: container,
+						props: {
+							text: marker.display_name,
+							canNav: marker.can_nav,
+							markerIcon: marker.icon,
+							navigationState,
+							endingFloor,
+							currentFloor: floor,
+							onNavigate: () => selectMarker(marker.id),
+							onChangeFloor: changeFloor
+						}
+					});
+					mountedPopups.add(popupComponent);
+					return container;
+				});
+
+				leafletMarker.on('popupclose', () => {
+					if (!popupComponent) return;
+					mountedPopups.delete(popupComponent);
+					void unmount(popupComponent);
+					popupComponent = undefined;
+				});
+
+				return leafletMarker;
+			});
+	}
+
+	function updateNavigation(startId: string | undefined, endId: string | undefined): void {
+		clearPathLayers();
+		errorMessage = '';
+
+		if (!startId) {
+			lastRecordedPath = '';
+			return;
 		}
+
+		const startMarker = getValidMarker(startId);
+		if (!startMarker) {
+			errorMessage = 'Počáteční bod zadaný v adrese neexistuje nebo jej nelze použít.';
+			return;
+		}
+
+		changeFloor(startMarker.floor);
+		if (!endId) {
+			lastRecordedPath = '';
+			return;
+		}
+
+		const endMarker = getValidMarker(endId);
+		if (!endMarker) {
+			errorMessage = 'Cílový bod zadaný v adrese neexistuje nebo jej nelze použít.';
+			return;
+		}
+
+		if (startId === endId) {
+			alert('Začátek a konec cesty nemůže být stejný');
+			navigateToMap(startId);
+			return;
+		}
+
+		const result = dijkstra(nav_markers, startId, endId, startMarker.floor);
+		if (result.status !== 'OK') {
+			errorMessage = 'Mezi vybranými body se nepodařilo najít cestu.';
+			return;
+		}
+
+		drawPath(result.path);
+		const pathKey = `${startId}/${endId}`;
+		if (lastRecordedPath !== pathKey) {
+			lastRecordedPath = pathKey;
+			void savePath(startId, endId, result.path).catch((error: unknown) => {
+				console.error('Cestu se nepodařilo uložit.', error);
+			});
+		}
+	}
+
+	function drawPath(path: string[]): void {
+		if (!leafletApi) return;
+
+		for (let floor = 0; floor < floorDefinitions.length; floor += 1) {
+			const segments = getFloorSegments(path, floor);
+			if (segments.length === 0) continue;
+
+			const polyline = leafletApi.polyline(segments, { color: pathStyle.color });
+			polyline.setText(pathStyle.text, {
+				repeat: true,
+				offset: pathStyle.textOffset,
+				attributes: { fill: pathStyle.textColor, 'font-size': pathStyle.textSize }
+			});
+			pathLayers[floor]?.addLayer(polyline);
+		}
+	}
+
+	function getFloorSegments(path: string[], floor: number): PathSegment[] {
+		const segments: PathSegment[] = [];
+		let currentSegment: PathSegment = [];
+		let passedStairSplit = false;
+
+		for (const pathPoint of path) {
+			const locationMarker = markerById.get(pathPoint);
+			if (locationMarker?.floor === floor) {
+				currentSegment.push([locationMarker.y, locationMarker.x]);
+				continue;
+			}
+
+			const navigationMarker = navigationMarkerById.get(pathPoint);
+			if (navigationMarker?.floor !== floor) continue;
+
+			currentSegment.push([navigationMarker.y, navigationMarker.x]);
+			if (
+				passedStairSplit &&
+				(navigationMarker.special_type === 'stair_up' ||
+					navigationMarker.special_type === 'stair_down')
+			) {
+				if (currentSegment.length > 0) segments.push(currentSegment);
+				currentSegment = [];
+			}
+			passedStairSplit = navigationMarker.special_type === 'stair_split';
+		}
+
+		if (currentSegment.length > 0) segments.push(currentSegment);
+		return segments;
+	}
+
+	function clearPathLayers(): void {
+		for (const layer of pathLayers) layer?.clearLayers();
+	}
+
+	function changeFloor(floor: number): void {
+		if (!leafletMap || !floorLayers[floor]) return;
+		for (const layer of floorLayers) {
+			if (leafletMap.hasLayer(layer)) leafletMap.removeLayer(layer);
+		}
+		floorLayers[floor].addTo(leafletMap);
+	}
+
+	function selectMarker(markerId: string): void {
+		const startMarker = getValidMarker(from);
+		if (!startMarker) {
+			navigateToMap(markerId);
+			return;
+		}
+
+		if (startMarker.id === markerId) {
+			alert('Začátek a konec cesty nemůže být stejný');
+			navigateToMap(startMarker.id);
+			return;
+		}
+
+		navigateToMap(startMarker.id, markerId);
+	}
+
+	function navigateToMap(startId?: string, endId?: string): void {
+		if (startId && endId) {
+			void goto(resolve('/map/[[from]]/[[to]]', { from: startId, to: endId }), {
+				replaceState: true,
+				noScroll: true,
+				keepFocus: true
+			});
+			return;
+		}
+
+		if (startId) {
+			void goto(resolve('/map/[[from]]/[[to]]', { from: startId }), {
+				replaceState: true,
+				noScroll: true,
+				keepFocus: true
+			});
+			return;
+		}
+
+		void goto(resolve('/map'), { replaceState: true, noScroll: true, keepFocus: true });
+	}
+
+	function resizeMap(): void {
+		leafletMap?.invalidateSize();
 	}
 </script>
 
@@ -388,21 +402,16 @@
 				navTo={to}
 				showClearNavButton={true}
 				{iconImageDisplayNames}
+				onNavigate={(startId, endId) => navigateToMap(startId, endId)}
+				onClear={() => navigateToMap()}
 			/>
 		</div>
 		{#if loading}
 			<Loading />
 		{/if}
-		{#if error}
-			<p class="error_msg">{errMsg}</p>
-		{:else}
-			<div id="map" class="max-sm:h-96 sm:h-[30rem] z-0" bind:this={map}></div>
+		{#if errorMessage}
+			<p class="text-error text-center pb-2" role="alert">{errorMessage}</p>
 		{/if}
+		<div id="map" class="max-sm:h-96 sm:h-[30rem] z-0" bind:this={mapElement}></div>
 	</div>
 </main>
-<link
-	rel="stylesheet"
-	href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
-	integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
-	crossorigin=""
-/>

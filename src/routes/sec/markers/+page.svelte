@@ -1,18 +1,18 @@
 <script lang="ts">
 	import { changeMarker } from '../../../lib/functions/markerManagementFunctions.js';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import { resolve } from '$app/paths';
 	import { printMarkersList, printSettingsString } from '$lib/data/store.js';
 	import { iconImages } from '$lib/data/markerIcons.js';
 	import { buildingLocationsList } from '$lib/data/staticData.js';
+	import type { EditableMarker, MarkerChange, ServerResponse } from '$lib/types/admin';
 
 	let { data } = $props();
 	let { markers, iconList } = $derived(data);
 
 	let localPrintMarkersList: Array<Array<string>> = [];
-	let savingError: SerializedServerResponse = $state({ message: '', code: '' });
-	let endingPoints: Array<enlargedMarkerObject> = $state([]);
+	let savingError: ServerResponse = $state({ message: '', code: '' });
+	let endingPoints: EditableMarker[] = $state([]);
 	$effect(() => {
 		let tempEndingPoints = [];
 		for (let marker of markers) {
@@ -33,18 +33,13 @@
 		endingPoints = tempEndingPoints;
 	});
 
-	let successDialog: any = $state();
-	let loadingDialog: any;
-	let errorDialog: any = $state();
-	onMount(() => {
-		successDialog = document.getElementById('success-dialog');
-		loadingDialog = document.getElementById('loading-dialog');
-		errorDialog = document.getElementById('error-dialog');
-	});
+	let successDialog: HTMLDialogElement;
+	let loadingDialog: HTMLDialogElement;
+	let errorDialog: HTMLDialogElement;
 
 	async function saveChanges(show: boolean = true) {
-		loadingDialog['showModal']();
-		let changedEndingPoints = [];
+		loadingDialog.showModal();
+		const changedEndingPoints: MarkerChange[] = [];
 		for (let endingPoint of endingPoints) {
 			if (
 				endingPoint.new_display_name !== '' ||
@@ -66,9 +61,9 @@
 			loadingDialog.close();
 			if (response.code !== '200' && response.code !== '201') {
 				savingError = response;
-				errorDialog['showModal']();
+				errorDialog.showModal();
 			} else {
-				successDialog['showModal']();
+				successDialog.showModal();
 			}
 		}
 	}
@@ -94,20 +89,20 @@
 	}
 
 	function printQRs() {
-		printMarkersList.update((n) => (n = localPrintMarkersList));
-		printSettingsString.update((n) => (n = 'marker'));
+		printMarkersList.set(localPrintMarkersList);
+		printSettingsString.set('marker');
 		saveChanges(false);
 		goto(`/sec/markers/print`, { replaceState: true });
 	}
 </script>
 
-<dialog id="loading-dialog" class="modal">
+<dialog bind:this={loadingDialog} id="loading-dialog" class="modal">
 	<div class="modal-box flex justify-center">
 		<span class="loading loading-dots loading-lg text-info"></span>
 	</div>
 </dialog>
 
-<dialog id="success-dialog" class="modal">
+<dialog bind:this={successDialog} id="success-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-success">Hotovo!</p>
 		<p class="text-lg py-4">Značky úspěšně upraveny.</p>
@@ -115,14 +110,14 @@
 		<button
 			onclick={() => {
 				successDialog.close();
-				goto(resolve('/sec', {}), { replaceState: true });
+				goto(resolve('/sec'), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
 	</div>
 </dialog>
 
-<dialog id="error-dialog" class="modal">
+<dialog bind:this={errorDialog} id="error-dialog" class="modal">
 	<div class="modal-box">
 		<p class="font-bold text-lg text-error">Došlo k chybě!</p>
 		<ul>
@@ -133,7 +128,7 @@
 		<button
 			onclick={() => {
 				errorDialog.close();
-				goto(resolve('/sec', {}), { replaceState: true });
+				goto(resolve('/sec'), { replaceState: true });
 			}}
 			class="modal-action btn btn-info">Ok</button
 		>
@@ -141,9 +136,8 @@
 </dialog>
 
 <div class="px-5 space-y-5">
-	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<div tabindex="0" class="collapse collapse-arrow border border-secondary bg-base-100">
-		<div class="collapse-title text-xl font-medium text-primary">Ikony</div>
+	<details class="collapse collapse-arrow border border-secondary bg-base-100">
+		<summary class="collapse-title text-xl font-medium text-primary">Ikony</summary>
 		<div class="collapse-content bg-white">
 			{#each iconList as icon}
 				<div class="float-left px-5">
@@ -159,7 +153,7 @@
 				</div>
 			{/each}
 		</div>
-	</div>
+	</details>
 	<a class="link-secondary link text-xl" href="/sec">Zpět</a> <br />
 	<button onclick={printQRs} class="btn btn-secondary">Tisk QR kódů</button>
 	<button onclick={printAllQRs} class="btn btn-secondary">Vytisknout všechny QR kódy</button>

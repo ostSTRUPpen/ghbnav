@@ -1,82 +1,87 @@
 import { staticSettings } from '$lib/data/staticData.js';
+import { setPublicNavigationCacheHeaders } from '$lib/server/publicNavigationCache';
+import { queryRowsOrEmpty } from '$lib/server/queryRows';
+import type { IconDisplayNames, Location, PublicPath } from '$lib/types/navigation';
+import type { PageServerLoad } from './$types';
 
-export async function load({ setHeaders, locals }) {
-	setHeaders({
-		'Cache-Control': `max-age=${60}, s-maxage=${60}`
-	});
+interface IconRow {
+	id: string;
+	display_name: string;
+}
 
-	const { sql } = locals;
+export const load: PageServerLoad = async ({ request, setHeaders, locals: { sql } }) => {
+	setPublicNavigationCacheHeaders({ request, setHeaders });
 
-	let markers;
-	try {
-		markers =
-			await sql`SELECT markers.id, markers.display_name, floor, can_nav, icon, building_location, icons.position 
-	FROM markers
-	LEFT JOIN icons ON markers.icon = icons.id
-	WHERE can_nav = true 
-	ORDER BY position ASC, floor ASC, display_name ASC;`;
-	} catch (error) {
-		console.error(error);
-	}
+	const storedPathsPromise = staticSettings.storeDynamicPaths
+		? queryRowsOrEmpty<PublicPath>(
+				'časté cesty',
+				sql<PublicPath[]>`
+					SELECT
+						path.start_node,
+						path.end_node,
+						path.count,
+						path.hidden,
+						start_marker.display_name AS start_name,
+						end_marker.display_name AS end_name
+					FROM stored_paths AS path
+					JOIN markers AS start_marker ON start_marker.id = path.start_node
+					JOIN markers AS end_marker ON end_marker.id = path.end_node
+					WHERE path.hidden = false
+					ORDER BY path.count DESC
+					LIMIT 5
+				`
+			)
+		: Promise.resolve([]);
 
-	let stored_paths;
-	const stored_paths_with_names = [];
-	if (staticSettings.storeDynamicPaths) {
-		try {
-			stored_paths =
-				await sql`SELECT id, start_node, end_node, count, hidden FROM stored_paths WHERE hidden = false ORDER BY count DESC LIMIT 5;`;
-		} catch (error) {
-			console.error(error);
-		}
+	const [locations, presetPaths, storedPaths, icons] = await Promise.all([
+		queryRowsOrEmpty<Location>(
+			'navigovatelné body',
+			sql<Location[]>`
+				SELECT
+					marker.id,
+					marker.display_name,
+					marker.floor,
+					marker.can_nav,
+					marker.icon,
+					marker.building_location
+				FROM markers AS marker
+				LEFT JOIN icons AS icon ON icon.id = marker.icon
+				WHERE marker.can_nav = true
+				ORDER BY icon.position, marker.floor, marker.display_name
+			`
+		),
+		queryRowsOrEmpty<PublicPath>(
+			'přednastavené cesty',
+			sql<PublicPath[]>`
+				SELECT
+					path.start_node,
+					path.end_node,
+					path.hidden,
+					start_marker.display_name AS start_name,
+					end_marker.display_name AS end_name
+				FROM preset_paths AS path
+				JOIN markers AS start_marker ON start_marker.id = path.start_node
+				JOIN markers AS end_marker ON end_marker.id = path.end_node
+				WHERE path.hidden = false
+				ORDER BY path.position
+				LIMIT 5
+			`
+		),
+		storedPathsPromise,
+		queryRowsOrEmpty<IconRow>(
+			'popisky ikon',
+			sql<IconRow[]>`SELECT id, display_name FROM icons ORDER BY position`
+		)
+	]);
 
-		for (const path of stored_paths ?? []) {
-			stored_paths_with_names.push({
-				start_node: path.start_node,
-				end_node: path.end_node,
-				count: path.count,
-				hidden: path.hidden,
-				start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-				end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-			});
-		}
-	}
-
-	let preset_paths;
-	try {
-		preset_paths =
-			await sql`SELECT id, start_node, end_node, position, hidden FROM preset_paths WHERE hidden = false ORDER BY position ASC LIMIT 5;`;
-	} catch (error) {
-		console.error(error);
-	}
-
-	const preset_paths_with_names = [];
-	for (const path of preset_paths ?? []) {
-		preset_paths_with_names.push({
-			id: path.id,
-			start_node: path.start_node,
-			end_node: path.end_node,
-			hidden: path.hidden,
-			start_name: markers?.find((obj) => obj.id === path.start_node)?.display_name,
-			end_name: markers?.find((obj) => obj.id === path.end_node)?.display_name
-		});
-	}
-
-	let icons;
-	try {
-		icons = await sql`SELECT id, display_name FROM icons ORDER BY position ASC;`;
-	} catch (error) {
-		console.error(error);
-	}
-
-	const iconImageDisplayNames = new Object();
-	for (const icon of icons ?? []) {
-		iconImageDisplayNames[icon.id as keyof typeof iconImageDisplayNames] = icon.display_name;
-	}
+	const iconImageDisplayNames: IconDisplayNames = Object.fromEntries(
+		icons.map((icon) => [icon.id, icon.display_name])
+	);
 
 	return {
-		locations: markers ?? [],
-		stored_paths: stored_paths_with_names ?? [],
-		preset_paths: preset_paths_with_names ?? [],
-		iconImageDisplayNames: iconImageDisplayNames ?? []
+		locations,
+		stored_paths: storedPaths,
+		preset_paths: presetPaths,
+		iconImageDisplayNames
 	};
-}
+};
