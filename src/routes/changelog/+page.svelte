@@ -12,11 +12,9 @@
 		<h1 class="mb-3 text-4xl font-bold">Historie verzí</h1>
 	</header>
 
-	<ol class="mt-10 border-l-2 border-secondary">
+	<ol class="version-timeline mt-10">
 		<li class="relative pb-12 pl-8">
-			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
-				>▲</span
-			>
+			<span class="version-arrow absolute left-0 top-0" aria-hidden="true"></span>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">5.0.0</h2>
@@ -36,9 +34,7 @@
 		</li>
 
 		<li class="relative pb-12 pl-8">
-			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
-				>▲</span
-			>
+			<span class="version-arrow absolute left-0 top-0" aria-hidden="true"></span>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">4.0.2</h2>
@@ -56,9 +52,7 @@
 		</li>
 
 		<li class="relative pb-12 pl-8">
-			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
-				>▲</span
-			>
+			<span class="version-arrow absolute left-0 top-0" aria-hidden="true"></span>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">3.0.0</h2>
@@ -75,9 +69,7 @@
 		</li>
 
 		<li class="relative pb-12 pl-8">
-			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
-				>▲</span
-			>
+			<span class="version-arrow absolute left-0 top-0" aria-hidden="true"></span>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">2.0.0</h2>
@@ -95,9 +87,7 @@
 		</li>
 
 		<li class="relative pl-8">
-			<span class="absolute -left-3 -top-1 text-[25px] leading-none text-primary" aria-hidden="true"
-				>▲</span
-			>
+			<span class="version-arrow absolute left-0 top-0" aria-hidden="true"></span>
 			<article>
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">1.0.0</h2>
@@ -115,3 +105,28 @@
 		</li>
 	</ol>
 </main>
+
+<style>
+	.version-timeline {
+		position: relative;
+	}
+
+	.version-timeline::before {
+		position: absolute;
+		inset-block: 0;
+		left: 0;
+		width: 2px;
+		content: '';
+		background: var(--color-secondary);
+		transform: translateX(-50%);
+	}
+
+	.version-arrow {
+		z-index: 1;
+		width: 22px;
+		height: 18px;
+		background: var(--color-primary);
+		clip-path: polygon(50% 0, 100% 100%, 0 100%);
+		transform: translateX(-50%);
+	}
+</style>
