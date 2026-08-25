@@ -13,10 +13,13 @@ function requiredEnvironment(name: string): string {
 	return value;
 }
 
-function parsePort(value: string): number {
-	const port = Number(value.replace(/^:/, ''));
+export function parsePostgresPort(value: string | undefined): number {
+	const configuredPort = value?.trim();
+	if (!configuredPort) return 5432;
+
+	const port = Number(configuredPort.replace(/^:/, ''));
 	if (!Number.isInteger(port) || port < 1 || port > 65535) {
-		throw new Error(`Invalid PostgreSQL port: ${value}`);
+		throw new Error(`Invalid PostgreSQL port: ${configuredPort}`);
 	}
 	return port;
 }
@@ -42,7 +45,7 @@ function parseSslMode(value: string | undefined): false | PostgresSslMode {
 function createDatabaseClient(): Sql {
 	return postgres({
 		host: requiredEnvironment('PSQL_HOST'),
-		port: parsePort(requiredEnvironment('PSQL_PORT')),
+		port: parsePostgresPort(env.PSQL_PORT),
 		database: requiredEnvironment('PSQL_DATABASE'),
 		username: requiredEnvironment('PSQL_USERNAME'),
 		password: requiredEnvironment('PSQL_PASSWORD'),
@@ -56,6 +59,10 @@ function createDatabaseClient(): Sql {
 }
 
 const databaseGlobal = globalThis as typeof globalThis & DatabaseGlobal;
+let database = databaseGlobal.ghbnavDatabase;
 
-export const database = databaseGlobal.ghbnavDatabase ?? createDatabaseClient();
-databaseGlobal.ghbnavDatabase = database;
+export function getDatabase(): Sql {
+	database ??= createDatabaseClient();
+	databaseGlobal.ghbnavDatabase = database;
+	return database;
+}

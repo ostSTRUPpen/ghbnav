@@ -1,6 +1,6 @@
 import { sequence } from '@sveltejs/kit/hooks';
 import { redirect, type Handle, type RequestEvent } from '@sveltejs/kit';
-import { database } from '$lib/server/database';
+import { getDatabase } from '$lib/server/database';
 import { SESSION_COOKIE_NAME, validateSession } from '$lib/functions/userLoginsManagement.server';
 
 const protectedApiRoutes = new Set(['/api/change_markers', '/api/groups', '/api/preset_paths']);
@@ -30,7 +30,7 @@ const privateResponseCache: Handle = async ({ event, resolve }) => {
 };
 
 const databaseConnection: Handle = async ({ event, resolve }) => {
-	event.locals.sql = database;
+	event.locals.sql = getDatabase();
 	return resolve(event);
 };
 
