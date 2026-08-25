@@ -12,6 +12,8 @@ secret.txt
 TODO.txt
 postgres_server.bat
 /.vercel/
+/playwright-report/
+/test-results/
 /db/fixtures/
 .dev
 docker
