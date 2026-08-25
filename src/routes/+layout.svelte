@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import type { LayoutData } from './$types';
-	import '../app.postcss';
+	import '../app.css';
 	import CookieAccept from '$lib/elements/CookieAccept.svelte';
 	import ColorMode from '$lib/elements/ColorMode.svelte';
 	import AboutMe from '$lib/elements/AboutMe.svelte';

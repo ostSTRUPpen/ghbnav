@@ -31,7 +31,7 @@ export interface MarkerIconDefinition {
 
 export type IconDisplayNames = Record<string, string>;
 
-export interface LocationSelectOption {
+export interface LocationSelectOption extends Record<string, unknown> {
 	value: string;
 	label: string;
 	group: string;

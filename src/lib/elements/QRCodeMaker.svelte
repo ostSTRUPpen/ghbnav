@@ -39,6 +39,7 @@
 					<td class="flex justify-center qrcode_td">
 						<img
 							src={qrSource}
+							data-qr-url={qrUrl}
 							alt={`QR kód pro ${name}`}
 							width="400"
 							height="400"
@@ -65,6 +66,7 @@
 					<td class="flex justify-center qrcode_td">
 						<img
 							src={qrSource}
+							data-qr-url={qrUrl}
 							alt={`QR kód pro ${name}`}
 							width="400"
 							height="400"

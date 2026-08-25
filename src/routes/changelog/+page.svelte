@@ -98,7 +98,7 @@
 				<header class="mb-4 flex flex-wrap items-center gap-x-4 gap-y-2">
 					<h2 class="text-3xl font-bold text-primary">1.0.0</h2>
 					<time datetime="2023" class="text-sm font-medium text-base-content/70 sm:ml-auto">
-						<p></p>rosinec 2023
+						prosinec 2023
 					</time>
 				</header>
 				<ul class="list-disc space-y-2 pl-5 marker:text-primary">

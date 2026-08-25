@@ -52,6 +52,8 @@
 	let isDisabled = $derived(
 		!selectedFrom || !selectedTo || selectedFrom.value === selectedTo.value
 	);
+	const groupLocations = (location: Record<string, unknown>): string | undefined =>
+		typeof location.group === 'string' ? location.group : undefined;
 
 	$effect(() => {
 		selectedFrom = navFrom
@@ -121,7 +123,8 @@
 		id="from"
 		name="from"
 		bind:value={selectedFrom}
-		class="select select-bordered w-full max-w-md"
+		groupBy={groupLocations}
+		class="w-full max-w-md"
 		clearable={false}
 	/>
 	<label for="to" class="label">
@@ -133,25 +136,40 @@
 		id="to"
 		name="to"
 		bind:value={selectedTo}
-		class="select select-bordered w-full max-w-md"
+		groupBy={groupLocations}
+		class="w-full max-w-md"
 		clearable={false}
 	/>
-	<br />
-	<button onclick={navigate} disabled={isDisabled} class="btn btn-secondary">
-		{printQR ? 'Vytisknout QR kód' : 'Navigovat'}
-	</button>
-	{#if showClearNavButton}
-		<button onclick={clearNavigation} class="btn btn-secondary">Vymazat navigaci</button>
-	{/if}
+	<div class="navigation-actions flex flex-wrap items-center gap-2 pt-2">
+		<button onclick={navigate} disabled={isDisabled} class="btn btn-secondary">
+			{printQR ? 'Vytisknout QR kód' : 'Navigovat'}
+		</button>
+		{#if showClearNavButton}
+			<button onclick={clearNavigation} class="btn btn-secondary">Vymazat navigaci</button>
+		{/if}
+	</div>
 </div>
 
 <style>
 	.styled_select {
-		--item-color: black;
-		--selected-item-color: black;
-		--item-hover-color: black;
-		--item-placeholder-color: black;
-		--input-color: black;
-		--placeholder-color: black;
+		--item-color: var(--color-base-content);
+		--selected-item-color: var(--color-base-content);
+		--item-hover-color: var(--color-base-content);
+		--item-hover-bg: var(--color-base-200);
+		--item-active-background: var(--color-base-300);
+		--item-is-active-bg: var(--color-secondary);
+		--item-is-active-color: var(--color-secondary-content);
+		--item-placeholder-color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		--item-is-not-selectable-color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		--group-title-color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
+		--input-color: var(--color-base-content);
+		--placeholder-color: color-mix(in oklab, var(--color-base-content) 60%, transparent);
+		--icons-color: var(--color-base-content);
+		--background: var(--color-base-100);
+		--list-background: var(--color-base-100);
+		--border: 1px solid color-mix(in oklab, var(--color-base-content) 20%, transparent);
+		--border-hover: 1px solid var(--color-base-content);
+		--border-focused: 1px solid var(--color-base-content);
+		--list-z-index: 50;
 	}
 </style>

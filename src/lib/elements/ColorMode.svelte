@@ -10,8 +10,7 @@
 			const theme = window.localStorage.getItem('theme');
 			if (theme) {
 				document.documentElement.setAttribute('data-theme', theme);
-				//condition ? true_expression : false_expression
-				theme === 'ghb_dark' ? (darkMode = true) : (darkMode = false);
+				darkMode = theme === 'ghb_dark';
 			}
 		}
 	});
@@ -30,8 +29,7 @@
 		window.localStorage.setItem('theme', theme);
 		document.cookie = `theme=${theme}; max-age=${one_year}; path=/; SameSite=Strict;`;
 		document.documentElement.setAttribute('data-theme', theme);
-		//condition ? true_expression : false_expression
-		theme === 'ghb_dark' ? (darkMode = true) : (darkMode = false);
+		darkMode = theme === 'ghb_dark';
 	}
 </script>
 
